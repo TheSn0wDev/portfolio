@@ -17,6 +17,21 @@ const PROJECTS = [
     tags: ["TypeScript", "Next.js", "App", "In development"],
   },
   {
+    name: "CoHoMa III",
+    link: "https://www.defense.gouv.fr/aid/actualites/cohoma-iii-ledition-consolidation",
+    tags: ["C++", "Python", "Robotics", "Military", "Innovation"],
+  },
+  {
+    name: "Vision4Rescue",
+    link: "https://www.renault.fr/gamme-concept-cars/vision-4rescue.html",
+    tags: ["C++", "Python", "Robotics", "Firefighters", "Innovation"],
+  },
+  {
+    name: "AZEOO",
+    link: "https://azeoo.com/",
+    tags: ["WordPress", "App", "Sport"],
+  },
+  {
     name: "Ekalia",
     link: "https://ekalia.fr",
     tags: ["HTML", "CSS", "JS", "Front-end"],
