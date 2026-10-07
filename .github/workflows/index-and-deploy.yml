@@ -1,0 +1,88 @@
+name: Index documents and deploy
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: index-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  index-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      IS_PRODUCTION: ${{ github.ref_name == github.event.repository.default_branch }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:rag
+      - run: pnpm test:chat-client
+      - name: Restore embeddings
+        if: github.event_name != 'pull_request'
+        uses: actions/cache@v4
+        with:
+          path: data/rag-index.json
+          key: embeddings-v1-${{ runner.os }}-${{ hashFiles('scripts/index-documents.mjs') }}-${{ github.ref_name }}-${{ hashFiles('documents/**') }}
+          restore-keys: |
+            embeddings-v1-${{ runner.os }}-${{ hashFiles('scripts/index-documents.mjs') }}-${{ github.ref_name }}-
+            embeddings-v1-${{ runner.os }}-${{ hashFiles('scripts/index-documents.mjs') }}-
+            embeddings-v1-${{ runner.os }}-
+      - run: pnpm test:index
+      - name: Index documents with OpenAI
+        if: github.event_name != 'pull_request'
+        run: pnpm index:documents
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - name: Save index artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rag-index
+          path: data/rag-index.json
+          retention-days: 7
+      - name: Check deployment configuration
+        id: deployment
+        if: github.event_name != 'pull_request'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        shell: bash
+        run: |
+          if [[ -n "$VERCEL_TOKEN" && -n "$VERCEL_ORG_ID" && -n "$VERCEL_PROJECT_ID" ]]; then
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Check build without Vercel credentials
+        if: steps.deployment.outputs.enabled != 'true'
+        run: pnpm build
+      - name: Build and deploy on Vercel
+        if: steps.deployment.outputs.enabled == 'true'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        shell: bash
+        run: |
+          environment=preview
+          flags=()
+          if [ "$IS_PRODUCTION" = 'true' ]; then
+            environment=production
+            flags+=(--prod)
+          fi
+          pnpm exec vercel pull --yes --environment="$environment" --token="$VERCEL_TOKEN"
+          pnpm exec vercel build "${flags[@]}" --token="$VERCEL_TOKEN"
+          pnpm exec vercel deploy --prebuilt "${flags[@]}" --token="$VERCEL_TOKEN"
