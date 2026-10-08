@@ -78,7 +78,7 @@ test('sharing images are absolute and demos distinguish illustration from eviden
   const metadata = seoMetadata('en', 'Title', 'Description', 'agents-ia-autonomes')
   assert.ok(metadata.twitter && 'card' in metadata.twitter)
   assert.equal(metadata.twitter.card, 'summary_large_image')
-  assert.deepEqual(metadata.twitter?.images, ['https://portfolio.example/og?locale=en&slug=agents-ia-autonomes'])
+  assert.deepEqual(metadata.twitter?.images, ['https://portfolio.example/og?locale=en&slug=agents-ia-autonomes&v=2'])
   for (const locale of ['fr', 'en'] as const) {
     assert.ok(seoDemos[locale]['agents-ia-autonomes'].paragraphs[0].includes(locale === 'fr' ? 'scénario fictif' : 'fictional scenario'))
     assert.ok(!JSON.stringify(seoDemos[locale]).includes(String.fromCodePoint(0x2014)))

@@ -44,14 +44,18 @@ export function pageAlternates(locale: Locale, slug = '') {
   }
 }
 
+// Bump when the /og design changes: social platforms cache previews by URL.
+const ogVersion = 2
+
 export function seoMetadata(locale: Locale, title: string, description: string, slug = ''): Metadata {
   const url = absoluteUrl(`/${locale}${slug ? `/${slug}` : ''}`)
+  const image = absoluteUrl(`/og?locale=${locale}&slug=${slug}&v=${ogVersion}`)
   return {
     metadataBase: siteOrigin(), title, description,
     alternates: pageAlternates(locale, slug),
     robots: { index: process.env.VERCEL_ENV !== 'preview', follow: true },
-    openGraph: { type: 'website', title, description, url, siteName: 'Clément Ozor', locale: locale === 'fr' ? 'fr_FR' : 'en_US', alternateLocale: locale === 'fr' ? 'en_US' : 'fr_FR', images: [{ url: absoluteUrl(`/og?locale=${locale}&slug=${slug}`), width: 1200, height: 630, alt: title }] },
-    twitter: { card: 'summary_large_image', title, description, images: [absoluteUrl(`/og?locale=${locale}&slug=${slug}`)] },
+    openGraph: { type: 'website', title, description, url, siteName: 'Clément Ozor', locale: locale === 'fr' ? 'fr_FR' : 'en_US', alternateLocale: locale === 'fr' ? 'en_US' : 'fr_FR', images: [{ url: image, width: 1200, height: 630, alt: title }] },
+    twitter: { card: 'summary_large_image', title, description, images: [image] },
   }
 }
 
