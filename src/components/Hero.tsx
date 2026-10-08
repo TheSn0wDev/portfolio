@@ -7,7 +7,7 @@ import * as profileContent from '@/content/profile'
 import styles from './portfolio.module.css'
 import { DotGrid } from './DotGrid'
 import { ChatWidget } from './ChatWidget'
-import { ArrowRightIcon, BrushUnderlineIcon, SuitcaseIcon, SwishArrowIcon } from './icons'
+import { ArrowRightIcon, SuitcaseIcon, SwishArrowIcon } from './icons'
 
 type HeroProps = {
   heroRef: RefObject<HTMLElement | null>
@@ -48,11 +48,11 @@ export function Hero({ heroRef, motionEnabled }: HeroProps) {
 
         <h1
           className={`${styles.disp} ${styles.name}`}
-          aria-label={`${name.line1} ${name.line2}`}
+          aria-label={`${name.line1} ${name.line2}, ${eyebrow}`}
           style={{
             margin: 0,
             display: 'flex',
-            flexWrap: 'nowrap',
+            flexWrap: 'wrap',
             columnGap: '0.24em',
             fontSize: 'clamp(32px, 7.6vw, 148px)',
             lineHeight: 0.92,
@@ -68,25 +68,17 @@ export function Hero({ heroRef, motionEnabled }: HeroProps) {
               </span>
             ))}
           </span>
-          <span className={styles.w2} aria-hidden="true" style={{ whiteSpace: 'nowrap' }}>
+          {' '}<span className={styles.w2} aria-hidden="true" style={{ whiteSpace: 'nowrap' }}>
             {line2.map((l, i) => (
               <span key={i} className={styles.ltr} style={{ animationDelay: l.delay }}>
                 {l.ch}
               </span>
             ))}
           </span>
+          {' '}<span style={{ flexBasis: '100%', marginTop: 20, fontSize: 'clamp(16px, 2vw, 24px)', fontWeight: 600, lineHeight: 1.4, letterSpacing: '0.02em' }}>{eyebrow}</span>
         </h1>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
-          <div className={styles.rise} style={{ display: 'flex', alignItems: 'center', gap: 22, animationDelay: '.45s' }}>
-            <BrushUnderlineIcon className={styles.brush} />
-            <p
-              className={`${styles.disp} ${styles.eyebrow}`}
-              style={{ margin: 0, fontSize: 'clamp(13px, 1.4vw, 18px)', fontWeight: 600, letterSpacing: '0.32em', color: 'var(--ink)', textTransform: 'uppercase' }}
-            >
-              {eyebrow}
-            </p>
-          </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end', gap: 24 }}>
           <div className={`${styles.rise} ${styles.hideSm}`} style={{ display: 'flex', alignItems: 'flex-end', gap: 8, transform: 'rotate(-5deg)', animationDelay: '.7s' }}>
             <p className={styles.hand} style={{ margin: 0, fontSize: 30, lineHeight: 0.95, color: 'var(--accent)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               {handwrittenTagline[0]}
@@ -143,7 +135,7 @@ export function Hero({ heroRef, motionEnabled }: HeroProps) {
             </div>
           </div>
 
-          <ChatWidget motionEnabled={motionEnabled} />
+          <div id="rag-demo" style={{ scrollMarginTop: 100 }}><ChatWidget motionEnabled={motionEnabled} /></div>
         </div>
       </div>
     </section>

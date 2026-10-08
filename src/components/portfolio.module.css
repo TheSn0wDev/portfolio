@@ -1,4 +1,5 @@
-.pf {
+.pf,
+.hdr {
   --ink: #0b1533;
   --text: #2e3a55;
   --muted: #56627e;
@@ -6,6 +7,9 @@
   --surface: #f2f5fc;
   --soft: color-mix(in srgb, var(--accent) 10%, #ffffff);
   --sky: color-mix(in srgb, var(--accent) 45%, #ffffff);
+}
+
+.pf {
   --mx: 0;
   --my: 0;
   --gut: max(clamp(20px, 4.5vw, 64px), calc((100vw - 1312px) / 2 + clamp(20px, 4.5vw, 64px)));
@@ -52,6 +56,9 @@
 
 /* Header */
 .hdr {
+  --accent: #2563eb;
+  font-family: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  color: var(--text);
   position: sticky;
   top: 0;
   z-index: 30;
@@ -2374,154 +2381,305 @@
   }
 }
 
-/* Vision4Rescue radar visual : drones patrol elliptic orbits around the
-   command node, each one linked to it with data packets flowing both ways
-   (sky : telemetry up, accent : orders down), under a radar sweep and pulse
-   rings. Orbits are flattened to the visual's aspect, so everything sized
-   around the node uses cqw / cqh. Base styles are a still frame, used as-is
-   when motion is off. */
-@property --vr-a {
-  syntax: '<angle>';
-  inherits: true;
-  initial-value: 0deg;
-}
-@property --vr-k {
+/* Vision4Rescue mission visual, played on a shared 11s cycle :
+   0–1.6s the R4 drives in · 1.7s the roof box nose slides forward ·
+   2.4 / 2.9 / 3.4s a drone lifts off, climbs and flies to its station above
+   the fire · 4.4–7.2s the fire perimeter is mapped · 4.5s the thermal feed
+   pops · 7.6 / 7.9 / 8.2s the drones fly back and land in the box ·
+   9.6s the box closes · 10.5s everything fades out.
+   Everything reads the --rs-t clock (seconds into the cycle) ; keep
+   RS_DRONES in ProjectCard in sync. The base clock (7.4) is a still frame
+   with every drone on station, used as-is when motion is off. Positions are
+   bottom-based and sized with cqw / cqh ; the car scales with the visual
+   and the drones' home is the launch bay of its roof box. */
+@property --rs-t {
   syntax: '<number>';
   inherits: true;
-  initial-value: 1;
+  initial-value: 7.4;
 }
-@property --vr-s {
-  syntax: '<angle>';
-  inherits: false;
-  initial-value: 0deg;
-}
-.vr {
+.rs {
+  --rs-t: 7.4;
+  --show: min(clamp(0, var(--rs-t) / 0.3, 1), clamp(0, (11 - var(--rs-t)) / 0.5, 1));
+  --drive: clamp(0, var(--rs-t) / 1.6, 1);
+  --drive-e: calc(1 - (1 - var(--drive)) * (1 - var(--drive)) * (1 - var(--drive)));
+  --open: min(clamp(0, (var(--rs-t) - 1.7) / 0.6, 1), clamp(0, (10.1 - var(--rs-t)) / 0.5, 1));
+  --map: clamp(0, (var(--rs-t) - 4.4) / 2.8, 1);
+  --feed: min(clamp(0, (var(--rs-t) - 4.5) / 0.3, 1), clamp(0, (8.4 - var(--rs-t)) / 0.3, 1));
+  --ground: 12cqh;
+  --car-x: 4cqw;
+  --car-w: min(40cqw, 68cqh);
+  --car-h: calc(var(--car-w) * 100 / 180);
+  /* Launch bay, at (98, 9) on the car's 180×100 board. */
+  --hx: calc(var(--car-x) + var(--car-w) * 98 / 180);
+  --hb: calc(var(--ground) + var(--car-h) * 0.91);
   position: relative;
   container-type: size;
   border-radius: 22px;
-  background: radial-gradient(120% 90% at 50% 50%, #16224a 0%, var(--ink) 70%);
-  overflow: hidden;
-}
-.vrMap {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  fill: none;
-}
-.vrGrid {
-  stroke: rgba(255, 255, 255, 0.05);
-  stroke-width: 1;
-}
-.vrContour path {
-  stroke: rgba(159, 180, 232, 0.16);
-  stroke-width: 1;
-}
-.vrRiver {
-  stroke: color-mix(in srgb, var(--sky) 28%, transparent);
-  stroke-width: 3;
-  stroke-linecap: round;
-}
-/* Range rings and crosshair, centred on the command node. */
-.vrRings,
-.vrSweep,
-.vrPulse {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 84cqw;
-  height: 84cqh;
-  margin: -42cqh 0 0 -42cqw;
-  border-radius: 50%;
-  pointer-events: none;
-}
-.vrRings {
-  border: 1px solid rgba(159, 180, 232, 0.22);
   background:
-    radial-gradient(
-      closest-side,
-      transparent calc(33% - 1px),
-      rgba(159, 180, 232, 0.14) 33%,
-      transparent calc(33% + 1px),
-      transparent calc(66% - 1px),
-      rgba(159, 180, 232, 0.14) 66%,
-      transparent calc(66% + 1px)
-    ),
-    linear-gradient(90deg, transparent calc(50% - 0.5px), rgba(159, 180, 232, 0.12) 0 calc(50% + 0.5px), transparent 0),
-    linear-gradient(transparent calc(50% - 0.5px), rgba(159, 180, 232, 0.12) 0 calc(50% + 0.5px), transparent 0);
+    radial-gradient(55% 60% at 76% 92%, rgba(255, 106, 31, 0.34), transparent 70%),
+    linear-gradient(180deg, var(--ink) 0%, #16224a 100%);
+  overflow: hidden;
+  animation: rsClock 11s linear infinite;
 }
-.vrSweep {
-  --vr-s: 300deg;
-  background: conic-gradient(
-    from var(--vr-s),
-    transparent 0deg,
-    transparent 290deg,
-    color-mix(in srgb, var(--sky) 10%, transparent) 330deg,
-    color-mix(in srgb, var(--sky) 45%, transparent) 359deg,
-    transparent 360deg
-  );
-  animation: vrSweep 4s linear infinite;
-}
-@keyframes vrSweep {
+@keyframes rsClock {
+  from {
+    --rs-t: 0;
+  }
   to {
-    --vr-s: 660deg;
+    --rs-t: 11;
   }
 }
-/* Rings broadcast from the command node, one per second. */
-.vrPulse {
-  border: 1.5px solid var(--sky);
-  opacity: 0;
-  animation: vrPulse 3s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+.rs > * {
+  opacity: var(--show);
 }
-@keyframes vrPulse {
+.rsHills {
+  position: absolute;
+  left: 0;
+  bottom: calc(var(--ground) - 2px);
+  width: 100%;
+  height: 46%;
+}
+.rsGround {
+  position: absolute;
+  inset: auto 0 0;
+  height: var(--ground);
+  background: #0a1129;
+  border-top: 1px solid rgba(159, 180, 232, 0.16);
+}
+.rsGround::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 55%;
+  height: 1.5px;
+  background: repeating-linear-gradient(90deg, rgba(159, 180, 232, 0.28) 0 14px, transparent 14px 30px);
+}
+/* Burning ridge on the right : flames flicker from their base, smoke rises
+   and the perimeter is drawn by the drones. */
+.rsFire {
+  position: absolute;
+  right: 2cqw;
+  bottom: calc(var(--ground) - 1px);
+  width: 46cqw;
+  height: 32cqh;
+}
+.rsFire svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.rsGlow {
+  animation: rsGlow 2.6s ease-in-out infinite alternate;
+}
+@keyframes rsGlow {
+  to {
+    opacity: 0.6;
+  }
+}
+.rsFlame {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: rsFlicker 1s ease-in-out infinite alternate;
+}
+@keyframes rsFlicker {
   0% {
-    opacity: 0.8;
-    transform: scale(0.06);
+    transform: scale(1, 0.82) skewX(-3deg);
+  }
+  100% {
+    transform: scale(0.94, 1.08) skewX(3deg);
+  }
+}
+.rsSmoke {
+  fill: #48506e;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: rsSmoke 2.8s ease-out infinite;
+}
+@keyframes rsSmoke {
+  0% {
+    opacity: 0.55;
+    transform: translateY(0) scale(0.6);
   }
   100% {
     opacity: 0;
-    transform: scale(1);
+    transform: translateY(-34px) scale(2.2);
   }
 }
-/* Zero-size anchor on the node ; --vr-a turns the drone around its orbit
-   and --vr-k breathes it in and out. Both animations' durations and
-   directions are set per drone. */
-.vrDrone {
-  --ang: calc(var(--a0) + var(--vr-a));
-  --x: calc(var(--rx) * var(--vr-k) * cos(var(--ang)));
-  --y: calc(var(--ry) * var(--vr-k) * sin(var(--ang)));
+.rsPerimeter {
+  fill: none;
+  stroke: #e4ff1a;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc((1 - var(--map)) * 100);
+  filter: drop-shadow(0 0 3px rgba(228, 255, 26, 0.7));
+}
+.rsZone {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  animation:
-    vrOrbit 20s linear infinite,
-    vrBreathe 6s ease-in-out infinite alternate;
+  right: 4cqw;
+  bottom: calc(var(--ground) / 2 - 8px);
+  padding: 2px 7px;
+  border-radius: 5px;
+  border: 1px solid rgba(228, 255, 26, 0.5);
+  background: rgba(11, 21, 51, 0.8);
+  color: #e4ff1a;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: calc(var(--show) * clamp(0, (var(--rs-t) - 7.2) / 0.3, 1));
 }
-@keyframes vrOrbit {
-  to {
-    --vr-a: 360deg;
+/* The R4 : drives in with a cubic ease-out, wheels spinning with the
+   distance covered ; the box nose slides on its rails to open the bay. */
+.rsCar {
+  position: absolute;
+  left: var(--car-x);
+  bottom: var(--ground);
+  width: var(--car-w);
+  height: var(--car-h);
+  transform: translateX(calc((var(--drive-e) - 1) * 80cqw));
+}
+.rsCarSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.rsWheel {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: rotate(calc(var(--drive-e) * 900deg));
+}
+.rsNose {
+  transform: translateX(calc(var(--open) * 20px));
+}
+.rsPad {
+  fill: var(--sky);
+  opacity: calc(var(--open) * 0.9);
+  filter: drop-shadow(0 0 3px var(--sky));
+}
+.rsBeacon {
+  fill: #3b82ff;
+  filter: drop-shadow(0 0 4px #3b82ff);
+  animation: rsBeacon 0.9s steps(1) infinite;
+}
+@keyframes rsBeacon {
+  50% {
+    fill: #1c2a55;
+    filter: none;
   }
 }
-@keyframes vrBreathe {
+.rsLamp {
+  fill: #fff6c8;
+}
+.rsBeam {
+  opacity: 0.8;
+}
+/* Drone : --l (launch) and --r (return), in seconds, and its station
+   --tx / --tb. It rises out of the bay, flies to its station tilting
+   forward, scans the ground and streams back to the car while on station,
+   then flies home tilting back and drops into the bay. */
+.rsDrone {
+  --rise: clamp(0, (var(--rs-t) - var(--l)) / 0.5, 1);
+  --go-p: clamp(0, (var(--rs-t) - var(--l) - 0.5) / 1.4, 1);
+  --go: calc(var(--go-p) * var(--go-p) * (3 - 2 * var(--go-p)));
+  --back-p: clamp(0, (var(--rs-t) - var(--r)) / 1, 1);
+  --back: calc(var(--back-p) * var(--back-p) * (3 - 2 * var(--back-p)));
+  --down: clamp(0, (var(--rs-t) - var(--r) - 1) / 0.4, 1);
+  --out: calc(var(--go) * (1 - var(--back)));
+  --lift: calc(16cqh * var(--rise) * (1 - var(--down)));
+  --scan: min(clamp(0, (var(--rs-t) - var(--l) - 1.9) / 0.3, 1), clamp(0, (var(--r) - var(--rs-t)) / 0.2, 1));
+  position: absolute;
+  left: calc(var(--hx) + (var(--tx) - var(--hx)) * var(--out));
+  bottom: calc(var(--hb) + var(--lift) + (var(--tb) - var(--hb) - 16cqh) * var(--out));
+  width: 0;
+  height: 0;
+  opacity: calc(var(--show) * min(clamp(0, (var(--rs-t) - var(--l)) / 0.12, 1), clamp(0, (var(--r) + 1.4 - var(--rs-t)) / 0.12, 1)));
+}
+.rsDroneBody {
+  position: absolute;
+  left: -15px;
+  top: -7px;
+  width: 30px;
+  height: 13px;
+  transform: rotate(calc(sin(var(--go-p) * 180deg) * 14deg - sin(var(--back-p) * 180deg) * 14deg));
+}
+.rsDroneSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: rsBob 1.4s ease-in-out infinite alternate;
+}
+@keyframes rsBob {
   from {
-    --vr-k: 0.72;
+    transform: translateY(-1.5px);
   }
   to {
-    --vr-k: 1;
+    transform: translateY(1.5px);
   }
 }
-.vrLink {
+.rsRotor {
+  fill: color-mix(in srgb, var(--sky) 70%, transparent);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: rsRotor 0.12s linear infinite alternate;
+}
+@keyframes rsRotor {
+  to {
+    transform: scaleX(0.35);
+  }
+}
+.rsDroneLabel {
+  position: absolute;
+  left: 0;
+  bottom: 10px;
+  color: #c9d3ea;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  opacity: var(--scan);
+}
+/* Scan cone down to the burning ridge, sweeping slowly. */
+.rsScan {
+  position: absolute;
+  left: -22px;
+  top: 5px;
+  width: 44px;
+  height: calc(var(--tb) - var(--ground) - 18cqh);
+  clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+  background: linear-gradient(color-mix(in srgb, var(--sky) 55%, transparent), transparent);
+  transform-origin: 50% 0;
+  opacity: calc(var(--scan) * 0.8);
+  animation: rsSweep 2.4s ease-in-out infinite alternate;
+}
+@keyframes rsSweep {
+  from {
+    transform: rotate(-9deg);
+  }
+  to {
+    transform: rotate(9deg);
+  }
+}
+/* Link from the station back to the launch bay : telemetry (sky) flows to
+   the car, orders (accent) to the drone. */
+.rsLink {
   position: absolute;
   left: 0;
   top: -0.5px;
-  width: hypot(var(--x), var(--y));
+  width: hypot(calc(var(--hx) - var(--tx)), calc(var(--tb) - var(--hb)));
   height: 1px;
   transform-origin: 0 50%;
-  transform: rotate(atan2(var(--y), var(--x)));
-  background: linear-gradient(90deg, rgba(159, 180, 232, 0.15), color-mix(in srgb, var(--sky) 70%, transparent));
+  transform: rotate(atan2(calc(var(--tb) - var(--hb)), calc(var(--hx) - var(--tx))));
+  background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--sky) 55%, transparent) 0 4px, transparent 4px 8px);
+  opacity: var(--scan);
 }
-/* Telemetry travels from the drone to the node ; orders run the other way. */
-.vrPacket {
+.rsPacket {
   position: absolute;
   top: -2px;
   left: 0;
@@ -2532,16 +2690,16 @@
   background: var(--sky);
   box-shadow: 0 0 8px var(--sky);
   opacity: 0;
-  animation: vrPacket 2.2s linear infinite;
+  animation: rsPacket 2.2s linear infinite;
 }
-.vrOrder {
+.rsOrder {
   background: var(--accent);
   box-shadow: 0 0 8px var(--accent);
   animation-direction: reverse;
 }
-@keyframes vrPacket {
+@keyframes rsPacket {
   0% {
-    left: 100%;
+    left: 0;
     opacity: 0;
   }
   10%,
@@ -2549,87 +2707,11 @@
     opacity: 1;
   }
   100% {
-    left: 0;
+    left: 100%;
     opacity: 0;
   }
 }
-.vrBlip {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow:
-    0 0 0 2px var(--sky),
-    0 0 14px var(--sky);
-  transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%));
-}
-.vrBlip::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: 50%;
-  border: 1px solid var(--sky);
-  opacity: 0;
-  animation: vrPing 1.6s ease-out infinite;
-}
-@keyframes vrPing {
-  0% {
-    opacity: 0.9;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(3.2);
-  }
-}
-.vrBlipLabel {
-  position: absolute;
-  left: 14px;
-  top: -6px;
-  color: #c9d3ea;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  white-space: nowrap;
-}
-.vrCommand {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 16px;
-  height: 16px;
-  margin: -8px 0 0 -8px;
-}
-.vrCommand::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 3px;
-  background: var(--accent);
-  border: 2px solid #fff;
-  box-shadow: 0 0 18px var(--accent);
-  transform: rotate(45deg);
-}
-.vrCommandLabel {
-  position: absolute;
-  left: 50%;
-  top: 22px;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: rgba(11, 21, 51, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #fff;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  transform: translateX(-50%);
-}
-.vrHud {
+.rsHud {
   position: absolute;
   left: 16px;
   top: 14px;
@@ -2642,19 +2724,118 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
-.still .vrSweep,
-.still .vrPulse,
-.still .vrDrone,
-.still .vrPacket,
-.still .vrBlip::before {
+/* Thermal feed of the second drone, streamed back to the car. */
+.rs > .rsFeed {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 104px;
+  height: 64px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #1c1240;
+  overflow: hidden;
+  opacity: calc(var(--show) * var(--feed));
+  transform: scale(calc(0.85 + 0.15 * var(--feed)));
+  transform-origin: 100% 0;
+}
+.rsFeedImg {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(18% 26% at 58% 64%, #fff6b0 0%, #ffb020 35%, transparent 75%),
+    radial-gradient(30% 40% at 40% 72%, #ff5a1f 0%, rgba(255, 90, 31, 0.6) 45%, transparent 80%),
+    radial-gradient(40% 30% at 70% 80%, #c2244f 0%, transparent 80%),
+    radial-gradient(60% 50% at 50% 100%, #6e1e78 0%, transparent 80%),
+    linear-gradient(#1c1240, #2a1458);
+  animation: rsHeat 3.2s ease-in-out infinite alternate;
+}
+@keyframes rsHeat {
+  to {
+    transform: translate(-6%, 3%) scale(1.06);
+  }
+}
+.rsFeed::before,
+.rsFeed::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  transform: translate(-50%, -50%);
+}
+.rsFeed::before {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+.rsFeed::after {
+  width: 34px;
+  height: 0;
+  border-width: 1px 0 0;
+}
+.rsFeedRec {
+  position: absolute;
+  left: 7px;
+  top: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.rsFeedRec::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ff5a5f;
+  animation: rsRec 1.2s steps(1) infinite;
+}
+@keyframes rsRec {
+  50% {
+    opacity: 0.2;
+  }
+}
+.rsFeedLabel {
+  position: absolute;
+  left: 7px;
+  bottom: 4px;
+  color: #fff;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+/* Narrow cards : the feed moves under the status line, clear of it. */
+@container (max-width: 340px) {
+  .rs > .rsFeed {
+    left: 16px;
+    right: auto;
+    top: 36px;
+    width: 96px;
+    height: 56px;
+    transform-origin: 0 0;
+  }
+  .rsFeedLabel {
+    font-size: 7.5px;
+    letter-spacing: 0.04em;
+  }
+}
+.still .rs,
+.still .rs *,
+.still .rs *::before {
   animation: none;
 }
 @media (prefers-reduced-motion: reduce) {
-  .vrSweep,
-  .vrPulse,
-  .vrDrone,
-  .vrPacket,
-  .vrBlip::before {
+  .rs,
+  .rs *,
+  .rs *::before {
     animation: none;
   }
 }
@@ -3224,6 +3405,827 @@
   }
 }
 
+/* LevelPilot improvement loop visual, played on a shared 11s cycle :
+   0.3s the KPI card opens, the curve drawing itself down into a dip · 1.5s
+   the agent (violet avatar) lands on the dip, its status line reading the
+   data · 2.6s it states its diagnosis · 3.4s it moves over to the code and
+   opens the PR · 4.3s it types the fix · 5.8s it runs the checks, passing one
+   by one · 7.3s a Merge button shows up and the agent's cursor clicks it ·
+   8.2s the PR is merged, the curve climbs back and the KPI swaps to its new
+   value · 10.2s everything fades. Generated from one timeline : keep the
+   comment in ProjectCard in sync. With motion off, every element rests on
+   its final frame (agent parked over the merged PR, statuses hidden).
+   The agent travels across both columns, so it is placed on the visual
+   itself : --lp-dip-* is the spot above the dip, --lp-pr-* the one above the
+   PR card (both measured for the 250px-high visual). */
+.lp {
+  --lp-dip-x: 37%;
+  --lp-dip-y: 162px;
+  --lp-pr-x: calc(100% - 30px);
+  --lp-pr-y: 22px;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px;
+  border-radius: 22px;
+  background:
+    radial-gradient(70% 80% at 0% 0%, color-mix(in srgb, var(--accent) 30%, transparent) 0%, transparent 70%),
+    radial-gradient(120% 90% at 100% 110%, #1b2a5a 0%, var(--ink) 70%);
+  color: #fff;
+  overflow: hidden;
+  container-type: inline-size;
+}
+.lpKpi {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 12px 14px 10px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: lpCard 11s ease-out infinite;
+}
+@keyframes lpCard {
+  0%,
+  2.73% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  7.27%,
+  92.73% {
+    opacity: 1;
+    transform: none;
+  }
+  96.36%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+.lpKpiHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 8px;
+}
+.lpKpiLabel {
+  flex-basis: 100%;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sky);
+}
+.lpKpiValue {
+  display: inline-grid;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.lpBefore,
+.lpAfter {
+  grid-area: 1 / 1;
+}
+.lpBefore {
+  color: #fca5a5;
+  opacity: 0;
+  animation: lpBefore 11s ease-out infinite;
+}
+@keyframes lpBefore {
+  0%,
+  80% {
+    opacity: 1;
+    transform: none;
+  }
+  82.73%,
+  100% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+.lpAfter,
+.lpDelta {
+  animation: lpAfter 11s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+@keyframes lpAfter {
+  0%,
+  80.91% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  84.55%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+.lpDelta {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(74, 222, 128, 0.16);
+  color: #4ade80;
+  font-size: 11px;
+  font-weight: 700;
+}
+.lpChart {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin-top: 8px;
+  background: repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 25%);
+}
+.lpPast,
+.lpNext {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  overflow: visible;
+}
+.lpPast {
+  left: 0;
+  width: 65%;
+  animation: lpDrawPast 11s ease-in-out infinite;
+}
+.lpNext {
+  left: 65%;
+  width: 35%;
+  animation: lpDrawNext 11s ease-in-out infinite;
+}
+@keyframes lpDrawPast {
+  0%,
+  2.73% {
+    clip-path: inset(-10% 100% -10% 0);
+  }
+  14.55%,
+  100% {
+    clip-path: inset(-10% -2% -10% 0);
+  }
+}
+@keyframes lpDrawNext {
+  0%,
+  75.45% {
+    clip-path: inset(-10% 100% -10% 0);
+  }
+  85.45%,
+  100% {
+    clip-path: inset(-10% -4% -10% 0);
+  }
+}
+.lpLine {
+  fill: none;
+  stroke: var(--sky);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.lpArea {
+  fill: rgba(159, 180, 232, 0.12);
+}
+.lpNext .lpLine {
+  stroke: #4ade80;
+}
+.lpNext .lpArea {
+  fill: rgba(74, 222, 128, 0.14);
+}
+/* The dip the agent reads, pulsing while it does. */
+.lpDip {
+  position: absolute;
+  left: 65%;
+  top: 74%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: #f87171;
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.25);
+  animation: lpDip 11s ease-out infinite;
+}
+.lpDip::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid #f87171;
+  opacity: 0;
+  animation: lpDipRing 11s ease-out infinite;
+}
+@keyframes lpDip {
+  0%,
+  12.73% {
+    transform: scale(0);
+  }
+  14.55% {
+    transform: scale(1.4);
+  }
+  16.36%,
+  100% {
+    transform: none;
+  }
+}
+@keyframes lpDipRing {
+  0%,
+  15.36% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  15.45% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  22.73% {
+    opacity: 0;
+    transform: scale(3);
+  }
+  22.82% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  30%,
+  100% {
+    opacity: 0;
+    transform: scale(3);
+  }
+}
+/* The pull request, GitHub-style, opened by the agent. */
+.lpPr {
+  position: relative;
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 10px 12px 12px;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+  transform-origin: top right;
+  animation: lpPr 11s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+@keyframes lpPr {
+  0%,
+  34.55% {
+    opacity: 0;
+    transform: scale(0.85) translateY(10px);
+  }
+  38.18%,
+  92.73% {
+    opacity: 1;
+    transform: none;
+  }
+  96.36%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+.lpPrHead {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 4px;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+}
+.lpPrId {
+  white-space: nowrap;
+}
+.lpPrIcon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: #8250df;
+  stroke-width: 1.5;
+}
+.lpPrState {
+  position: relative;
+  display: inline-grid;
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+}
+.lpReview,
+.lpMergeBtn,
+.lpMerged {
+  grid-area: 1 / 1;
+  justify-self: end;
+  padding: 2px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.lpReview {
+  background: #eaeef2;
+  color: #57606a;
+  opacity: 0;
+  animation: lpReview 11s ease-out infinite;
+}
+@keyframes lpReview {
+  0%,
+  66.36% {
+    opacity: 1;
+  }
+  67.27%,
+  100% {
+    opacity: 0;
+  }
+}
+.lpMergeBtn {
+  background: #1f883d;
+  color: #fff;
+  box-shadow: 0 2px 0 #116329;
+  opacity: 0;
+  animation: lpMergeBtn 11s ease-out infinite;
+}
+@keyframes lpMergeBtn {
+  0%,
+  66.36% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  68.18%,
+  71.82% {
+    opacity: 1;
+    transform: none;
+  }
+  72.73% {
+    opacity: 1;
+    transform: scale(0.86) translateY(1px);
+  }
+  73.64% {
+    opacity: 1;
+    transform: none;
+  }
+  74.55%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+.lpMerged {
+  background: #8250df;
+  color: #fff;
+  animation: lpMerged 11s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+@keyframes lpMerged {
+  0%,
+  74.09% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  76.36% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  78.18%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* The agent's cursor, flying in from the avatar to click Merge. */
+.lpCursor {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  width: 11px;
+  fill: #a78bfa;
+  stroke: #fff;
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+  opacity: 0;
+  pointer-events: none;
+  animation: lpCursor 11s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes lpCursor {
+  0%,
+  67.27% {
+    opacity: 0;
+    transform: translate(14px, -26px);
+  }
+  68.18% {
+    opacity: 1;
+    transform: translate(14px, -26px);
+  }
+  71.82% {
+    opacity: 1;
+    transform: none;
+  }
+  72.73% {
+    opacity: 1;
+    transform: scale(0.8);
+  }
+  73.64%,
+  76.36% {
+    opacity: 1;
+    transform: none;
+  }
+  78.18%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+.lpPrTitle {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.lpPrFile,
+.lpDiff {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+}
+.lpPrFile {
+  margin-top: -3px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lpDiff {
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.lpDel,
+.lpAdd {
+  display: flex;
+  padding: 2px 6px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.lpDel {
+  background: #ffebe9;
+  color: #82071e;
+}
+.lpAdd {
+  background: #dafbe1;
+  color: #116329;
+}
+/* Each diff line is typed by the agent, one character at a time (line i
+   starts 0.7s after line i - 1), its caret blinking while it types. */
+.lpType {
+  display: inline-block;
+  width: calc(var(--n) * 1ch);
+  overflow: hidden;
+  border-right: 1.5px solid transparent;
+  animation: lpType 11s linear infinite;
+  animation-delay: calc(var(--i) * 0.7s);
+}
+@keyframes lpType {
+  0% {
+    width: 0;
+    border-right-color: #a78bfa;
+  }
+  39.09% {
+    width: 0;
+    border-right-color: #a78bfa;
+    animation-timing-function: steps(12, end);
+  }
+  44.55% {
+    width: calc(var(--n) * 1ch);
+    border-right-color: #a78bfa;
+  }
+  45.45%,
+  100% {
+    width: calc(var(--n) * 1ch);
+    border-right-color: transparent;
+  }
+}
+.lpChecks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lpCheck {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+/* Pending (spinning amber ring) until its turn, then a green tick ; each
+   check is shifted by --i × 0.4s. */
+.lpCheckDot {
+  position: relative;
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #1f883d;
+  background: #1f883d;
+  color: #fff;
+  animation: lpCheck 11s linear infinite;
+  animation-delay: calc(var(--i) * 0.4s);
+}
+.lpCheckDot::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1;
+}
+@keyframes lpCheck {
+  0% {
+    border-color: #d4a72c #d4a72c #d4a72c transparent;
+    background: transparent;
+    color: transparent;
+    transform: rotate(0);
+  }
+  55.45% {
+    border-color: #d4a72c #d4a72c #d4a72c transparent;
+    background: transparent;
+    color: transparent;
+    transform: rotate(5turn);
+  }
+  55.55% {
+    border-color: #1f883d;
+    background: #1f883d;
+    color: #fff;
+    transform: rotate(5turn) scale(1.35);
+  }
+  57.73%,
+  100% {
+    border-color: #1f883d;
+    background: #1f883d;
+    color: #fff;
+    transform: rotate(5turn);
+  }
+}
+/* The agent : a violet avatar travelling from the dip to the PR, its status
+   line beside it (right of it on the chart, left of it over the PR). */
+.lpAgent {
+  position: absolute;
+  left: var(--lp-pr-x);
+  top: var(--lp-pr-y);
+  z-index: 2;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  animation: lpAgent 11s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes lpAgent {
+  0%,
+  11.82% {
+    left: var(--lp-dip-x);
+    top: var(--lp-dip-y);
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  14.09% {
+    left: var(--lp-dip-x);
+    top: var(--lp-dip-y);
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  15.45%,
+  30.91% {
+    left: var(--lp-dip-x);
+    top: var(--lp-dip-y);
+    opacity: 1;
+    transform: none;
+  }
+  36.36%,
+  92.73% {
+    left: var(--lp-pr-x);
+    top: var(--lp-pr-y);
+    opacity: 1;
+    transform: none;
+  }
+  96.36%,
+  100% {
+    left: var(--lp-pr-x);
+    top: var(--lp-pr-y);
+    opacity: 0;
+    transform: none;
+  }
+}
+.lpAvatar {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a78bfa, #6d28d9);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.25), 0 6px 16px rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+}
+.lpStatus {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 7px);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #241f52;
+  border: 1px solid rgba(196, 181, 253, 0.35);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  font-size: 10.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-50%);
+}
+.lpStatusRight {
+  right: auto;
+  left: calc(100% + 7px);
+}
+.lpStatus .typing {
+  display: inline-flex;
+}
+.lpStatus .typing span {
+  width: 4px;
+  height: 4px;
+  margin-right: 2px;
+  background: #c4b5fd;
+}
+/* The diagnosis reads as a finding, not a task. */
+.lpStatus:nth-child(3) {
+  background: #3b1d2a;
+  border-color: rgba(248, 113, 113, 0.45);
+  color: #fecaca;
+}
+.lpStatus:nth-child(2) {
+  animation: lpStatus0 11s ease-out infinite;
+}
+@keyframes lpStatus0 {
+  0%,
+  15.91% {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.85);
+  }
+  17.27%,
+  22.73% {
+    opacity: 1;
+    transform: translateY(-50%);
+  }
+  23.64%,
+  100% {
+    opacity: 0;
+    transform: translateY(-50%);
+  }
+}
+.lpStatus:nth-child(3) {
+  animation: lpStatus1 11s ease-out infinite;
+}
+@keyframes lpStatus1 {
+  0%,
+  23.64% {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.85);
+  }
+  25%,
+  30% {
+    opacity: 1;
+    transform: translateY(-50%);
+  }
+  30.91%,
+  100% {
+    opacity: 0;
+    transform: translateY(-50%);
+  }
+}
+.lpStatus:nth-child(4) {
+  animation: lpStatus2 11s ease-out infinite;
+}
+@keyframes lpStatus2 {
+  0%,
+  37.27% {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.85);
+  }
+  38.64%,
+  51.82% {
+    opacity: 1;
+    transform: translateY(-50%);
+  }
+  52.73%,
+  100% {
+    opacity: 0;
+    transform: translateY(-50%);
+  }
+}
+.lpStatus:nth-child(5) {
+  animation: lpStatus3 11s ease-out infinite;
+}
+@keyframes lpStatus3 {
+  0%,
+  52.73% {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.85);
+  }
+  54.09%,
+  65.45% {
+    opacity: 1;
+    transform: translateY(-50%);
+  }
+  66.36%,
+  100% {
+    opacity: 0;
+    transform: translateY(-50%);
+  }
+}
+.lpStatus:nth-child(6) {
+  animation: lpStatus4 11s ease-out infinite;
+}
+@keyframes lpStatus4 {
+  0%,
+  66.36% {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.85);
+  }
+  67.73%,
+  73.64% {
+    opacity: 1;
+    transform: translateY(-50%);
+  }
+  74.55%,
+  100% {
+    opacity: 0;
+    transform: translateY(-50%);
+  }
+}
+/* Narrow cards (phones) : tighter padding and type ; measured anchors. */
+@container (max-width: 340px) {
+  .lpKpi {
+    padding: 10px 10px 8px;
+  }
+  .lpPr {
+    padding: 8px 9px 10px;
+  }
+  .lpKpiValue {
+    font-size: 20px;
+  }
+  .lpStatus {
+    padding: 3px 7px;
+    font-size: 9.5px;
+  }
+  .lpPrFile,
+  .lpDiff {
+    font-size: 9px;
+  }
+  .lpDel,
+  .lpAdd {
+    padding: 2px 4px;
+  }
+}
+.still .lpKpi,
+.still .lpBefore,
+.still .lpAfter,
+.still .lpDelta,
+.still .lpPast,
+.still .lpNext,
+.still .lpDip,
+.still .lpDip::after,
+.still .lpPr,
+.still .lpReview,
+.still .lpMergeBtn,
+.still .lpMerged,
+.still .lpCursor,
+.still .lpType,
+.still .lpCheckDot,
+.still .lpAgent,
+.still .lpStatus {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lpKpi,
+  .lpBefore,
+  .lpAfter,
+  .lpDelta,
+  .lpPast,
+  .lpNext,
+  .lpDip,
+  .lpDip::after,
+  .lpPr,
+  .lpReview,
+  .lpMergeBtn,
+  .lpMerged,
+  .lpCursor,
+  .lpType,
+  .lpCheckDot,
+  .lpAgent,
+  .lpStatus {
+    animation: none;
+  }
+}
+
 /* Combat Digital Platform tactical mesh visual, played on a shared 9s cycle :
    0.3s the data mesh links the allied units · 0.8s the recon unit sweeps its
    sensor · 1.7s it spots the enemy · from 1.8s the track hops over the mesh,
@@ -3463,29 +4465,30 @@
 }
 
 
-/* Atlantique RP : Île d'Oléron map, pin and team org chart.
-   Timeline, in seconds of a 9s cycle : 0.3s the coastline draws · 1.2s the
-   pin drops, landing at 1.65s with a squash and a ripple · 1.9s the lead pops
-   in, its link to the pin draws · 2.7s the bus spreads under the pin, members
-   pop in from the centre outwards · 4.6s and 6.2s packets run down the chart,
-   every member glowing as one lands · 8.3s everything fades out.
-   Everything reads the --at-t clock ; per-element start times come in as --d
-   (keep in sync with ProjectRpTeamVisual). The base clock (7) is the final
-   frame, used as-is when motion is off. */
+/* Atlantique RP : GTA-style minimap of the Île d'Oléron and server HUD.
+   Timeline, in seconds of a 9s cycle : 0.3s the minimap opens on an overview,
+   the coastline drawing · 1s roads, viaduct and the health / armour bars ·
+   1.3s blips pop up · 1.5s the waypoint drops (landing at 1.95s) and the GPS
+   route lights up · 2.2s the map zooms in on the player · 2.8s the drive to the
+   waypoint, which clears on arrival · 8.3s everything fades out.
+   Everything reads the --at-t clock ; the player position, heading and route
+   progress (--rx, --ry, --rh, --rp) and arrival time (--arrive) come in from
+   ProjectRpMinimapVisual, other start times as --d. The base clock (5.6) is
+   the frame used as-is when motion is off : just over the viaduct. */
 @property --at-t {
   syntax: '<number>';
   inherits: true;
-  initial-value: 7;
+  initial-value: 5.6;
 }
 .at {
-  --at-t: 7;
+  --at-t: 5.6;
   --member: #80e0ff;
   --lead: #ffd27a;
-  --pin: #ff7a7a;
+  --gps: #c77dff;
   --show: min(clamp(0, var(--at-t) / 0.3, 1), clamp(0, (9 - var(--at-t)) / 0.7, 1));
   --coast: clamp(0, (var(--at-t) - 0.3) / 1, 1);
-  --drop: clamp(0, (var(--at-t) - 1.2) / 0.45, 1);
-  --land: clamp(0, (var(--at-t) - 1.65) / 0.3, 1);
+  --drop: clamp(0, (var(--at-t) - 1.5) / 0.45, 1);
+  --land: clamp(0, (var(--at-t) - 1.95) / 0.3, 1);
   position: relative;
   border-radius: 22px;
   background:
@@ -3503,7 +4506,14 @@
     --at-t: 9;
   }
 }
-.atMap {
+/* Camera : an overview of the island first, then a smooth zoom onto the
+   player, who then stays put while the world scrolls under them. */
+.atHud {
+  --z: clamp(0, (var(--at-t) - 2.2) / 0.6, 1);
+  --ze: calc(var(--z) * var(--z) * (3 - 2 * var(--z)));
+  --k: calc(0.72 + 0.78 * var(--ze));
+  --cx: calc(262 + (var(--rx) - 262) * var(--ze));
+  --cy: calc(125 + (var(--ry) - 125) * var(--ze));
   position: absolute;
   inset: 0;
   width: 100%;
@@ -3511,67 +4521,118 @@
   overflow: visible;
   opacity: var(--show);
 }
-.atSea path,
-.atMainland,
-.atBridge {
+.atFrame {
+  fill: #142a48;
+}
+.atRim {
   fill: none;
-  stroke: rgba(159, 180, 232, 0.18);
+  stroke: rgba(4, 9, 22, 0.9);
+  stroke-width: 3;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+}
+.atWorld {
+  transform: translate(128px, 110px) scale(var(--k)) translate(calc(var(--cx) * -1px), calc(var(--cy) * -1px));
+}
+.atSea path {
+  fill: none;
+  stroke: rgba(159, 180, 232, 0.22);
   stroke-width: 1;
   stroke-linecap: round;
 }
-.atMainland {
-  stroke-width: 1.4;
-  stroke: rgba(159, 180, 232, 0.26);
-}
-/* The Oléron viaduct, back to the mainland. */
-.atBridge {
-  stroke-dasharray: 3 3;
-  opacity: clamp(0, (var(--at-t) - 1) / 0.5, 1);
-}
-.atIslandFill {
-  fill: rgba(159, 180, 232, 0.1);
+.atLand {
+  fill: #283a5e;
   opacity: clamp(0, (var(--at-t) - 0.9) / 0.6, 1);
 }
 .atCoast {
   fill: none;
-  stroke: rgba(159, 180, 232, 0.55);
-  stroke-width: 1.4;
+  stroke: rgba(159, 180, 232, 0.6);
+  stroke-width: 1.2;
   stroke-linejoin: round;
   stroke-dasharray: 1 1;
   stroke-dashoffset: calc(1 - var(--coast));
 }
-/* Org chart link, drawn from its start once its --d time comes. */
-.atLine {
-  --p: clamp(0, (var(--at-t) - var(--d)) / var(--len, 0.3), 1);
+.atRoad {
   fill: none;
-  stroke: color-mix(in srgb, var(--member) 60%, transparent);
-  stroke-width: 1.4;
-  stroke-dasharray: 1 1;
-  stroke-dashoffset: calc(1 - var(--p));
-  opacity: clamp(0, var(--p) * 20, 1);
-}
-.atPacket {
-  --p: clamp(0, (var(--at-t) - var(--d)) / 1.1, 1);
-  fill: none;
-  stroke: var(--lead);
-  stroke-width: 3;
+  stroke: rgba(230, 236, 250, 0.32);
+  stroke-width: 1.8;
   stroke-linecap: round;
-  stroke-dasharray: 0.03 2;
-  stroke-dashoffset: calc(0.03 - 1.03 * var(--p));
-  filter: drop-shadow(0 0 3px var(--lead));
-  opacity: min(clamp(0, var(--p) * 20, 1), clamp(0, (1 - var(--p)) * 20, 1));
+  stroke-linejoin: round;
+  opacity: clamp(0, (var(--at-t) - 1) / 0.5, 1);
 }
-/* Pin : falls from above, squashes on landing, its tip on the map point. */
+/* The Oléron viaduct, back to the mainland. */
+.atBridge {
+  stroke: rgba(230, 236, 250, 0.55);
+  stroke-width: 2.4;
+}
+/* GPS route : draws from the player to the waypoint, then gets eaten up from
+   the player's end as they drive (visible from --rp to --draw). */
+.atRoute {
+  --draw: clamp(0, (var(--at-t) - 1.9) / 0.5, 1);
+  fill: none;
+  stroke: var(--gps);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: calc(1 - var(--draw) - var(--rp));
+  filter: drop-shadow(0 0 2px var(--gps));
+  opacity: min(clamp(0, var(--draw) * 40, 1), clamp(0, (1 - var(--rp)) * 40, 1));
+}
+/* Blips and markers keep a constant on-screen size whatever the zoom. */
+.atUnscale {
+  transform: scale(calc(1 / var(--k)));
+}
+.atBlip {
+  --p: clamp(0, (var(--at-t) - var(--d)) / 0.35, 1);
+  transform: scale(calc((var(--p) + 0.35 * sin(calc(var(--p) * 3.1416))) / var(--k)));
+  opacity: clamp(0, var(--p) * 6, 1);
+}
+.atBlip circle {
+  stroke: var(--ink);
+  stroke-width: 1.2;
+}
+.atBlip path {
+  fill: #fff;
+}
+.atBlip_police circle {
+  fill: #4a8cff;
+}
+.atBlip_hospital circle {
+  fill: #ff5d6c;
+}
+.atBlip_garage circle {
+  fill: #ff9f43;
+}
+.atBlip_bank circle {
+  fill: #3fc06f;
+}
+.atBlip .atBlipStroke {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+.atBlipText {
+  fill: #fff;
+  font-size: 8.5px;
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+/* Waypoint : falls from above, squashes on landing, clears on arrival. */
+.atWaypoint {
+  opacity: clamp(0, (var(--arrive) + 0.1 - var(--at-t)) / 0.25, 1);
+}
 .atPin {
   --s: sin(calc(var(--land) * 3.1416));
-  transform: translateY(calc((1 - var(--drop) * var(--drop)) * -80px)) scale(calc(1 + 0.2 * var(--s)), calc(1 - 0.2 * var(--s)));
+  transform: translateY(calc((1 - var(--drop) * var(--drop)) * -60px)) scale(calc(1 + 0.2 * var(--s)), calc(1 - 0.2 * var(--s)));
   opacity: clamp(0, var(--drop) * 8, 1);
 }
 .atPinBody {
-  fill: var(--pin);
+  fill: var(--gps);
   stroke: var(--ink);
-  stroke-width: 1.4;
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--pin) 60%, transparent));
+  stroke-width: 1.2;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--gps) 60%, transparent));
 }
 .atPinDot {
   fill: #fff;
@@ -3582,64 +4643,100 @@
   opacity: var(--drop);
 }
 .atRipple {
-  --f: clamp(0, (var(--at-t) - var(--d, 1.65)) / 0.9, 1);
+  --f: clamp(0, (var(--at-t) - var(--d, 1.95)) / 0.9, 1);
   fill: none;
-  stroke: var(--pin);
+  stroke: var(--gps);
   stroke-width: 1.2;
   vector-effect: non-scaling-stroke;
   transform: scale(calc(0.4 + 1.6 * var(--f)));
   opacity: calc((1 - var(--f)) * clamp(0, var(--f) * 40, 1));
 }
-.atPlace,
-.atLabel {
-  fill: #c9d3ea;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  dominant-baseline: central;
+/* Player arrow, pointing north at 0deg. */
+.atPlayer {
+  transform: translate(calc(var(--rx) * 1px), calc(var(--ry) * 1px)) rotate(calc(var(--rh) * 1deg)) scale(calc(1 / var(--k)));
+  opacity: clamp(0, (var(--at-t) - 1.4) / 0.3, 1);
+}
+.atPlayer path {
+  fill: #fff;
+  stroke: var(--ink);
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.6));
+}
+/* Health and armour bars under the minimap, filling from the left. */
+.atBar {
+  --p: clamp(0, (var(--at-t) - var(--d)) / 0.6, 1);
+  opacity: clamp(0, var(--p) * 8, 1);
+}
+.atBarBack {
+  fill: rgba(255, 255, 255, 0.1);
+}
+.atBarFill {
+  transform-box: fill-box;
+  transform-origin: 0 50%;
+  transform: scaleX(var(--p));
+}
+.atHealth {
+  fill: #5fd27a;
+  transform: scaleX(calc(0.86 * var(--p)));
+}
+.atArmour {
+  fill: #4aa3ff;
+}
+/* HUD text, beside the minimap. */
+.atText {
+  fill: #fff;
+  font-weight: 800;
   paint-order: stroke;
   stroke: var(--ink);
   stroke-width: 3px;
   stroke-linejoin: round;
+  opacity: clamp(0, (var(--at-t) - var(--d, 0)) / 0.3, 1);
 }
-.atPlace {
-  fill: #fff;
-  opacity: clamp(0, (var(--at-t) - 1.8) / 0.3, 1);
+.atTitle {
+  font-size: 17px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
-.atLabel {
-  opacity: clamp(0, (var(--at-t) - var(--d)) / 0.3, 1);
+.atTitleTag {
+  fill: var(--lead);
+}
+.atSub {
+  fill: #8e9bbd;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
 }
 .atLeadLabel {
   fill: var(--lead);
+  font-size: 10px;
+  dominant-baseline: central;
 }
-/* Team member : pops in with an overshoot and a ring, then glows each time
-   a packet lands on it (--h1, --h2). */
+.atTeam {
+  fill: #c9d3ea;
+  font-size: 9px;
+  font-weight: 700;
+  dominant-baseline: central;
+}
+.atStreet {
+  opacity: min(clamp(0, (var(--at-t) - var(--from)) / 0.3, 1), clamp(0, (var(--to) - var(--at-t)) / 0.2, 1));
+}
+.atStreetName {
+  font-size: 11px;
+}
+/* Team badges : pop in with an overshoot. */
 .atNode {
   --p: clamp(0, (var(--at-t) - var(--d)) / 0.4, 1);
-  --hit: max(
-    min(clamp(0, (var(--at-t) - var(--h1, -9)) / 0.1, 1), clamp(0, (var(--h1, -9) + 0.6 - var(--at-t)) / 0.5, 1)),
-    min(clamp(0, (var(--at-t) - var(--h2, -9)) / 0.1, 1), clamp(0, (var(--h2, -9) + 0.6 - var(--at-t)) / 0.5, 1))
-  );
-  transform: scale(calc(var(--p) + 0.35 * sin(calc(var(--p) * 3.1416)) + 0.12 * var(--hit)));
+  transform: scale(calc(var(--p) + 0.35 * sin(calc(var(--p) * 3.1416))));
   opacity: clamp(0, var(--p) * 6, 1);
-}
-.atRing {
-  --f: clamp(0, (var(--at-t) - var(--d) - 0.1) / 0.7, 1);
-  fill: none;
-  stroke: var(--member);
-  stroke-width: 1.2;
-  vector-effect: non-scaling-stroke;
-  transform: scale(calc(0.6 + 0.8 * var(--f)));
-  opacity: calc((1 - var(--f)) * clamp(0, var(--f) * 40, 1));
-}
-.atLead .atRing {
-  stroke: var(--lead);
 }
 .atBadge {
   fill: var(--member);
   stroke: var(--ink);
   stroke-width: 1.5;
-  filter: drop-shadow(0 0 calc(4px + 8px * var(--hit, 0)) color-mix(in srgb, var(--lead) calc(100% * var(--hit, 0)), var(--member)));
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--member) 50%, transparent));
 }
 .atLead .atBadge {
   fill: var(--lead);
@@ -3649,7 +4746,7 @@
 .atIcon path {
   fill: none;
   stroke: var(--ink);
-  stroke-width: 1.6;
+  stroke-width: 1.8;
   stroke-linecap: round;
 }
 .atStar {
@@ -4560,6 +5657,72 @@ a:hover .logoOrb {
 .curPress .curAR {
   transform: translateX(-19px);
 }
+/* Scissors : the cutting point between the blades sits on the pointer. They
+   snip slowly at rest, fast while pressed, and flip to face a leftward drag. */
+.curS {
+  position: absolute;
+  left: -36px;
+  top: -15px;
+  width: 50px;
+  height: 30px;
+  color: #fff;
+  filter: drop-shadow(0 2px 4px rgba(11, 21, 51, 0.45));
+  opacity: 0;
+  transform: scale(0.4) rotate(-20deg);
+  transform-origin: 36px 15px;
+  transition:
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.2s;
+}
+.curS svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.curCut .curR {
+  transform: scale(0.4);
+  opacity: 0;
+}
+.curCut .curS {
+  opacity: 1;
+  transform: none;
+}
+.curCut.curFlip .curS {
+  transform: scaleX(-1);
+}
+.curSA,
+.curSB {
+  transform-box: view-box;
+  transform-origin: 17px 12px;
+}
+.curCut .curSA {
+  animation: curSnipA 1.4s ease-in-out infinite;
+}
+.curCut .curSB {
+  animation: curSnipB 1.4s ease-in-out infinite;
+}
+.curCut.curPress .curSA,
+.curCut.curPress .curSB {
+  animation-duration: 0.32s;
+}
+@keyframes curSnipA {
+  0%,
+  100% {
+    transform: rotate(-16deg);
+  }
+  50% {
+    transform: rotate(-1deg);
+  }
+}
+@keyframes curSnipB {
+  0%,
+  100% {
+    transform: rotate(16deg);
+  }
+  50% {
+    transform: rotate(1deg);
+  }
+}
 /* Nothing left to scroll toward on that side. */
 .curAtStart .curAL,
 .curAtEnd .curAR {
@@ -4683,3 +5846,113 @@ a:hover .logoOrb {
   .hdr > div > a { gap: 6px !important; }
   .hdr > div > a > span { font-size: 13px !important; }
 }
+
+/* Project card header : a coloured status badge and a neutral context badge. */
+.pcBadges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.status,
+.context {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.status {
+  background: color-mix(in srgb, var(--tone) 12%, #fff);
+  color: color-mix(in srgb, var(--tone) 72%, #000);
+}
+.statusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--tone);
+}
+.statusLive {
+  --tone: #16a34a;
+}
+.statusLive .statusDot {
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--tone) 50%, transparent);
+  animation: statusPulse 2s ease-out infinite;
+}
+.statusDev {
+  --tone: #2563eb;
+}
+.statusProduction {
+  --tone: #0d9488;
+}
+.statusDone {
+  --tone: #7c3aed;
+}
+.statusArchived {
+  --tone: #64748b;
+}
+.statusAbandoned {
+  --tone: #dc2626;
+}
+@keyframes statusPulse {
+  70% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--tone) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--tone) 0%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .statusLive .statusDot {
+    animation: none;
+  }
+}
+.context {
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+/* Project links : labelled pill buttons under the bullets. */
+.pcLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+.pcLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.25s, transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.pcLink:hover {
+  background: var(--accent);
+}
+.pcLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.pcLinkArrow {
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.pcLink:hover .pcLinkArrow {
+  transform: translate(2px, -2px);
+}
+
+.skipLink { position: fixed; top: 12px; left: 12px; z-index: 1000; padding: 12px 18px; background: var(--ink); color: white; border-radius: 8px; transform: translateY(-180%); }
+.skipLink:focus-visible { transform: translateY(0); outline: 3px solid var(--accent); outline-offset: 3px; }
+/* The primary heading is visible on the first paint. */
+.pf h1 .ltr, .pf h1 .rise { animation: none; opacity: 1; transform: none; }

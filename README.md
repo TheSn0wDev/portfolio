@@ -56,6 +56,11 @@ pas dans `public/`. Le build ne déclenche pas l’indexation et n’appelle pas
 ## Backend RAG
 
 `POST /api/chat` accepte `{ "question": "..." }`, avec `history` et `stream` facultatifs.
+BotID Basic protège cette route : initialisation navigateur dans `src/instrumentation-client.ts`,
+rewrites via `withBotId` et vérification serveur avant les appels Redis/OpenAI.
+Les bots détectés reçoivent une réponse 403. Le niveau `basic` est explicite des deux côtés.
+La protection réelle s'applique après déploiement sur Vercel ; en développement, BotID
+autorise les requêtes par défaut (le `curl` ci-dessous sert au test local).
 Recherche hybride cosinus + BM25, quatre extraits maximum (~1 800 tokens), une génération
 Responses API (`gpt-4.1-mini-2025-04-14`, configurable), sources citées et streaming SSE.
 Réponse plafonnée à 350 tokens ; historique borné à 600 tokens. Les instructions et
@@ -123,3 +128,9 @@ Les contenus français restent dans `src/content`. Les traductions anglaises son
 Le chat transmet `locale` à `/api/chat`. La langue de la page impose la langue des réponses, des abstentions et des erreurs ; les clés de cache incluent cette langue. Le changement de langue démarre une nouvelle conversation.
 
 Validation : `pnpm test:locale`, `pnpm test:chat-client`, `pnpm test:rag`.
+
+### Choisir l’adresse publique
+
+L’adresse publique est le domaine sur lequel le portfolio sera consulté. Pour ce profil, `clementozor.fr` est un choix lisible pour une cible française, sous réserve de disponibilité. Le projet peut d’abord utiliser l’adresse stable `.vercel.app` attribuée par Vercel.
+
+Après achat et configuration du domaine dans Vercel, renseigner `SITE_URL` avec son origine HTTPS réelle, puis redéployer. Ne pas renseigner un domaine proposé avant qu’il soit associé au projet. Vérifier ensuite les canoniques, `/sitemap.xml`, les images `/og` et l’indexation dans Search Console. Les performances PageSpeed doivent être mesurées sur cette adresse publique.

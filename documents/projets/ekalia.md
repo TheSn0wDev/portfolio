@@ -16,8 +16,10 @@ HTML, CSS, JS, Front-end.
 
 ## Développeur frontend bénévole - Ekalia
 
-Clément Ozor a été développeur frontend bénévole chez Ekalia à 16 ans, soit approximativement en 2018-2019 ; les dates exactes ne sont pas confirmées.
+Clément Ozor a été développeur frontend bénévole chez Ekalia en 2018-2019, à partir de ses 16 ans. La période est confirmée par Clément ; les mois exacts ne sont pas précisés.
 
 Il s'occupait de la création et de la gestion des pages web à partir des maquettes réalisées par une designer UI/UX de l'équipe. Son rôle consistait à traduire ces maquettes en pages web et à gérer ces pages.
+
+Ses réalisations comprennent le menu de navigation, la page d’accueil et les interfaces de gestion des équipes.
 
 Technologies référencées dans le portfolio : HTML, CSS et JavaScript.

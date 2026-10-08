@@ -1,6 +1,7 @@
 'use client'
 
-import { useContent, useTranslation } from '@/i18n/LocaleProvider'
+import { usePathname } from 'next/navigation'
+import { useContent, useTranslation, useLocale } from '@/i18n/LocaleProvider'
 import * as navContent from '@/content/nav'
 import * as profileContent from '@/content/profile'
 import styles from './portfolio.module.css'
@@ -17,11 +18,15 @@ type HeaderProps = {
 
 export function Header({ scrolled, menuOpen, onToggleMenu, onCloseMenu }: HeaderProps) {
   const t = useTranslation()
+  const locale = useLocale()
+  const pathname = usePathname()
+  const sectionPrefix = pathname === `/${locale}` ? '' : `/${locale}`
   const { navLinks } = useContent(navContent)
   const { availability, heroCtas, name } = useContent(profileContent)
 
   return (
     <header className={[styles.hdr, scrolled || menuOpen ? styles.hdrOn : ''].filter(Boolean).join(' ')}>
+      <a className={styles.skipLink} href="#main">{locale === 'en' ? 'Skip to content' : 'Aller au contenu'}</a>
       <div
         style={{
           maxWidth: 1312,
@@ -35,7 +40,7 @@ export function Header({ scrolled, menuOpen, onToggleMenu, onCloseMenu }: Header
         }}
       >
         <a
-          href="#top"
+          href={`${sectionPrefix}#top`}
           style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', color: 'var(--ink)' }}
           aria-label={`${name.line1} ${name.line2}, ${t('retour en haut')}`}
         >
@@ -46,7 +51,7 @@ export function Header({ scrolled, menuOpen, onToggleMenu, onCloseMenu }: Header
         </a>
         <nav className={styles.nav} aria-label={t('Sections')} style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
           {navLinks.map((link) => (
-            <a key={link.href} href={link.href}>
+            <a key={link.href} href={`${sectionPrefix}${link.href}`}>
               {link.label}
             </a>
           ))}
@@ -61,7 +66,7 @@ export function Header({ scrolled, menuOpen, onToggleMenu, onCloseMenu }: Header
           </span>
           <a
             className={`${styles.btn} ${styles.btnP} ${styles.hdrCta}`}
-            href={heroCtas.contact.href}
+            href={`${sectionPrefix}${heroCtas.contact.href}`}
             style={{ minHeight: 44, padding: '0 20px', fontSize: 14 }}
           >
             {heroCtas.contact.label}
@@ -80,7 +85,7 @@ export function Header({ scrolled, menuOpen, onToggleMenu, onCloseMenu }: Header
           </button>
         </div>
       </div>
-      {menuOpen && <MobileNav onNavigate={onCloseMenu} />}
+      {menuOpen && <MobileNav onNavigate={onCloseMenu} sectionPrefix={sectionPrefix} />}
     </header>
   )
 }

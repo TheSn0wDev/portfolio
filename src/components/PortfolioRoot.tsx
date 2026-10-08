@@ -16,6 +16,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useRevealArmed } from '@/hooks/useReveal'
 import { useHeaderScroll } from '@/hooks/useHeaderScroll'
 import { usePointerFx } from '@/hooks/usePointerFx'
+import { SeoLinks } from './SeoLinks'
 import { accent } from '@/content/profile'
 
 export function PortfolioRoot() {
@@ -48,12 +49,15 @@ export function PortfolioRoot() {
     <div ref={rootRef} className={rootClassName} style={{ '--accent': accent } as CSSProperties}>
       <CustomCursor ref={cursorRef} />
       <Header scrolled={scrolled} menuOpen={menuOpen} onToggleMenu={() => setMenuOpen((v) => !v)} onCloseMenu={() => setMenuOpen(false)} />
+      <main id="main" tabIndex={-1}>
       <Hero heroRef={heroRef} motionEnabled={motionEnabled} />
       <Marquee />
       <ExperienceTimeline timelineRef={timelineRef} armed={armed} motionEnabled={motionEnabled} />
       <ProjectsCarousel armed={armed} motionEnabled={motionEnabled} />
+      <SeoLinks />
       <SkillsGrid armed={armed} />
       <Education armed={armed} />
+      </main>
       <ContactSection armed={armed} />
     </div>
   )

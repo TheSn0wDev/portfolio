@@ -4,9 +4,11 @@ Skytale est un studio indépendant de jeu vidéo fondé en 2019, organisé en as
 
 ## Développeur frontend - Skytale
 
-Clément a rejoint Skytale peu après son expérience chez Ekalia, à une date non confirmée, également en tant que développeur frontend. Comme chez Ekalia, il s'occupait de la création et de la gestion de pages web à partir de maquettes UI/UX.
+Clément a rejoint Skytale peu après son expérience chez Ekalia, en 2019, également en tant que développeur frontend. Comme chez Ekalia, il s'occupait de la création et de la gestion de pages web à partir de maquettes UI/UX.
 
-Technologies référencées dans le portfolio : HTML, CSS et JavaScript. Les dates exactes de cette expérience ne sont pas précisées.
+Il a réalisé une landing page.
+
+Technologies référencées dans le portfolio : HTML, CSS et JavaScript. L’année 2019 est confirmée ; les mois exacts ne sont pas précisés.
 
 Lien référencé dans le portfolio précédent : https://skytale.fr/.
 
@@ -18,4 +20,4 @@ HTML, CSS, JS, Front-end.
 
 Aucun statut de développement n'est précisé dans le portfolio précédent ou le CV fourni.
 
-Les dates exactes et les résultats chiffrés de cette contribution ne sont pas documentés.
+Les mois exacts et les résultats chiffrés de cette contribution ne sont pas documentés.

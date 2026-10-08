@@ -78,7 +78,7 @@ export const experiences: Experience[] = [
   {
   "title": "Développeur frontend",
   "company": "Skytale",
-  "period": "Après Ekalia · Dates à préciser",
+  "period": "2019",
   "bullets": [
     "Création et gestion de pages web à partir de maquettes UI/UX, au sein d’un studio associatif de jeux vidéo."
   ],
@@ -91,7 +91,7 @@ export const experiences: Experience[] = [
   {
   "title": "Développeur frontend bénévole",
   "company": "Ekalia",
-  "period": "Vers 2018–2019 · À 16 ans",
+  "period": "2018-2019",
   "bullets": [
     "Intégration de maquettes réalisées par une designer UI/UX en pages web.",
     "Création et gestion des pages pour une association organisant des événements gaming."

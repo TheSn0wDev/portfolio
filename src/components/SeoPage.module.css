@@ -1,0 +1,11 @@
+/* GenAI hub on the landing page (SeoLinks). */
+.hub { padding: clamp(48px, 6vw, 80px) clamp(20px, 4.5vw, 64px); max-width: 1312px; margin: auto; }
+.hub h2 { font-family: var(--font-archivo), sans-serif; color: #0b1533; font-size: clamp(24px, 3vw, 36px); margin-bottom: 16px; }
+.hub > p { max-width: 740px; font-size: 18px; line-height: 1.7; margin-bottom: 28px; }
+.hub nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.hub a { display: block; padding: 20px 0; border-top: 2px solid #dce3f2; text-decoration: none; color: #0b1533; }
+.hub a:hover { border-color: #2563eb; color: #2563eb; }
+.hub a:focus-visible { outline: 3px solid #2563eb; outline-offset: 5px; }
+.hub strong { font-family: var(--font-archivo), sans-serif; display: block; font-size: 20px; line-height: 1.4; margin-bottom: 12px; }
+.hub span { display: block; font-size: 15px; line-height: 1.7; color: #56627e; }
+@media (max-width: 800px) { .hub nav { grid-template-columns: 1fr; gap: 8px; } }

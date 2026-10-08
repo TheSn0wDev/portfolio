@@ -7,9 +7,10 @@ import styles from './portfolio.module.css'
 
 type MobileNavProps = {
   onNavigate: () => void
+  sectionPrefix?: string
 }
 
-export function MobileNav({ onNavigate }: MobileNavProps) {
+export function MobileNav({ onNavigate, sectionPrefix = '' }: MobileNavProps) {
   const t = useTranslation()
   const { navLinks } = useContent(navContent)
   const { heroCtas } = useContent(profileContent)
@@ -17,14 +18,14 @@ export function MobileNav({ onNavigate }: MobileNavProps) {
   return (
     <nav id="mnav" className={styles.mnav} aria-label={t('Menu mobile')}>
       {navLinks.map((link) => (
-        <a key={link.href} href={link.href} onClick={onNavigate}>
+        <a key={link.href} href={`${sectionPrefix}${link.href}`} onClick={onNavigate}>
           {link.label}
           <span aria-hidden="true">{link.mobileIndex}</span>
         </a>
       ))}
       <a
         className={`${styles.btn} ${styles.btnP}`}
-        href={heroCtas.contact.href}
+        href={`${sectionPrefix}${heroCtas.contact.href}`}
         onClick={onNavigate}
         style={{ marginTop: 16, justifyContent: 'center' }}
       >

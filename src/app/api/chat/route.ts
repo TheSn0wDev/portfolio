@@ -1,3 +1,4 @@
+import { checkBotId } from 'botid/server'
 import { translate } from '@/i18n/messages'
 import type { Locale } from '@/i18n/locale'
 import { parseInput } from '@/lib/rag/core'
@@ -51,6 +52,8 @@ export async function POST(request: Request) {
       input = parseInput(body)
     }
     catch (error) { if (error instanceof ServiceError) throw error; throw new ServiceError(400, error instanceof Error ? error.message : 'Requête invalide.') }
+    const verification = await checkBotId({ advancedOptions: { checkLevel: 'basic' } })
+    if (verification.isBot) throw new ServiceError(403, 'Accès refusé : requête automatisée détectée.')
     await rateLimit(request)
     const cancellation = new AbortController()
     const signal = AbortSignal.any([request.signal, cancellation.signal, AbortSignal.timeout(45_000)])

@@ -12,6 +12,8 @@ type Options = {
   pressClass: string
   atStartClass: string
   atEndClass: string
+  cutClass?: string
+  flipClass?: string
   enabled: boolean
 }
 
@@ -22,8 +24,9 @@ type Options = {
 // turns into a drag pill over the horizontal project track. The pill squashes
 // while grabbed, stretches with the cursor's horizontal speed, and dims the
 // arrow pointing at an edge the track has already reached (read from the
-// track's data-at-start / data-at-end attributes).
-export function usePointerFx({ rootRef, heroRef, cursorRef, bigClass, dragClass, pressClass, atStartClass, atEndClass, enabled }: Options) {
+// track's data-at-start / data-at-end attributes). Over a [data-pcut] zone it
+// becomes a pair of scissors that turns to face the way the pointer moves.
+export function usePointerFx({ rootRef, heroRef, cursorRef, bigClass, dragClass, pressClass, atStartClass, atEndClass, cutClass, flipClass, enabled }: Options) {
   const state = useRef({
     mx: 0,
     my: 0,
@@ -39,6 +42,7 @@ export function usePointerFx({ rootRef, heroRef, cursorRef, bigClass, dragClass,
     pressed: false,
     lastTarget: null as HTMLElement | null,
     track: null as HTMLElement | null,
+    cut: false,
   })
 
   useEffect(() => {
@@ -68,9 +72,11 @@ export function usePointerFx({ rootRef, heroRef, cursorRef, bigClass, dragClass,
       const closestTrack = target && target.closest ? target.closest('[data-ptrack]') : null
       const dragOverride = !!(closestInteractive && closestInteractive.hasAttribute('data-cursor-drag'))
       const dragOn = !!closestTrack && (!closestInteractive || dragOverride)
+      s.cut = !!cutClass && !!target?.closest?.('[data-pcut]')
       s.track = dragOn ? (closestTrack as HTMLElement) : null
       cur.classList.toggle(dragClass, dragOn)
-      cur.classList.toggle(bigClass, !!closestInteractive && !dragOn)
+      cur.classList.toggle(bigClass, !!closestInteractive && !dragOn && !s.cut)
+      if (cutClass) cur.classList.toggle(cutClass, s.cut)
     }
 
     const onOver = (e: Event) => {
@@ -82,7 +88,7 @@ export function usePointerFx({ rootRef, heroRef, cursorRef, bigClass, dragClass,
 
     const onDown = (e: PointerEvent) => {
       const cur = cursorRef.current
-      if (!cur || e.pointerType !== 'mouse' || e.button !== 0 || !cur.classList.contains(dragClass)) return
+      if (!cur || e.pointerType !== 'mouse' || e.button !== 0 || !(cur.classList.contains(dragClass) || s.cut)) return
       s.pressed = true
       cur.classList.add(pressClass)
     }
@@ -128,6 +134,7 @@ export function usePointerFx({ rootRef, heroRef, cursorRef, bigClass, dragClass,
             const bg = cur.querySelector<HTMLElement>('[data-cur-bg]')
             if (bg) bg.style.transform = stretch ? `scale(${(1 + stretch).toFixed(3)},${(1 - stretch * 0.5).toFixed(3)})` : ''
           }
+          if (flipClass && s.cut && Math.abs(s.vx) > 0.6) cur.classList.toggle(flipClass, s.vx < 0)
           cur.classList.toggle(atStartClass, !!track && track.hasAttribute('data-at-start'))
           cur.classList.toggle(atEndClass, !!track && track.hasAttribute('data-at-end'))
         } else {
@@ -145,5 +152,5 @@ export function usePointerFx({ rootRef, heroRef, cursorRef, bigClass, dragClass,
       window.removeEventListener('blur', onUp)
       cancelAnimationFrame(raf)
     }
-  }, [rootRef, heroRef, cursorRef, bigClass, dragClass, pressClass, atStartClass, atEndClass, enabled])
+  }, [rootRef, heroRef, cursorRef, bigClass, dragClass, pressClass, atStartClass, atEndClass, cutClass, flipClass, enabled])
 }

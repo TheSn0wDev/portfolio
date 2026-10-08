@@ -14,6 +14,16 @@ Les fonctionnalités décrites comprennent le suivi des combattants, l'historiqu
 
 Le déploiement est automatisé via une pipeline CI/CD GitHub Actions.
 
+## Sources de données et fonctionnement de l’IA
+
+Le projet utilise plusieurs sources publiques, notamment UFC Stats, ESPN et FightMatrix. L’analyse IA reçoit le contexte des deux combattants et produit une analyse basée sur leurs statistiques. Elle prédit le combattant gagnant, la méthode de victoire et le round précis.
+
+## Résultats rapportés et usage personnel
+
+Clément rapporte environ 90 % de prédictions correctes du combattant gagnant dans son usage personnel. Il indique également une bonne précision pour la méthode de victoire et le round, sans taux chiffré pour ces deux critères. Le nombre de combats évalués, la période et le protocole d’évaluation ne sont pas précisés ; le chiffre de 90 % est une estimation rapportée par Clément, pas une performance validée indépendamment ni une probabilité garantie pour un combat donné.
+
+Clément utilise ponctuellement MMA Scan pour confronter ses choix de paris sportifs aux analyses de l’outil.
+
 ## Statut
 
 MMA Scan est un projet actif et toujours en cours de développement.
@@ -22,4 +32,4 @@ MMA Scan est un projet actif et toujours en cours de développement.
 
 Next.js, TypeScript, PostgreSQL, Python, LLM et GitHub Actions.
 
-Le CV ne précise pas les dates de développement, le nombre d'utilisateurs ni des résultats chiffrés.
+Les dates de développement et le nombre d’utilisateurs ne sont pas précisés. Les résultats rapportés par Clément sont décrits ci-dessus.

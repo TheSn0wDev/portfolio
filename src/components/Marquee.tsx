@@ -2,8 +2,8 @@ import styles from './portfolio.module.css'
 import { MarqueeTriangleIcon } from './icons'
 import { techMarquee } from '@/content/profile'
 
-export function Marquee() {
-  const items = techMarquee.concat(techMarquee)
+export function Marquee({ items: source = techMarquee }: { items?: string[] }) {
+  const items = source.concat(source)
 
   return (
     <div

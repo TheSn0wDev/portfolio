@@ -5,6 +5,7 @@ import '../globals.css'
 import { notFound } from 'next/navigation'
 import { isLocale } from '@/i18n/locale'
 import { LocaleProvider } from '@/i18n/LocaleProvider'
+import { siteOrigin } from '@/lib/seo/site'
 
 const archivo = Archivo({
   subsets: ['latin'],
@@ -29,16 +30,7 @@ const caveat = Caveat({
 
 export function generateStaticParams() { return [{ locale: 'fr' }, { locale: 'en' }] }
 export const dynamicParams = false
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-  const { locale } = await params
-  return {
-    title: 'Clément Ozor | Software Engineer Backend & GenAI',
-    description: locale === 'en'
-      ? 'Clément Ozor’s portfolio: backend Software Engineer at Thales and GenAI project developer. Seeking a long-term GenAI engineering engagement from early 2027.'
-      : 'Portfolio de Clément Ozor, Software Engineer backend chez Thales et développeur de projets GenAI. Disponible début 2027 pour une mission longue en GenAI Engineering.',
-    alternates: { canonical: `/${locale}`, languages: { fr: '/fr', en: '/en', 'x-default': '/' } },
-  }
-}
+export const metadata: Metadata = { metadataBase: siteOrigin() }
 
 export default async function RootLayout({ children, params }: { children: ReactNode; params: Promise<{ locale: string }> }) {
   const { locale } = await params
