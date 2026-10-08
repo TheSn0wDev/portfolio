@@ -120,10 +120,10 @@ export function usePointerFx({ rootRef, heroRef, cursorRef, bigClass, dragClass,
       const cur = cursorRef.current
       if (cur) {
         if (enabled && s.seen) {
-          // The ring and pill trail the native pointer as decoration; the
-          // scissors stand in for it, so they track it exactly.
+          // The ring trails the native pointer as decoration; the drag pill
+          // and the scissors stand in for it, so they track it exactly.
           const px = s.cx
-          const k = s.cut ? 1 : 0.2
+          const k = s.cut || s.track ? 1 : 0.2
           s.cx += (s.tcx - s.cx) * k
           s.cy += (s.tcy - s.cy) * k
           cur.style.transform = `translate3d(${s.cx.toFixed(1)}px,${s.cy.toFixed(1)}px,0)`
