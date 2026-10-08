@@ -632,6 +632,8 @@
   inset: -22px calc(-22px - var(--notch)) auto;
   height: 44px;
   touch-action: pan-y;
+  /* The scissors are the pointer here, so they replace the native one. */
+  cursor: none;
 }
 .tearHint {
   position: absolute;

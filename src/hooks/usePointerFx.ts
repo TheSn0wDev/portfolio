@@ -20,7 +20,8 @@ type Options = {
 // Ports the pointer-driven effects of the original design in one place, since
 // they all share a single rAF loop: the subtle parallax on the hero name
 // (--mx/--my), the spotlight that lights up the dot grid under the cursor
-// (--px/--py), and the custom cursor that grows over interactive elements and
+// (--px/--py), and the custom cursor, a decorative follower of the native
+// pointer (which stays visible), that grows over interactive elements and
 // turns into a drag pill over the horizontal project track. The pill squashes
 // while grabbed, stretches with the cursor's horizontal speed, and dims the
 // arrow pointing at an edge the track has already reached (read from the
@@ -119,9 +120,12 @@ export function usePointerFx({ rootRef, heroRef, cursorRef, bigClass, dragClass,
       const cur = cursorRef.current
       if (cur) {
         if (enabled && s.seen) {
+          // The ring and pill trail the native pointer as decoration; the
+          // scissors stand in for it, so they track it exactly.
           const px = s.cx
-          s.cx += (s.tcx - s.cx) * 0.2
-          s.cy += (s.tcy - s.cy) * 0.2
+          const k = s.cut ? 1 : 0.2
+          s.cx += (s.tcx - s.cx) * k
+          s.cy += (s.tcy - s.cy) * k
           cur.style.transform = `translate3d(${s.cx.toFixed(1)}px,${s.cy.toFixed(1)}px,0)`
           cur.style.opacity = '1'
 
