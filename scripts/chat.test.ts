@@ -7,7 +7,15 @@ const originalFetch = globalThis.fetch
 const environment = { ...process.env }
 const index = getDocumentIndex()
 const originalChunks = index.chunks
+const contextKey = Symbol.for('@vercel/request-context')
+const requestGlobal = globalThis as typeof globalThis & { [contextKey]?: unknown }
+const originalContext = requestGlobal[contextKey]
 beforeEach(() => {
+  requestGlobal[contextKey] = { get: () => ({
+    headers: { 'x-vercel-oidc-token': 'test-botid-token', 'x-is-human': 'test-challenge' },
+    url: 'http://localhost/api/chat',
+    mutateResponseHeadersBeforeFlush: () => {},
+  }) }
   Object.assign(process.env, { NODE_ENV: 'test', OPENAI_API_KEY: 'test-only', VERCEL_ENV: 'test-' + Math.random() })
   delete process.env.VERCEL
   delete process.env.OPENAI_CHAT_MODEL
@@ -19,6 +27,8 @@ beforeEach(() => {
   index.chunks = [{ id: 'test', source: 'projets/robot.md', position: 0, text: 'Clément développe un robot autonome.', contentHash: digest('robot'), embedding: Array.from({ length: index.dimensions }, (_, i) => i === 0 ? 1 : 0) }]
 })
 afterEach(() => {
+  if (originalContext === undefined) delete requestGlobal[contextKey]
+  else requestGlobal[contextKey] = originalContext
   globalThis.fetch = originalFetch
   index.chunks = originalChunks
   for (const key of Object.keys(process.env)) if (!(key in environment)) delete process.env[key]
@@ -29,6 +39,10 @@ function mockOpenAI(stream = false, unrelated = false) {
   const calls: { url: string; body: Record<string, unknown> }[] = []
   globalThis.fetch = (async (url, options) => {
     const body = JSON.parse(String(options?.body))
+    if (String(url).startsWith('https://api.vercel.com/bot-protection/')) {
+      assert.equal(body.forceCheckLevel, 'basic')
+      return Response.json({ isBot: false })
+    }
     calls.push({ url: String(url), body })
     if (String(url).endsWith('/embeddings')) return Response.json({ data: [{ index: 0, embedding: Array.from({ length: index.dimensions }, (_, i) => i === 0 ? (unrelated ? -1 : 1) : 0) }], usage: { total_tokens: 6, prompt_tokens: 6 } })
     const response = { id: 'resp_test', object: 'response', status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: 'Clément développe un robot [1].', annotations: [] }] }], usage: { input_tokens: 60, output_tokens: 10, total_tokens: 70 } }
@@ -80,6 +94,25 @@ test('production fails closed without distributed limiter', async () => {
   const calls = mockOpenAI()
   assert.equal((await POST(request({ question: 'Bonjour' }))).status, 503)
   assert.equal(calls.length, 0)
+})
+test('BotID rejects automated requests before Redis and OpenAI in both locales', async () => {
+  Object.assign(process.env, { NODE_ENV: 'production' })
+  let checks = 0
+  globalThis.fetch = (async (url, options) => {
+    assert.ok(String(url).startsWith('https://api.vercel.com/bot-protection/'))
+    assert.equal(JSON.parse(String(options?.body)).forceCheckLevel, 'basic')
+    checks++
+    return Response.json({ isBot: true })
+  }) as typeof fetch
+  for (const locale of ['fr', 'en']) {
+    const response = await POST(request({ question: 'Bonjour', locale }))
+    assert.equal(response.status, 403)
+    assert.equal(response.headers.get('cache-control'), 'no-store')
+    assert.equal((await response.json()).error, locale === 'fr'
+      ? 'Accès refusé : requête automatisée détectée.'
+      : 'Access denied: automated request detected.')
+  }
+  assert.equal(checks, 2)
 })
 test('quota exhaustion returns 429 before a paid call', async () => {
   process.env.RAG_GENERATIONS_PER_DAY = '1'

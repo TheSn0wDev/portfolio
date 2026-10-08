@@ -4,9 +4,11 @@ import { useLocale, useTranslation } from '@/i18n/LocaleProvider'
 import styles from './portfolio.module.css'
 import { Reveal } from './Reveal'
 import { useTilt } from '@/hooks/useTilt'
-import { DiagonalArrowIcon } from './icons'
-import type { CSSProperties } from 'react'
-import type { Project } from '@/content/projects'
+import { ArticleIcon, DiagonalArrowIcon, GitHubIcon, GlobeIcon } from './icons'
+import { useId } from 'react'
+import Link from 'next/link'
+import type { ComponentType, CSSProperties } from 'react'
+import type { Project, ProjectLink, ProjectStatus } from '@/content/projects'
 
 type ProjectCardProps = {
   project: Project
@@ -78,7 +80,7 @@ const ragLensVars = Object.fromEntries(
   RAG_LENS.flatMap(([x, y, s], i) => [[`--x${i}`, `${x}%`], [`--y${i}`, `${y}%`], [`--s${i}`, s]]),
 ) as CSSProperties
 
-function ProjectRagVisual({ visual }: { visual: Extract<Project['visual'], { kind: 'ragCloud' }> }) {
+export function ProjectRagVisual({ visual }: { visual: Extract<Project['visual'], { kind: 'ragCloud' }> }) {
   const locale = useLocale()
   const [ax, ay] = RAG_LANDINGS[0]
   return (
@@ -214,7 +216,7 @@ function ProjectRcVisual({ visual }: { visual: Extract<Project['visual'], { kind
     <div
       className={`${styles.visual} ${styles.rc}`}
       role="img"
-      aria-label={locale === 'en' ? `The controller sends radio commands; the vehicle moves with each command. Measured latency: ${Math.min(...visual.latencies)} to ${Math.max(...visual.latencies)} ms.` : `La manette envoie ses commandes par radio ; le véhicule avance à chaque ordre reçu. Latence mesurée : ${Math.min(...visual.latencies)} à ${Math.max(...visual.latencies)} ms.`}
+      aria-label={locale === 'en' ? `The controller sends radio commands; the vehicle moves with each command. Illustrative latency, not measured: ${Math.min(...visual.latencies)} to ${Math.max(...visual.latencies)} ms.` : `La manette envoie ses commandes par radio ; le véhicule avance à chaque ordre reçu. Exemple de latence, non mesurée : ${Math.min(...visual.latencies)} à ${Math.max(...visual.latencies)} ms.`}
     >
       {RC_SENDS.flatMap((send, i) =>
         Array.from({ length: RC_RINGS }, (_, ring) => (
@@ -575,77 +577,212 @@ function ProjectCohomaVisual({ visual }: { visual: Extract<Project['visual'], { 
   )
 }
 
-// Drone patrols on the radar, as elliptic orbits around the command node :
-// start angle (deg), radii in % of the visual's width / height, lap time (s),
-// direction, and how long the orbit takes to breathe in and out (s). Laps are
-// coprime-ish so the formation never visibly repeats.
-const VR_ORBITS = [
-  { a: 20, rx: 34, ry: 34, lap: 19, dir: 'normal', breathe: 5.2 },
-  { a: 140, rx: 42, ry: 40, lap: 27, dir: 'reverse', breathe: 6.6 },
-  { a: 230, rx: 26, ry: 28, lap: 15, dir: 'normal', breathe: 4.4 },
-  { a: 310, rx: 38, ry: 42, lap: 23, dir: 'reverse', breathe: 7.4 },
-] as const
+// Timeline, in seconds of an 11s cycle (keep in sync with the rs styles) :
+// 0–1.6 the R4 drives in · 1.7 the roof box nose slides forward · each drone
+// lifts off at its RS_DRONES launch time, climbs, then flies to its station
+// above the fire · 4.4–7.2 the fire perimeter gets mapped · 4.5 the thermal
+// feed pops · each drone heads back at its return time and lands in the box
+// · 9.6 the box closes · 10.5 everything fades out.
+// Stations are in % of the visual's width (x) / height from the bottom (b).
+const RS_DRONES = [
+  { launch: 2.4, back: 7.6, x: 60, b: 50 },
+  { launch: 2.9, back: 7.9, x: 75, b: 57 },
+  { launch: 3.4, back: 8.2, x: 89, b: 47 },
+]
+// Pines along the burning ridge, as [x, height] on the 200×80 fire board,
+// and flames as [x, height, flicker period (s)]. The back row is drawn first.
+const RS_PINES_BACK: [number, number][] = [
+  [8, 26], [22, 34], [38, 30], [54, 38], [72, 32], [90, 40], [108, 34], [126, 42], [144, 34], [162, 38], [180, 30], [194, 26],
+]
+const RS_PINES_FRONT: [number, number][] = [
+  [0, 18], [16, 22], [30, 18], [62, 24], [98, 22], [136, 26], [172, 20], [188, 24], [200, 18],
+]
+const RS_FLAMES: [number, number, number][] = [
+  [48, 22, 0.9], [62, 34, 1.1], [78, 26, 0.8], [94, 42, 1.2], [110, 30, 0.95], [126, 38, 1.05], [142, 28, 0.85], [158, 20, 1],
+]
+const rsPine = (x: number, h: number) => `M${x - h * 0.28} 80L${x} ${80 - h}L${x + h * 0.28} 80Z`
+const rsFlame = (x: number, h: number, w: number) =>
+  `M${x - w} 80C${x - w} ${80 - h * 0.45} ${x - w * 0.2} ${80 - h * 0.6} ${x} ${80 - h}C${x + w * 0.2} ${80 - h * 0.6} ${x + w} ${80 - h * 0.45} ${x + w} 80Z`
 
-function ProjectRadarVisual({ visual }: { visual: Extract<Project['visual'], { kind: 'radar' }> }) {
+// Wheel of the R4, centred on the origin so it can spin in place.
+function RsWheel({ x }: { x: number }) {
+  return (
+    <g transform={`translate(${x} 83)`}>
+      <g className={styles.rsWheel}>
+        <circle r="17.3" fill="#10131d" />
+        <circle r="12.4" fill="#1f2436" stroke="#e8352d" strokeWidth="2.8" />
+        <circle r="5.2" fill="#2b3149" />
+        {[0, 90, 180, 270].map((a) => (
+          <rect key={a} x="-1" y="-9.6" width="2" height="3" rx="0.6" fill="#e4ff1a" transform={`rotate(${a})`} />
+        ))}
+      </g>
+    </g>
+  )
+}
+
+// Minimal side view of the Vision 4Rescue R4, facing right, on a 180×100
+// board whose bottom edge is the road : short and tall, big wheels with
+// tight overhangs, red body with the fluo yellow livery, flared black
+// arches, and the drone roof box whose nose slides forward on its rails to
+// open the launch bay.
+function RsCar({ id }: { id: string }) {
+  return (
+    <svg className={styles.rsCarSvg} viewBox="0 0 180 100" aria-hidden>
+      <defs>
+        <linearGradient id={`${id}-body`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ec3a2e" />
+          <stop offset="1" stopColor="#a8141c" />
+        </linearGradient>
+        <linearGradient id={`${id}-beam`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#fff6c8" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#fff6c8" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path className={styles.rsBeam} d="M174 63L234 54L234 80Z" fill={`url(#${id}-beam)`} />
+      {/* Launch bay rails, uncovered as the nose slides away. */}
+      <rect x="85.5" y="12.4" width="30" height="3.4" rx="1" fill="#8b93a8" />
+      <rect className={styles.rsPad} x="90" y="9.8" width="16" height="2.6" rx="1.3" />
+      <path d="M42 18L37.5 10Q37.5 1 45 1L88.5 0.5V18Z" fill={`url(#${id}-body)`} />
+      <path d="M60 9L63 2.4H65.6L62.6 9ZM66 9L69 2.2H71.6L68.6 9ZM72 9L75 2H77.6L74.6 9ZM78 9L81 1.8H83.6L80.6 9Z" fill="#e4ff1a" />
+      <g className={styles.rsNose}>
+        <path d="M88.5 0.5L100.5 1.5Q112.5 4 116 9.6Q112.5 16.4 102 18H88.5Z" fill="#c41f24" />
+        <path d="M109.5 6.2L116 9.6L109.5 13Z" fill="#e4ff1a" />
+      </g>
+      <rect x="34.5" y="18.2" width="67.5" height="3.8" rx="1.2" fill="#1a1f30" />
+      <rect className={styles.rsBeacon} x="64" y="16.4" width="12" height="2.4" rx="1" />
+      <path d="M6 88L6.8 40Q7.5 26 13.5 24L97.5 23Q102 23 105 27L120 41Q147 44 160.5 50Q171 53 172.5 58L175.5 66V84Q175.5 88 172.5 88Z" fill={`url(#${id}-body)`} />
+      <path d="M39 27L96 26.4Q99.8 26.4 102.8 30L115.5 44H39Z" fill="#17203f" stroke="#e4ff1a" strokeWidth="1.6" strokeLinejoin="round" />
+      <rect x="48" y="27" width="2.2" height="17" fill="#10162c" />
+      <rect x="71.2" y="26.6" width="4" height="17.4" fill="#10162c" />
+      {/* "112" hazard block on the rear pillar. */}
+      <path d="M23.2 27.4H36L36.8 44H22.5Z" fill="#e4ff1a" />
+      <path d="M23.2 40L28.5 27.4H31L25.2 41ZM28.5 44L34.5 32.6L35.2 36.8L31.2 44Z" fill="#141826" />
+      <path d="M38.2 46V80M73.5 46V80M117.8 46V72" stroke="#8a1218" strokeWidth="1" />
+      <rect x="51" y="51" width="6" height="1.8" rx="0.9" fill="#8a1218" />
+      <rect x="85.5" y="51" width="6" height="1.8" rx="0.9" fill="#8a1218" />
+      {/* SAPEURS POMPIERS lettering and RESCUE chevrons. */}
+      <rect x="55.5" y="62" width="30" height="2.2" rx="1.1" fill="#e4ff1a" />
+      <path d="M88.5 80H93L103.5 52H99ZM96 80H99.8L110.2 52H106.5ZM102.8 80H105.8L116.2 52H113.2Z" fill="#e4ff1a" />
+      <path d="M109.5 41Q111 36 115.5 38L117 44H111Z" fill="#141826" />
+      {/* Hazard chevrons over the headlight. */}
+      <path d="M150 48.4L173 57V62.6L150 54Z" fill="#e4ff1a" />
+      <path d="M155 50.4L158 56.4L160 57L157 51ZM162 53L165 59L167 59.6L164 53.6ZM168.6 55.6L171 60.4L172.6 61L170.6 56.4Z" fill="#141826" />
+      <rect className={styles.rsLamp} x="167" y="62" width="7" height="6" rx="3" />
+      <path d="M6 70H12V88H6Z" fill="#1d2133" />
+      <path d="M164 68H175.5V84Q175.5 88 172.5 88H164Z" fill="#1d2133" />
+      <rect x="162" y="84" width="13.5" height="2.6" rx="1" fill="#e4ff1a" />
+      <rect x="10" y="79" width="158" height="9" rx="2" fill="#1d2133" />
+      <path d="M7 88A22 22 0 0 1 51 88Z" fill="#1d2133" />
+      <path d="M116 88A22 22 0 0 1 160 88Z" fill="#1d2133" />
+      <RsWheel x={29} />
+      <RsWheel x={138} />
+    </svg>
+  )
+}
+
+// Quadcopter seen from the side, rotors blurred by their spin.
+function RsDroneShape() {
+  return (
+    <svg className={styles.rsDroneSvg} viewBox="0 0 32 14" aria-hidden>
+      <ellipse className={styles.rsRotor} cx="5" cy="3" rx="5" ry="1" />
+      <ellipse className={styles.rsRotor} cx="27" cy="3" rx="5" ry="1" />
+      <path d="M4 3.6V6M28 3.6V6M4 6H28" stroke="#c9d3ea" strokeWidth="1.2" strokeLinecap="round" />
+      <rect x="10" y="4.6" width="12" height="5.4" rx="2.4" fill="#1a2036" stroke="#c9d3ea" strokeWidth="0.8" />
+      <rect x="12" y="6.4" width="8" height="1.4" rx="0.7" fill="#e4ff1a" />
+      <circle cx="16" cy="11.6" r="1.6" fill="#c9d3ea" />
+      <circle cx="3" cy="6.4" r="0.9" fill="#ff5a5f" />
+      <circle cx="29" cy="6.4" r="0.9" fill="#4ade80" />
+    </svg>
+  )
+}
+
+function ProjectRescueVisual({ visual }: { visual: Extract<Project['visual'], { kind: 'rescue' }> }) {
   const locale = useLocale()
   const tr = useTranslation()
+  const drones = visual.drones.slice(0, RS_DRONES.length)
+  const feedDrone = drones[1] ?? drones[0]
+  // Gradient ids must stay unique in the page.
+  const id = useId()
   return (
     <div
-      className={`${styles.visual} ${styles.vr}`}
+      className={`${styles.visual} ${styles.rs}`}
       role="img"
       aria-label={
         locale === 'en'
-          ? `Tactical map under a radar sweep: ${visual.drones.length} drones (${visual.drones.join(', ')}) patrol the area and stream their data to the ${visual.command} node.`
-          : `Carte tactique sous balayage radar : ${visual.drones.length} drones (${visual.drones.join(', ')}) patrouillent la zone et remontent leurs données au nœud ${visual.command}.`
+          ? `A Vision 4Rescue Renault 4 drives up to a forest fire and opens its roof box: ${drones.length} drones (${drones.join(', ')}) take off, map the fire front and stream a thermal feed back to the vehicle, then land back in the box.`
+          : `Une Renault 4 Vision 4Rescue arrive près d’un feu de forêt et ouvre son coffre de toit : ${drones.length} drones (${drones.join(', ')}) décollent, cartographient le front de feu et renvoient un flux thermique au véhicule, puis se reposent dans le coffre.`
       }
     >
-      <svg className={styles.vrMap} viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" aria-hidden>
-        <path className={styles.vrGrid} d="M40 0v200M80 0v200M120 0v200M160 0v200M200 0v200M240 0v200M280 0v200M320 0v200M360 0v200M0 40h400M0 80h400M0 120h400M0 160h400" />
-        <g className={styles.vrContour}>
-          <path d="M40 150c10-26 52-30 70-12s4 40-24 40-54-8-46-28z" />
-          <path d="M26 152c10-40 76-46 100-18s6 58-38 58-78-10-62-40z" />
-          <path d="M300 40c8-18 44-20 52-2s-10 30-30 28-28-10-22-26z" />
-          <path d="M286 42c10-30 70-32 82-4s-16 46-48 42-46-14-34-38z" />
-        </g>
-        <path className={styles.vrRiver} d="M-5 70C50 60 90 92 150 84S250 40 300 120s70 70 105 72" />
+      <svg className={styles.rsHills} viewBox="0 0 400 200" preserveAspectRatio="xMidYMax slice" aria-hidden>
+        <path d="M0 168C40 150 80 156 120 146S200 128 250 140 340 126 400 136V200H0Z" fill="#121c40" />
+        <path d="M0 178C60 166 110 172 170 162S290 160 400 152V200H0Z" fill="#0f1836" />
       </svg>
-      <span className={styles.vrRings} />
-      <span className={styles.vrSweep} />
-      {[0, 1, 2].map((i) => (
-        <span key={i} className={styles.vrPulse} style={{ animationDelay: `${i}s` }} />
-      ))}
-      {visual.drones.map((drone, i) => {
-        const o = VR_ORBITS[i % VR_ORBITS.length]
+      <span className={styles.rsGround} />
+      <div className={styles.rsFire}>
+        <svg viewBox="0 0 200 80" preserveAspectRatio="xMidYMax meet" aria-hidden>
+          <defs>
+            <radialGradient id={`${id}-glow`} cx="0.5" cy="1" r="0.6">
+              <stop offset="0" stopColor="#ff7a1f" stopOpacity="0.55" />
+              <stop offset="1" stopColor="#ff7a1f" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <ellipse cx="100" cy="80" rx="110" ry="60" fill={`url(#${id}-glow)`} className={styles.rsGlow} />
+          {[48, 86, 120, 152].map((x, i) => (
+            <circle key={x} className={styles.rsSmoke} cx={x} cy="40" r="7" style={{ animationDelay: `${(i * 0.7).toFixed(1)}s` }} />
+          ))}
+          {RS_PINES_BACK.map(([x, h]) => (
+            <path key={x} d={rsPine(x, h)} fill="#1a2550" />
+          ))}
+          {RS_FLAMES.map(([x, h, period], i) => (
+            <g key={x} className={styles.rsFlame} style={{ animationDuration: `${period}s`, animationDelay: `${(-i * 0.37).toFixed(2)}s` }}>
+              <path d={rsFlame(x, h, h * 0.32)} fill="#ff5a1f" />
+              <path d={rsFlame(x, h * 0.6, h * 0.18)} fill="#ffc83d" />
+            </g>
+          ))}
+          {RS_PINES_FRONT.map(([x, h]) => (
+            <path key={x} d={rsPine(x, h)} fill="#0c1430" />
+          ))}
+          <path
+            className={styles.rsPerimeter}
+            pathLength={100}
+            d="M30 80C26 62 42 50 56 50C64 38 80 34 92 36C104 28 122 32 132 38C148 36 168 46 170 60C174 70 172 78 170 80"
+          />
+        </svg>
+      </div>
+      <span className={styles.rsZone}>{visual.zone}</span>
+      <div className={styles.rsCar}>
+        <RsCar id={id} />
+      </div>
+      {drones.map((drone, i) => {
+        const d = RS_DRONES[i]
         return (
           <span
             key={drone}
-            className={styles.vrDrone}
-            style={
-              {
-                '--a0': `${o.a}deg`,
-                '--rx': `${o.rx}cqw`,
-                '--ry': `${o.ry}cqh`,
-                animationDuration: `${o.lap}s, ${o.breathe}s`,
-                animationDirection: `${o.dir}, alternate`,
-              } as CSSProperties
-            }
+            className={styles.rsDrone}
+            style={{ '--l': d.launch, '--r': d.back, '--tx': `${d.x}cqw`, '--tb': `${d.b}cqh` } as CSSProperties}
           >
-            <span className={styles.vrLink}>
-              <span className={styles.vrPacket} style={{ animationDelay: `${(i * 0.45).toFixed(2)}s` }} />
-              <span className={`${styles.vrPacket} ${styles.vrOrder}`} style={{ animationDelay: `${(1.1 + i * 0.45).toFixed(2)}s` }} />
+            <span className={styles.rsScan} />
+            <span className={styles.rsLink}>
+              <span className={styles.rsPacket} style={{ animationDelay: `${(i * 0.4).toFixed(1)}s` }} />
+              <span className={`${styles.rsPacket} ${styles.rsOrder}`} style={{ animationDelay: `${(1.1 + i * 0.4).toFixed(1)}s` }} />
             </span>
-            <span className={styles.vrBlip}>
-              <span className={styles.vrBlipLabel}>{drone}</span>
+            <span className={styles.rsDroneBody}>
+              <RsDroneShape />
             </span>
+            <span className={styles.rsDroneLabel}>{drone}</span>
           </span>
         )
       })}
-      <span className={styles.vrCommand}>
-        <span className={styles.vrCommandLabel}>{visual.command}</span>
-      </span>
-      <span className={styles.vrHud}>
+      <span className={styles.rsHud}>
         <span className={styles.pulse} />
-        {tr('Liaison active')} · {visual.drones.length}/{visual.drones.length}
+        {tr('Liaison active')} · {drones.length}/{drones.length}
+      </span>
+      <span className={styles.rsFeed}>
+        <span className={styles.rsFeedImg} />
+        <span className={styles.rsFeedRec}>REC</span>
+        <span className={styles.rsFeedLabel}>
+          {feedDrone} · {visual.feed}
+        </span>
       </span>
     </div>
   )
@@ -953,13 +1090,15 @@ function ProjectDjiseVisual({ visual }: { visual: Extract<Project['visual'], { k
 }
 
 // Timeline, in seconds of a 9s cycle (keep in sync with the at styles) :
-// 0.3 the island's coastline draws itself · 1.2 the pin drops onto it and
-// lands with a ripple · 1.9 the lead pops in above and links down to the pin
-// · 2.6 the bus spreads out under the pin, members pop in from the centre
-// outwards, each one hooking onto it · 4.6 and 6.2 a packet runs from the
-// lead through the pin down to every member · 8.3 everything fades out.
-// Rough outline of the Île d'Oléron (north-west tip to south-east tip, east
-// coast first), smoothed into a closed Catmull-Rom curve on a 400×200 board.
+// 0.3 the GTA-style minimap opens on an overview of the island, its coastline
+// drawing itself · 1 roads, viaduct, health and armour bars fill in · 1.3 the
+// blips pop up · 1.5 the waypoint drops and the GPS route lights up · 2.2 the
+// minimap zooms in on the player · 2.8 the player drives over the viaduct to
+// the waypoint, the street name following along, the route eaten up as it
+// goes · on arrival the waypoint clears with a ripple · 8.3 everything fades.
+// World : a 400×200 board, rough outline of the Île d'Oléron (north-west tip
+// to south-east tip, east coast first) smoothed into a closed Catmull-Rom
+// curve, the mainland on the right.
 const AT_COAST: [number, number][] = [
   [140, 18], [156, 26], [170, 46], [186, 66], [210, 84], [232, 104], [254, 124], [272, 146], [276, 168], [262, 184],
   [244, 176], [226, 156], [204, 136], [180, 118], [162, 96], [148, 70], [136, 44],
@@ -974,12 +1113,60 @@ const atCurve = (pts: [number, number][]) =>
     })
     .join('') + 'Z'
 const AT_ISLAND = atCurve(AT_COAST)
-// Org chart : lead, pin (the point it marks), bus, member row.
-const AT_LEAD = [200, 32]
-const AT_PIN = [200, 104]
-const AT_BUS = 130
-const AT_ROW = 158
-const AT_GAP = 64
+const AT_MAINLAND_COAST = 'M346 -5C334 30 352 58 340 86S356 140 344 205'
+const AT_ROADS = [
+  'M258 170L236 140L215 112L196 96L176 74L156 44L142 26',
+  'M196 96L166 104',
+  'M215 112L204 132',
+  'M370 -10L352 92L366 210',
+]
+// The drive : mainland, over the viaduct (P1 → P2), then up the island to the
+// waypoint, at a constant speed so the GPS route shrinks in step.
+const AT_ROUTE: [number, number][] = [[352, 92], [342, 106], [243, 116], [215, 112], [196, 96], [176, 74]]
+const AT_DRIVE = 2.8
+const AT_SPEED = 46
+const atRamp = (t0: number, d: number) => `clamp(0, (var(--at-t) - ${t0.toFixed(2)}) / ${d.toFixed(2)}, 1)`
+const AT_LEGS = (() => {
+  let t = AT_DRIVE
+  return AT_ROUTE.slice(1).map((p, i) => {
+    const [dx, dy] = [p[0] - AT_ROUTE[i][0], p[1] - AT_ROUTE[i][1]]
+    const dur = Math.hypot(dx, dy) / AT_SPEED
+    const leg = { dx, dy, start: t, dur, hd: (Math.atan2(dx, -dy) * 180) / Math.PI }
+    t += dur
+    return leg
+  })
+})()
+const AT_ARRIVE = AT_DRIVE + AT_LEGS.reduce((s, l) => s + l.dur, 0)
+// Player position (--rx, --ry), heading (--rh, turning over a quarter second
+// at each corner) and route progress (--rp), all derived from the clock.
+const AT_DRIVE_VARS = {
+  '--rx': `calc(${AT_ROUTE[0][0]} + ${AT_LEGS.map((l) => `${l.dx} * ${atRamp(l.start, l.dur)}`).join(' + ')})`,
+  '--ry': `calc(${AT_ROUTE[0][1]} + ${AT_LEGS.map((l) => `${l.dy} * ${atRamp(l.start, l.dur)}`).join(' + ')})`,
+  '--rh': `calc(${AT_LEGS[0].hd.toFixed(1)}${AT_LEGS.slice(1)
+    .map((l, i) => ` + ${(((l.hd - AT_LEGS[i].hd + 540) % 360) - 180).toFixed(1)} * ${atRamp(l.start - 0.12, 0.24)}`)
+    .join('')})`,
+  '--rp': atRamp(AT_DRIVE, AT_ARRIVE - AT_DRIVE),
+  '--arrive': AT_ARRIVE.toFixed(2),
+} as CSSProperties
+// Street name shown beside the minimap, switching as the player crosses over.
+const AT_STREETS = [
+  { name: 'Bourcefranc-le-Chapus', zone: 'Charente-Maritime', from: 2.4, to: AT_LEGS[1].start },
+  { name: 'Viaduc d’Oléron', zone: 'Charente-Maritime', from: AT_LEGS[1].start, to: AT_LEGS[2].start },
+  { name: 'Saint-Pierre-d’Oléron', zone: 'Île d’Oléron', from: AT_LEGS[2].start, to: 9 },
+]
+const AT_BLIPS = [
+  { kind: 'police', x: 222, y: 128, d: 1.3 },
+  { kind: 'hospital', x: 205, y: 86, d: 1.42 },
+  { kind: 'garage', x: 172, y: 98, d: 1.54 },
+  { kind: 'bank', x: 362, y: 140, d: 1.66 },
+] as const
+
+function AtBlipGlyph({ kind }: { kind: (typeof AT_BLIPS)[number]['kind'] }) {
+  if (kind === 'police') return <path d="M0 -4l1.2 2.5 2.7.3-2 1.9.5 2.7L0 2.1l-2.4 1.3.5-2.7-2-1.9 2.7-.3z" />
+  if (kind === 'hospital') return <path d="M-1.2 -4h2.4v2.8h2.8v2.4h-2.8v2.8h-2.4v-2.8h-2.8v-2.4h2.8z" />
+  if (kind === 'garage') return <path className={styles.atBlipStroke} d="M-3 3L1 -1M1.2 -3.6a2.2 2.2 0 1 0 2.4 2.4" />
+  return <text className={styles.atBlipText}>$</text>
+}
 
 function AtPerson() {
   return (
@@ -990,96 +1177,240 @@ function AtPerson() {
   )
 }
 
-function ProjectRpTeamVisual({ visual }: { visual: Extract<Project['visual'], { kind: 'rpTeam' }> }) {
+function ProjectRpMinimapVisual({ visual }: { visual: Extract<Project['visual'], { kind: 'rpMinimap' }> }) {
   const locale = useLocale()
+  const clip = useId()
   const n = Math.max(1, Math.min(6, visual.team))
-  const [lx, ly] = AT_LEAD
-  const [px, py] = AT_PIN
-  const members = Array.from({ length: n }, (_, i) => {
-    const off = i - (n - 1) / 2
-    // Packets leave at 4.6 and 6.2 (staggered outwards) and take 1.1s to land.
-    const lag = Math.abs(off) * 0.08 + 1.1
-    return { x: px + off * AT_GAP, d: 3 + Math.abs(off) * 0.22, h1: 4.6 + lag, h2: 6.2 + lag }
-  })
-  const spread = ((n - 1) / 2) * AT_GAP
+  const [wx, wy] = AT_ROUTE[AT_ROUTE.length - 1]
+  const words = visual.server.split(' ')
   return (
     <div
       className={`${styles.visual} ${styles.at}`}
       role="img"
       aria-label={
         locale === 'en'
-          ? `Map centred on ${visual.place}: a pin drops on the island, then a team of ${n} developers gathers around it and links up into an org chart under the ${visual.lead}.`
-          : `Carte centrée sur ${visual.place} : un pin se pose sur l’île, puis une équipe de ${n} développeurs se rassemble autour et se connecte en organigramme sous le ${visual.lead}.`
+          ? `GTA-style minimap of the ${visual.server} server (${visual.place}): a waypoint is set, the GPS route lights up and the player drives over the Oléron viaduct to it, next to a HUD showing the ${visual.lead} and a team of ${n} developers.`
+          : `Minimap façon GTA du serveur ${visual.server} (${visual.place}) : un waypoint est posé, l’itinéraire GPS s’allume et le joueur traverse le viaduc d’Oléron pour le rejoindre, à côté d’un HUD montrant le ${visual.lead} et une équipe de ${n} développeurs.`
       }
     >
-      <svg className={styles.atMap} viewBox="0 0 400 200" aria-hidden>
-        <g className={styles.atSea}>
-          <path d="M18 150q10-5 20 0t20 0M300 40q10-5 20 0t20 0M52 74q10-5 20 0t20 0M318 176q10-5 20 0t20 0" />
-        </g>
-        <path className={styles.atMainland} d="M346 -5C334 30 352 58 340 86S356 140 344 205" />
-        <path className={styles.atBridge} d="M243 116L342 106" />
-        <path className={styles.atIslandFill} d={AT_ISLAND} />
-        <path className={styles.atCoast} d={AT_ISLAND} pathLength={1} />
-        <path className={styles.atLine} d={`M${lx} ${ly + 15}V${py - 31}`} pathLength={1} style={{ '--d': 2.2 } as CSSProperties} />
-        <path className={styles.atLine} d={`M${px} ${py}V${AT_BUS}`} pathLength={1} style={{ '--d': 2.5 } as CSSProperties} />
-        {n > 1 && (
-          <>
-            <path className={styles.atLine} d={`M${px} ${AT_BUS}h${-spread}`} pathLength={1} style={{ '--d': 2.7, '--len': 0.25 + spread / 400 } as CSSProperties} />
-            <path className={styles.atLine} d={`M${px} ${AT_BUS}h${spread}`} pathLength={1} style={{ '--d': 2.7, '--len': 0.25 + spread / 400 } as CSSProperties} />
-          </>
-        )}
-        {members.map((m, i) => (
-          <path key={i} className={styles.atLine} d={`M${m.x} ${AT_BUS}V${AT_ROW - 13}`} pathLength={1} style={{ '--d': m.d - 0.1, '--len': 0.15 } as CSSProperties} />
-        ))}
-        {members.map((m, i) =>
-          [4.6, 6.2].map((run) => (
-            <path
-              key={`${i}-${run}`}
-              className={styles.atPacket}
-              d={`M${lx} ${ly + 15}V${AT_BUS}H${m.x}V${AT_ROW - 13}`}
-              pathLength={1}
-              style={{ '--d': run + Math.abs(i - (n - 1) / 2) * 0.08 } as CSSProperties}
-            />
-          )),
-        )}
-        <g transform={`translate(${px} ${py})`}>
-          <ellipse className={styles.atRipple} rx="16" ry="5" />
-          <ellipse className={styles.atRipple} rx="16" ry="5" style={{ '--d': 5.1 } as CSSProperties} />
-          <ellipse className={styles.atRipple} rx="16" ry="5" style={{ '--d': 6.7 } as CSSProperties} />
-          <ellipse className={styles.atShadow} rx="6" ry="2" />
-          <g className={styles.atPin}>
-            <path className={styles.atPinBody} d="M0 0C-4 -7 -11 -11 -11 -18.5a11 11 0 0 1 22 0C11 -11 4 -7 0 0Z" />
-            <circle className={styles.atPinDot} cy="-18.5" r="4.2" />
+      <svg className={styles.atHud} viewBox="0 0 400 200" style={AT_DRIVE_VARS} aria-hidden>
+        <defs>
+          <clipPath id={clip}>
+            <rect x="18" y="22" width="196" height="134" rx="9" />
+          </clipPath>
+        </defs>
+        <rect className={styles.atFrame} x="18" y="22" width="196" height="134" rx="9" />
+        <g clipPath={`url(#${clip})`}>
+          <g className={styles.atWorld}>
+            <g className={styles.atSea}>
+              <path d="M60 150q10-5 20 0t20 0M300 30q10-5 20 0t20 0M90 70q10-5 20 0t20 0M290 180q10-5 20 0t20 0M250 60q10-5 20 0t20 0" />
+            </g>
+            <path className={styles.atLand} d={`${AT_MAINLAND_COAST}L460 205L460 -5Z`} />
+            <path className={styles.atLand} d={AT_ISLAND} />
+            <path className={styles.atCoast} d={AT_MAINLAND_COAST} pathLength={1} />
+            <path className={styles.atCoast} d={AT_ISLAND} pathLength={1} />
+            {AT_ROADS.map((d) => (
+              <path key={d} className={styles.atRoad} d={d} />
+            ))}
+            <path className={`${styles.atRoad} ${styles.atBridge}`} d={`M${AT_ROUTE[1].join(' ')}L${AT_ROUTE[2].join(' ')}`} />
+            <path className={styles.atRoute} d={`M${AT_ROUTE.map((p) => p.join(' ')).join('L')}`} pathLength={1} />
+            {AT_BLIPS.map((b) => (
+              <g key={b.kind} transform={`translate(${b.x} ${b.y})`}>
+                <g className={`${styles.atBlip} ${styles[`atBlip_${b.kind}`]}`} style={{ '--d': b.d } as CSSProperties}>
+                  <circle r="6" />
+                  <AtBlipGlyph kind={b.kind} />
+                </g>
+              </g>
+            ))}
+            <g transform={`translate(${wx} ${wy})`}>
+              <g className={styles.atUnscale}>
+                <ellipse className={styles.atRipple} rx="12" ry="4" />
+                <ellipse className={styles.atRipple} rx="12" ry="4" style={{ '--d': AT_ARRIVE } as CSSProperties} />
+                <g className={styles.atWaypoint}>
+                  <ellipse className={styles.atShadow} rx="4.5" ry="1.5" />
+                  <g className={styles.atPin}>
+                    <path className={styles.atPinBody} d="M0 0C-3 -5 -8 -8 -8 -13.5a8 8 0 0 1 16 0C8 -8 3 -5 0 0Z" />
+                    <circle className={styles.atPinDot} cy="-13.5" r="3" />
+                  </g>
+                </g>
+              </g>
+            </g>
+            <g className={styles.atPlayer}>
+              <path d="M0 -7L5.2 6L0 3.2L-5.2 6Z" />
+            </g>
           </g>
-          <text className={styles.atPlace} x="15" y="-19">
-            {visual.place}
-          </text>
         </g>
-        <g transform={`translate(${lx} ${ly})`}>
-          <g className={`${styles.atNode} ${styles.atLead}`} style={{ '--d': 1.9 } as CSSProperties}>
-            <circle className={styles.atRing} r="22" />
-            <circle className={styles.atBadge} r="15" />
-            <g className={styles.atIcon}>
+        <rect className={styles.atRim} x="18" y="22" width="196" height="134" rx="9" />
+        <g className={styles.atBar} style={{ '--d': 1 } as CSSProperties}>
+          <rect className={styles.atBarBack} x="18" y="162" width="96" height="5" rx="1" />
+          <rect className={`${styles.atBarFill} ${styles.atHealth}`} x="18" y="162" width="96" height="5" rx="1" />
+        </g>
+        <g className={styles.atBar} style={{ '--d': 1.2 } as CSSProperties}>
+          <rect className={styles.atBarBack} x="118" y="162" width="96" height="5" rx="1" />
+          <rect className={`${styles.atBarFill} ${styles.atArmour}`} x="118" y="162" width="96" height="5" rx="1" />
+        </g>
+
+        <text className={`${styles.atText} ${styles.atTitle}`} x="230" y="44" style={{ '--d': 0.4 } as CSSProperties}>
+          {words.length > 1 ? (
+            <>
+              {words.slice(0, -1).join(' ')} <tspan className={styles.atTitleTag}>{words.at(-1)}</tspan>
+            </>
+          ) : (
+            visual.server
+          )}
+        </text>
+        <text className={`${styles.atText} ${styles.atSub}`} x="231" y="59" style={{ '--d': 0.6 } as CSSProperties}>
+          FIVEM · GTA V RP
+        </text>
+        <g transform="translate(240 84)">
+          <g className={`${styles.atNode} ${styles.atLead}`} style={{ '--d': 1 } as CSSProperties}>
+            <circle className={styles.atBadge} r="10" />
+            <g className={styles.atIcon} transform="scale(0.7)">
               <AtPerson />
             </g>
-            <path className={styles.atStar} d="M11 -15l1.6 3.3 3.6.5-2.6 2.5.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.5 3.6-.5z" />
+            <path className={styles.atStar} d="M7.5 -11l1.3 2.6 2.9.4-2.1 2 .5 2.9-2.6-1.4-2.6 1.4.5-2.9-2.1-2 2.9-.4z" />
           </g>
-          <text className={`${styles.atLabel} ${styles.atLeadLabel}`} x="24" y="0" style={{ '--d': 2.1 } as CSSProperties}>
-            {visual.lead}
-          </text>
         </g>
-        {members.map((m, i) => (
-          <g key={i} transform={`translate(${m.x} ${AT_ROW})`}>
-            <g className={styles.atNode} style={{ '--d': m.d, '--h1': m.h1, '--h2': m.h2 } as CSSProperties}>
-              <circle className={styles.atRing} r="18" />
-              <circle className={styles.atBadge} r="12" />
-              <g className={styles.atIcon}>
+        <text className={`${styles.atText} ${styles.atLeadLabel}`} x="257" y="84" style={{ '--d': 1.15 } as CSSProperties}>
+          {visual.lead}
+        </text>
+        {Array.from({ length: n }, (_, i) => (
+          <g key={i} transform={`translate(${238 + i * 19} 112)`}>
+            <g className={styles.atNode} style={{ '--d': 1.3 + i * 0.12 } as CSSProperties}>
+              <circle className={styles.atBadge} r="8" />
+              <g className={styles.atIcon} transform="scale(0.55)">
                 <AtPerson />
               </g>
             </g>
           </g>
         ))}
+        <text className={`${styles.atText} ${styles.atTeam}`} x={238 + n * 19 - 5} y="112" style={{ '--d': 1.3 + n * 0.12 } as CSSProperties}>
+          {n} devs
+        </text>
+        {AT_STREETS.map((s) => (
+          <g key={s.name} className={styles.atStreet} style={{ '--from': s.from, '--to': s.to } as CSSProperties}>
+            <text className={`${styles.atText} ${styles.atStreetName}`} x="230" y="142">
+              {s.name}
+            </text>
+            <text className={`${styles.atText} ${styles.atSub}`} x="231" y="156">
+              {s.zone.toUpperCase()}
+            </text>
+          </g>
+        ))}
       </svg>
+    </div>
+  )
+}
+
+
+// Timeline, in seconds of an 11s cycle (keep in sync with the lp styles) :
+// 0.3 the KPI card opens, the curve drawing itself down into a dip · 1.5 the
+// agent lands on the dip and reads the data · 2.6 it states its diagnosis ·
+// 3.4 it moves over to the code and opens the PR · 4.3 it types the fix ·
+// 5.8 it runs the checks, passing one by one · 7.3 a Merge button shows up,
+// the agent's cursor clicks it · 8.2 the PR is merged, the curve climbs back
+// and the KPI swaps to its new value · 10.2 everything fades.
+// Curve : the past (left 65 % of the chart) ends on the dip, the rebound
+// (right 35 %) starts from it.
+const LP_PAST = 'M0 22C14 18 22 28 36 24S58 16 72 28S100 70 130 74'
+const LP_NEXT = 'M0 74C14 74 22 60 34 46S56 20 70 18'
+
+export function ProjectLevelPilotVisual({ visual }: { visual: Extract<Project['visual'], { kind: 'levelPilot' }> }) {
+  const locale = useLocale()
+  const tr = useTranslation()
+  // What the agent is doing, shown next to its avatar ; the insight is its
+  // diagnosis, said while it still sits on the dip.
+  const statuses = [
+    { text: tr('Analyse les données'), busy: true },
+    { text: visual.insight, busy: false },
+    { text: tr('Écrit le correctif'), busy: true },
+    { text: tr('Lance les tests'), busy: true },
+    { text: tr('Merge la PR'), busy: true },
+  ]
+  return (
+    <div
+      className={`${styles.visual} ${styles.lp}`}
+      role="img"
+      aria-label={
+        locale === 'en'
+          ? `Illustrative scenario, not measured results. ${visual.kpi} drops to ${visual.before}. The AI agent analyses the data and finds the cause (${visual.insight}), then writes the fix itself in pull request #${visual.pr.id} (${visual.pr.file}), runs the ${visual.checks.join(', ')} checks and, once they pass, merges it: ${visual.kpi} climbs back to ${visual.after} (${visual.delta}).`
+          : `Scénario illustratif, sans résultats mesurés. ${visual.kpi} en baisse à ${visual.before}. L’agent IA analyse les données et trouve la cause (${visual.insight}), puis écrit lui-même le correctif dans la pull request #${visual.pr.id} (${visual.pr.file}), lance les vérifications ${visual.checks.join(', ')} et, une fois validées, la merge : ${visual.kpi} remonte à ${visual.after} (${visual.delta}).`
+      }
+    >
+      <div className={styles.lpKpi} aria-hidden>
+        <div className={styles.lpKpiHead}>
+          <span className={styles.lpKpiLabel}>{visual.kpi}</span>
+          <span className={styles.lpKpiValue}>
+            <span className={styles.lpBefore}>{visual.before}</span>
+            <span className={styles.lpAfter}>{visual.after}</span>
+          </span>
+          <span className={styles.lpDelta}>↑ {visual.delta}</span>
+        </div>
+        <div className={styles.lpChart}>
+          <svg className={styles.lpPast} viewBox="0 0 130 100" preserveAspectRatio="none">
+            <path className={styles.lpArea} d={`${LP_PAST}L130 100L0 100Z`} />
+            <path className={styles.lpLine} d={LP_PAST} />
+          </svg>
+          <svg className={styles.lpNext} viewBox="0 0 70 100" preserveAspectRatio="none">
+            <path className={styles.lpArea} d={`${LP_NEXT}L70 100L0 100Z`} />
+            <path className={styles.lpLine} d={LP_NEXT} />
+          </svg>
+          <span className={styles.lpDip} />
+        </div>
+      </div>
+      <div className={styles.lpPr} aria-hidden>
+        <div className={styles.lpPrHead}>
+          <svg className={styles.lpPrIcon} viewBox="0 0 16 16">
+            <circle cx="4" cy="3.5" r="1.8" />
+            <circle cx="4" cy="12.5" r="1.8" />
+            <circle cx="12" cy="12.5" r="1.8" />
+            <path d="M4 5.3v5.4M12 10.7V8a3 3 0 0 0-3-3H6.5" />
+          </svg>
+          <span className={styles.lpPrId}>PR #{visual.pr.id}</span>
+          <span className={styles.lpPrState}>
+            <span className={styles.lpReview}>{tr('En revue')}</span>
+            <span className={styles.lpMergeBtn}>Merge</span>
+            <span className={styles.lpMerged}>{tr('Mergée')}</span>
+            <svg className={styles.lpCursor} viewBox="0 0 12 16">
+              <path d="M1 1v12.5l3.3-3.1 2.2 4.9 2.2-1-2.2-4.8H11z" />
+            </svg>
+          </span>
+        </div>
+        <span className={styles.lpPrTitle}>{visual.fix}</span>
+        <span className={styles.lpPrFile}>{visual.pr.file}</span>
+        <span className={styles.lpDiff}>
+          {visual.pr.diff.map((line, i) => (
+            <span key={i} className={i ? styles.lpAdd : styles.lpDel}>
+              <span className={styles.lpType} style={{ '--n': line.length, '--i': i } as CSSProperties}>
+                {line}
+              </span>
+            </span>
+          ))}
+        </span>
+        <ul className={styles.lpChecks}>
+          {visual.checks.map((check, i) => (
+            <li key={check} className={styles.lpCheck} style={{ '--i': i } as CSSProperties}>
+              <span className={styles.lpCheckDot} />
+              {check}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className={styles.lpAgent} aria-hidden>
+        <span className={styles.lpAvatar}>✦</span>
+        {statuses.map((status, i) => (
+          <span key={i} className={`${styles.lpStatus} ${i < 2 ? styles.lpStatusRight : ''}`} style={{ '--i': i } as CSSProperties}>
+            {status.text}
+            {status.busy && (
+              <span className={styles.typing}>
+                <span />
+                <span />
+                <span />
+              </span>
+            )}
+          </span>
+        ))}
+      </div>
     </div>
   )
 }
@@ -1124,39 +1455,80 @@ function ProjectChatVisual({ visual }: { visual: Extract<Project['visual'], { ki
   )
 }
 
+const STATUS_LABELS: Record<ProjectStatus, string> = {
+  live: 'En ligne',
+  dev: 'En développement',
+  production: 'En production',
+  done: 'Terminé',
+  archived: 'Archivé',
+  abandoned: 'Abandonné',
+}
+
+const STATUS_CLASSES: Record<ProjectStatus, string> = {
+  live: styles.statusLive,
+  dev: styles.statusDev,
+  production: styles.statusProduction,
+  done: styles.statusDone,
+  archived: styles.statusArchived,
+  abandoned: styles.statusAbandoned,
+}
+
+function ProjectBadges({ project }: { project: Project }) {
+  const t = useTranslation()
+  return (
+    <div className={styles.pcBadges}>
+      <span className={`${styles.status} ${STATUS_CLASSES[project.status]}`}>
+        <span className={styles.statusDot} aria-hidden="true" />
+        {t(STATUS_LABELS[project.status])}
+      </span>
+      <span className={styles.context}>{project.context}</span>
+    </div>
+  )
+}
+
+const LINK_TEXTS: Record<ProjectLink['kind'], string> = {
+  repo: 'GitHub',
+  site: 'Voir le site',
+  article: 'Lire l’article',
+}
+
+const LINK_ICONS: Record<ProjectLink['kind'], ComponentType> = {
+  repo: GitHubIcon,
+  site: GlobeIcon,
+  article: ArticleIcon,
+}
+
+function ProjectLinks({ links, title }: { links: ProjectLink[]; title: string }) {
+  const t = useTranslation()
+  const locale = useLocale()
+  return (
+    <div className={styles.pcLinks}>
+      {links.map((link) => {
+        const Icon = LINK_ICONS[link.kind]
+        return (
+          <a
+            key={link.href}
+            className={styles.pcLink}
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={link.label ?? `${locale === 'en' ? 'Explore' : 'Découvrir'} ${title}`}
+          >
+            <Icon />
+            {t(LINK_TEXTS[link.kind])}
+            <DiagonalArrowIcon className={styles.pcLinkArrow} />
+          </a>
+        )
+      })}
+    </div>
+  )
+}
+
 export function ProjectCard({ project, armed, motionEnabled }: ProjectCardProps) {
   const locale = useLocale()
+  const caseSlug = project.title === 'Personal RAG' ? 'personal-rag' : project.title === 'LevelPilot' ? 'agents-ia-autonomes' : undefined
   const { onMouseMove, onMouseLeave } = useTilt(motionEnabled)
-
-  if (project.visual.kind === 'placeholder') {
-    return (
-      <Reveal
-        as="article"
-        armed={armed}
-        className={styles.pcard}
-        data-pcard=""
-        style={{ border: '1.5px dashed var(--line)', borderRadius: 32, padding: 'clamp(24px, 3vw, 40px)', display: 'flex', flexDirection: 'column', gap: 20, background: 'transparent' }}
-      >
-        <span style={{ fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--muted)', fontWeight: 600 }}>
-          {project.index} · {project.category}
-        </span>
-        <h3 className={styles.disp} style={{ margin: 0, fontSize: 'clamp(30px, 3.2vw, 44px)', fontWeight: 900, color: 'var(--ink)', letterSpacing: '-0.02em', lineHeight: 1 }}>
-          {project.title}
-        </h3>
-        <div className={styles.visual} style={{ borderRadius: 22, background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--muted)', fontSize: 14 }}>
-          {project.visual.label}
-        </div>
-        <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6, color: 'var(--muted)' }}>{project.description}</p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          {project.stack.map((tech, i) => (
-            <span key={`${tech}-${i}`} className={styles.chip}>
-              {tech}
-            </span>
-          ))}
-        </div>
-      </Reveal>
-    )
-  }
+  const t = useTranslation()
 
   return (
     <Reveal
@@ -1169,25 +1541,22 @@ export function ProjectCard({ project, armed, motionEnabled }: ProjectCardProps)
       style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 32, padding: 'clamp(24px, 3vw, 40px)' }}
     >
       <span className={styles.glare} />
-      <div className={styles.pcHead} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', minHeight: 44 }}>
-        <span style={{ fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--muted)', fontWeight: 600 }}>
-          {project.index} · {project.category}
-        </span>
-        {project.url && (
-          <a
-            href={project.url}
-            aria-label={project.linkLabel ?? `${locale === 'en' ? 'Explore' : 'Découvrir'} ${project.title}`}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, borderRadius: '50%', background: 'var(--surface)', color: 'var(--ink)' }}
-          >
-            <DiagonalArrowIcon />
-          </a>
-        )}
+      <div className={styles.pcHead}>
+        <ProjectBadges project={project} />
       </div>
       <h3 className={`${styles.disp} ${styles.pcTitle}`} style={{ margin: 0, fontSize: 'clamp(30px, 3.2vw, 44px)', fontWeight: 900, color: 'var(--ink)', letterSpacing: '-0.02em', lineHeight: 1 }}>
         {project.title}
       </h3>
       <div className={styles.pcAside}>
         <div className={styles.pcVisual}>
+          {project.visual.kind === 'placeholder' && (
+            <div
+              className={styles.visual}
+              style={{ border: '1px dashed var(--line)', borderRadius: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, textAlign: 'center', color: 'var(--muted)', fontSize: 14 }}
+            >
+              {project.visual.label}
+            </div>
+          )}
           {project.visual.kind === 'flow' && <ProjectFlowVisual steps={project.visual.steps} />}
           {project.visual.kind === 'ragCloud' && <ProjectRagVisual visual={project.visual} />}
           {project.visual.kind === 'chatPreview' && <ProjectChatVisual visual={project.visual} />}
@@ -1195,11 +1564,13 @@ export function ProjectCard({ project, armed, motionEnabled }: ProjectCardProps)
           {project.visual.kind === 'rcLink' && <ProjectRcVisual visual={project.visual} />}
           {project.visual.kind === 'codeSandbox' && <ProjectSandboxVisual visual={project.visual} />}
           {project.visual.kind === 'cohoma' && <ProjectCohomaVisual visual={project.visual} />}
-          {project.visual.kind === 'radar' && <ProjectRadarVisual visual={project.visual} />}
+          {project.visual.kind === 'rescue' && <ProjectRescueVisual visual={project.visual} />}
           {project.visual.kind === 'luma' && <ProjectLumaVisual visual={project.visual} />}
           {project.visual.kind === 'tacticalMesh' && <ProjectTacticalMeshVisual visual={project.visual} />}
           {project.visual.kind === 'djise' && <ProjectDjiseVisual visual={project.visual} />}
-          {project.visual.kind === 'rpTeam' && <ProjectRpTeamVisual visual={project.visual} />}
+          {project.visual.kind === 'rpMinimap' && <ProjectRpMinimapVisual visual={project.visual} />}
+          {project.visual.kind === 'levelPilot' && <ProjectLevelPilotVisual visual={project.visual} />}
+          {['levelPilot', 'faceOff', 'rcLink'].includes(project.visual.kind) && <p style={{ fontSize: 12, lineHeight: 1.5, color: 'var(--muted)', marginTop: 10 }}>{t('Illustration du fonctionnement. Les valeurs affichées sont des exemples.')}</p>}
         </div>
         <div className={styles.pcChips} style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {project.stack.map((tech, i) => (
@@ -1218,6 +1589,8 @@ export function ProjectCard({ project, armed, motionEnabled }: ProjectCardProps)
             ))}
           </ul>
         )}
+        {caseSlug && <div className={styles.pcLinks}><Link className={styles.pcLink} href={`/${locale}/${caseSlug}`}>{locale === 'en' ? `Explore ${project.title}: architecture and demo` : `Découvrir ${project.title} : architecture et démo`}<DiagonalArrowIcon className={styles.pcLinkArrow} /></Link></div>}
+        {project.links && project.links.length > 0 && <ProjectLinks links={project.links} title={project.title} />}
       </div>
     </Reveal>
   )

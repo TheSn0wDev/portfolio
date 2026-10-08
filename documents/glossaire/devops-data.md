@@ -26,11 +26,11 @@ Docker fournit des outils pour créer et exécuter des conteneurs. Un conteneur 
 
 ## Kubernetes
 
-Kubernetes est une plateforme d'orchestration de conteneurs qui organise leur déploiement, leur fonctionnement et leur mise à l'échelle. Kubernetes figure dans les compétences du CV ; aucun projet ni niveau de maîtrise précis n'y est détaillé.
+Kubernetes est une plateforme d'orchestration de conteneurs qui organise leur déploiement, leur fonctionnement et leur mise à l'échelle. Clément utilise Kubernetes chez Thales sur la Combat Digital Platform pour déboguer et tester l’environnement Azure. Aucun niveau de maîtrise chiffré n’est précisé.
 
 ## Cloud, AWS, Azure et GCP
 
-Le cloud fournit des ressources informatiques accessibles à distance, comme du calcul, du stockage et des services gérés. AWS signifie Amazon Web Services ; Azure est la plateforme cloud de Microsoft ; GCP signifie Google Cloud Platform. Ces plateformes figurent dans les compétences du CV.
+Le cloud fournit des ressources informatiques accessibles à distance, comme du calcul, du stockage et des services gérés. AWS signifie Amazon Web Services ; Azure est la plateforme cloud de Microsoft ; GCP signifie Google Cloud Platform. Dans le parcours de Clément, AWS a été étudié à l’Université Laval, Azure est l’environnement qu’il teste et débogue avec Kubernetes chez Thales CDP, et GCP fait l’objet d’une formation en cours.
 
 ## Vercel et serverless
 

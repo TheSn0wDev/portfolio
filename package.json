@@ -13,10 +13,12 @@
     "test:index": "node --test scripts/index-documents.test.mjs",
     "test:rag": "node --conditions=react-server --import tsx --test scripts/rag.test.ts scripts/chat.test.ts",
     "test:locale": "node --import tsx --test scripts/locale.test.ts",
-    "test:chat-client": "node --import tsx --test scripts/chat-client.test.ts scripts/chat-markdown.test.ts"
+    "test:chat-client": "node --import tsx --test scripts/chat-client.test.ts scripts/chat-markdown.test.ts",
+    "test:seo": "node --import tsx --test scripts/seo.test.ts"
   },
   "dependencies": {
     "@upstash/redis": "^1.39.0",
+    "botid": "^1.5.11",
     "js-tiktoken": "^1.0.21",
     "next": "16.4.0",
     "openai": "^7.30.0",

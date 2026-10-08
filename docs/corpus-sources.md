@@ -32,7 +32,7 @@ Le 7 octobre 2026, Clément a confirmé que MMA Scan est actif et toujours en co
 - CoHoMa III est enrichi avec l'expérience robotique décrite dans le CV. Le périmètre commun avec Vision4Rescue est confirmé par Clément le 8 octobre 2026.
 - Les coordonnées du CV, dont le téléphone, sont incluses dans `documents/contact.md`.
 - Les descriptions ne déduisent ni niveaux de maîtrise, ni dates de disponibilité, ni métriques ou responsabilités absentes des sources.
-- Le corpus comporte 27 fichiers Markdown : cinq documents biographiques, dix-sept fiches projets et cinq fichiers de glossaire comprenant 69 entrées.
+- Le corpus comporte 28 fichiers Markdown : cinq documents biographiques, dix-huit fiches projets et cinq fichiers de glossaire comprenant 69 entrées.
 
 ## Provenance par document
 
@@ -52,6 +52,7 @@ Les sections de sources sont centralisées ici pour ne pas être incluses dans l
 | `documents/projets/djise.md` | Portfolio précédent (`main`) ; description du concept fournie par Clément le 7 octobre 2026 |
 | `documents/projets/ekalia.md` | Portfolio précédent (`main`) ; site officiel Ekalia et précisions de Clément le 7 octobre 2026 |
 | `documents/projets/facebook-marketplace-bot.md` | Portfolio précédent (`main`) ; README, code et statut du dépôt GitHub consultés le 7 octobre 2026 |
+| `documents/projets/levelpilot.md` | Lecture du code, de la documentation et des commits attribués à TheSn0wDev dans les projets locaux LevelPilot ; rôle backend, travail en binôme et autonomie configurable jusqu’à 100 % précisés par Clément le 8 octobre 2026 |
 | `documents/projets/fulgur.md` | Portfolio précédent (`main`) ; README et structure du dépôt GitHub consultés le 7 octobre 2026 ; statut confirmé par Clément le 7 octobre 2026 |
 | `documents/projets/luma-framework.md` | Portfolio précédent (`main`) ; dépôt et présentation de l'organisation GitHub consultés le 7 octobre 2026 ; statut confirmé par Clément |
 | `documents/projets/mma-scan.md` | CV fourni ; statut actif et en développement confirmé par Clément le 7 octobre 2026 |
@@ -203,3 +204,22 @@ Lecture le 8 octobre 2026 du README, de l’arborescence et du code de la branch
 - [Lecteur vidéo](https://github.com/TheSn0wDev/fulgur/blob/main/fulgur-viewer/src/components/WebRTCPlayer.tsx) : WebRTC/WHEP et reconnexion.
 
 La fiche distingue code présent et périmètre annoncé ; le fonctionnement sur véhicule et l’auteur de chaque ligne ne sont pas vérifiés.
+
+## Compléments confirmés par Clément le 8 octobre 2026
+
+Ces précisions remplacent les mentions antérieures d’absence d’information sur les points concernés :
+
+- Atlantique RP : développement de scripts / mods de création d’identité, en complément du rôle de lead.
+- MMA Scan : sources publiques UFC Stats, ESPN et FightMatrix ; contexte des deux combattants transmis à l’IA pour analyser les statistiques et prédire gagnant, méthode et round. Clément rapporte environ 90 % de gagnants correctement prédits et une bonne précision non chiffrée sur méthode et round ; échantillon et protocole non précisés. Usage personnel ponctuel pour confronter ses paris sportifs aux analyses. Aucun rendement financier ni validation indépendante n’est déduit.
+- Personal RAG : fonctionnalités confirmées comme opérationnelles, dont reranking et agents ; intégration au portfolio et à MMA Scan confirmée. Cette confirmation ne signifie pas que toutes les fonctions ou la même stack sont utilisées dans chaque intégration.
+- Fulgur : Raspberry Pi Zero 2 W, composants de voiture à monter, moteur brushless, servomoteurs et caméra Raspberry Pi v2. Aucun état d’assemblage ni essai matériel supplémentaire n’est déduit.
+- Thales CDP : périmètres Combat, TEWA, BSO et JDSS ; Kubernetes pour tester et déboguer l’environnement Azure. Les sigles TEWA et BSO sont conservés sans développement non confirmé.
+- Ekalia : période 2018-2019 confirmée ; menu de navigation, page d’accueil et interfaces de gestion des équipes.
+- Skytale : année 2019 confirmée ; réalisation d’une landing page.
+
+Les fiches, expériences, compétences et le glossaire Kubernetes/Azure sont harmonisés. Les documents sont modifiés ; l’index vectoriel n’a pas été régénéré lors de cette mise à jour.
+
+
+## Ajout de LevelPilot — 8 octobre 2026
+
+Clément confirme développer LevelPilot avec un collègue chargé du frontend et prendre en charge le backend. La fiche projet, le profil et les compétences sont enrichis à partir de cette confirmation et de la lecture du code, de la documentation et de l’historique local. Clément précise que l’agent peut fonctionner de manière 100 % autonome selon la configuration de l’utilisateur, avec notamment création de PR et rollback automatiques. Cette précision complète la lecture du code local et fait autorité pour la présentation du projet. Aucun gain de KPI ou déploiement en production n’est déduit. L’index vectoriel n’a pas été régénéré lors de cet ajout.

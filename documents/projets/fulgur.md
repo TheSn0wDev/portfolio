@@ -22,6 +22,15 @@ Stack observée : C++, SDL3, NATS, JSON, CMake, React, TypeScript, Vite, Tailwin
 
 Le code a été lu sans compilation ni exécution. JetStream n’est pas implémenté dans le bus NATS et la batterie affichée dans le viewer reçoit encore une valeur fixe. Le montage matériel, la commande des moteurs et le fonctionnement complet sur véhicule restent à confirmer. Cette lecture ne vérifie pas l’auteur de chaque ligne.
 
+## Matériel confirmé par Clément
+
+- Raspberry Pi Zero 2 W.
+- Composants de voiture à monter.
+- Moteur brushless et servomoteurs.
+- Caméra Raspberry Pi Camera Module v2.
+
+Cette liste précise le matériel du projet ; l’état d’assemblage et les essais de pilotage sur véhicule ne sont pas précisés.
+
 ## Technologies annoncées dans le README
 
 C++ embarqué, SDL3 pour les entrées des manettes, WebSocket, UDP et liaison série pour les communications. Le README mentionne aussi des intégrations optionnelles avec Raspberry Pi, ESP32 ou d'autres microcontrôleurs.

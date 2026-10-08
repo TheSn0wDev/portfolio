@@ -10,7 +10,7 @@ La GenAI, ou intelligence artificielle générative, produit du contenu comme du
 
 ## GenAI Engineer
 
-Un GenAI Engineer se concentre sur les applications d'IA générative, par exemple les assistants, les RAG et les agents. Clément souhaite évoluer vers ce rôle, à partir de son expérience backend et de ses projets personnels en GenAI. Les intitulés varient selon les entreprises ; ils ne prouvent pas à eux seuls une expérience d'entraînement de modèles.
+Un GenAI Engineer se concentre sur les applications d'IA générative, par exemple les assistants, les RAG et les agents. Clément recherche une mission backend et/ou en IA générative, où il peut apporter son expérience backend et ses compétences en LLM, RAG et agents IA selon les besoins du produit. Les intitulés varient selon les entreprises ; ils ne prouvent pas à eux seuls une expérience d'entraînement de modèles.
 
 ## LLM - Large Language Model
 

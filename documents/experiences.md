@@ -12,7 +12,9 @@ Ses travaux comprennent :
 - Le développement de composants d'intégration pour des systèmes distribués à fortes contraintes d'interopérabilité.
 - La participation à la conception technique, aux revues de code, aux tests et aux processus d'intégration continue.
 
-Stack : Go, Java, Python, Docker, GitLab CI et PostgreSQL.
+Clément précise intervenir principalement sur les périmètres Combat, TEWA, BSO et JDSS de la CDP. Il utilise Kubernetes pour déboguer et tester l’environnement Azure. Les intitulés développés de TEWA et BSO et le détail des composants internes ne sont pas précisés.
+
+Stack : Go, Java, Python, Docker, Kubernetes, Azure, GitLab CI et PostgreSQL.
 
 ## Robotics Software Engineer - Thales, Gennevilliers
 
@@ -48,7 +50,8 @@ Ses responsabilités comprennent :
 
 - Le recrutement de développeurs.
 - La création de cahiers des charges techniques.
-- Le management d'une équipe de cinq personnes.
+- Le management d’une équipe de cinq personnes.
+- Le développement de scripts / mods de création d’identité pour les personnages du serveur FiveM, dans une stack Lua et React.
 
 ## IT Technician - AZEOO
 
@@ -64,16 +67,16 @@ Technologies et outils : WordPress et Bitbucket.
 
 ## Développeur frontend - Skytale
 
-Clément Ozor a rejoint Skytale peu après son expérience chez Ekalia. Il y occupait également un rôle de développeur frontend, avec la création et la gestion de pages web à partir de maquettes UI/UX.
+Clément Ozor a rejoint Skytale en 2019, peu après son expérience chez Ekalia. Il y occupait un rôle de développeur frontend et a réalisé une landing page à partir de maquettes UI/UX.
 
-Les dates exactes de début et de fin ne sont pas précisées.
+Les mois exacts de début et de fin ne sont pas précisés.
 
 Technologies référencées dans le portfolio : HTML, CSS et JavaScript.
 
 ## Développeur frontend bénévole - Ekalia
 
-Clément Ozor a été développeur frontend bénévole chez Ekalia à l'âge de 16 ans. Clément est né en 2002 : cette expérience se situe donc approximativement en 2018-2019, sans dates exactes de début et de fin précisées.
+Clément Ozor a été développeur frontend bénévole chez Ekalia en 2018-2019, à partir de ses 16 ans. La période est confirmée par Clément ; les mois exacts ne sont pas précisés.
 
-Il s'occupait de la création et de la gestion des pages web à partir des maquettes réalisées par une designer UI/UX de l'équipe. Son rôle consistait à traduire ces maquettes en pages web et à gérer ces pages.
+Il s’occupait de la création et de la gestion des pages web à partir des maquettes réalisées par une designer UI/UX de l’équipe. Ses réalisations comprennent le menu de navigation, la page d’accueil et les interfaces de gestion des équipes.
 
 Technologies référencées dans le portfolio : HTML, CSS et JavaScript.

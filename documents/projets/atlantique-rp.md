@@ -22,4 +22,5 @@ Ses responsabilités comprennent :
 
 - Le recrutement de développeurs.
 - La création de cahiers des charges techniques.
-- Le management d'une équipe de cinq personnes.
+- Le management d’une équipe de cinq personnes.
+- Le développement de scripts / mods de création d’identité pour les personnages du serveur FiveM, dans une stack Lua et React.

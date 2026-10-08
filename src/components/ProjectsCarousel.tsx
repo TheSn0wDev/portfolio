@@ -71,6 +71,8 @@ export function ProjectsCarousel({ armed, motionEnabled }: ProjectsCarouselProps
           data-pcard=""
           data-cursor-drag=""
           href={githubCard.url}
+          target="_blank"
+          rel="noopener noreferrer"
           style={{
             borderRadius: 32,
             padding: 'clamp(24px, 3vw, 40px)',

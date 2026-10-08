@@ -21,9 +21,10 @@ export type ProjectVisual =
       feeds: { label: string; kind: 'uav' | 'ugv' | 'cam' }[]
       markers: number[]
     }
-  // Tactical map : drones patrol around a command node they stay linked to,
-  // under a radar sweep. One blip per drone label.
-  | { kind: 'radar'; command: string; drones: string[] }
+  // Forest fire mission : the R4 drives in and opens its roof box, the drones
+  // (up to three) take off, map the fire front (zone) and stream a thermal
+  // feed (shown for the second drone) back to the car, then land again.
+  | { kind: 'rescue'; drones: string[]; feed: string; zone: string }
   // Puzzle : plugins drift in and snap into the sockets of a central core,
   // which boots once all are in. Up to four plugins (left, top, right, bottom).
   // Tactical map : allied APP-6 units linked by a data mesh. The first unit
@@ -38,18 +39,37 @@ export type ProjectVisual =
   // Live DJ set : an equalizer bounces over a sound wave while a song request
   // bubble pops in, a tip coin drops onto it and the DJ queues the track.
   | { kind: 'djise'; song: string; artist: string; tip: string }
-  // Map of the Île d'Oléron : a pin drops on the island, then the team pops in
-  // around it and links up into an org chart (lead above, members below) whose
-  // links all run through the pin. team is the member count (up to six).
-  | { kind: 'rpTeam'; place: string; lead: string; team: number }
+  // GTA-style minimap of the Île d'Oléron : a waypoint is set and the player
+  // drives over the viaduct to it, blips and street names along the way, next
+  // to a HUD with the server name, the lead and the team (up to six).
+  | { kind: 'rpMinimap'; server: string; place: string; lead: string; team: number }
+  // Closed improvement loop : a KPI curve dips, the AI agent (an avatar with
+  // a status line) diagnoses it (insight), moves over to the code, types the
+  // fix in a PR, runs its checks, clicks Merge and the curve climbs back, the
+  // KPI moving from `before` to `after`.
+  | {
+      kind: 'levelPilot'
+      kpi: string
+      before: string
+      after: string
+      delta: string
+      insight: string
+      fix: string
+      pr: { id: number; file: string; diff: [string, string] }
+      checks: string[]
+    }
   | { kind: 'placeholder'; label: string }
 
+export type ProjectStatus = 'live' | 'dev' | 'production' | 'done' | 'archived' | 'abandoned'
+
+// kind picks the icon and visible text ; label is the accessible name.
+export type ProjectLink = { kind: 'repo' | 'site' | 'article'; href: string; label?: string }
+
 export type Project = {
-  index: string
-  category: string
+  status: ProjectStatus
+  context: string
   title: string
-  url?: string
-  linkLabel?: string
+  links?: ProjectLink[]
   visual: ProjectVisual
   bullets?: string[]
   description?: string
@@ -58,9 +78,9 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    "index": "01",
+    "status": "dev",
+    "context": "Projet personnel",
     "title": "Personal RAG",
-    "category": "Projet personnel · GenAI",
     "visual": {
       "kind": "ragCloud",
       "question": "Quand se termine mon contrat d’assurance ?",
@@ -85,13 +105,38 @@ export const projects: Project[] = [
       "ChromaDB",
       "OpenAI"
     ],
-    "url": "https://github.com/TheSn0wDev/project-brain",
-    "linkLabel": "Voir le dépôt project-brain"
+    "links": [
+      { "kind": "repo", "href": "https://github.com/TheSn0wDev/project-brain", "label": "Voir le dépôt project-brain" }
+    ]
   },
   {
-    "index": "02",
+    status: 'dev',
+    context: 'SaaS',
+    title: 'LevelPilot',
+    links: [{ kind: 'repo', href: 'https://github.com/LevelPilot', label: 'Voir l’organisation GitHub LevelPilot' }],
+    visual: {
+      kind: 'levelPilot',
+      kpi: 'Rétention J1',
+      before: '31 %',
+      after: '38 %',
+      delta: '+7 pts',
+      insight: 'Onboarding trop long',
+      fix: 'Raccourcir l’onboarding',
+      pr: { id: 42, file: 'Tutorial.luau', diff: ['- STEPS = 12', '+ STEPS = 5'] },
+      checks: ['StyLua', 'Selene', 'Rojo'],
+    },
+    description: 'Une plateforme SaaS pour aider les créateurs de jeux Roblox à améliorer la rétention, l’engagement et la monétisation grâce aux données joueurs et à des agents IA. Je développe le backend avec un collègue chargé du frontend.',
+    bullets: [
+      'Intégrations Roblox et GitHub, collecte analytics et suivi des KPIs.',
+      'Agents configurables jusqu’à 100 % d’autonomie : analyse, modifications, tests, PR et rollback automatiques.',
+      'Permissions, chiffrement des jetons, audit et contrôle des budgets IA.',
+    ],
+    stack: ['TypeScript', 'Next.js', 'Prisma', 'PostgreSQL', 'Docker', 'OpenAI', 'Luau'],
+  },
+  {
+    "status": "live",
+    "context": "SaaS",
     "title": "MMA Scan",
-    "category": "SaaS · Actif, en développement",
     "visual": {
       "kind": "faceOff",
       "fighters": [
@@ -120,36 +165,14 @@ export const projects: Project[] = [
       "LLM",
       "GitHub Actions"
     ],
-    "url": "https://mmascan.fr/",
-    "linkLabel": "Découvrir MMA Scan"
+    "links": [
+      { "kind": "site", "href": "https://mmascan.fr/", "label": "Découvrir MMA Scan" }
+    ]
   },
   {
-    "index": "03",
-    "title": "Fulgur",
-    "category": "Open source · En développement",
-    "visual": {
-      "kind": "rcLink",
-      "latencies": [18, 23, 16, 21]
-    },
-    "description": "Un véhicule radiocommandé tout-terrain piloté à la manette avec retour caméra FPV, pensé comme une plateforme modulaire d’expérimentation robotique ; développé sur mon temps personnel.",
-    "bullets": [
-      "Architecture présentée autour du contrôle en C++, des communications et des pilotes matériels.",
-      "Communications sur WebSocket, UDP et liaison série ; lecture de la manette avec SDL3."
-    ],
-    "stack": [
-      "C++",
-      "SDL3",
-      "WebSocket",
-      "UDP",
-      "Série"
-    ],
-    "url": "https://github.com/TheSn0wDev/fulgur",
-    "linkLabel": "Voir le dépôt Fulgur"
-  },
-  {
-    "index": "04",
+    "status": "production",
+    "context": "Thales",
     "title": "Combat Digital Platform",
-    "category": "Thales · Backend · Depuis 2025",
     "visual": {
       "kind": "tacticalMesh",
       "units": [
@@ -167,13 +190,45 @@ export const projects: Project[] = [
       "Développement de composants d’intégration pour des systèmes distribués à fortes contraintes d’interopérabilité."
     ],
     "stack": ["Go", "Java", "Python", "Docker", "GitLab CI", "PostgreSQL"],
-    "url": "https://www.thalesgroup.com/fr/catalogue-de-solutions/defense/terrestre/combat-digital-platform",
-    "linkLabel": "Découvrir la Combat Digital Platform sur le site de Thales"
+    "links": [
+      { "kind": "site", "href": "https://www.thalesgroup.com/fr/catalogue-de-solutions/defense/terrestre/combat-digital-platform", "label": "Découvrir la Combat Digital Platform sur le site de Thales" }
+    ]
   },
   {
-    "index": "05",
+    "status": "done",
+    "context": "Thales",
+    "title": "CoHoMa III",
+    "visual": {
+      "kind": "cohoma",
+      "feeds": [
+        { "label": "UAV 1", "kind": "uav" },
+        { "label": "UAV 2", "kind": "uav" },
+        { "label": "UGV 1", "kind": "ugv" },
+        { "label": "Thermique", "kind": "cam" }
+      ],
+      "markers": [0.22, 0.47, 0.8]
+    },
+    "description": "Challenge de l’Agence de l’innovation de défense sur la collaboration homme-machine, où drones et robots terrestres opèrent aux côtés d’opérateurs humains.",
+    "bullets": [
+      "Développement full-stack et intégration logicielle de systèmes robotiques.",
+      "Conception d’une chaîne complète de streaming vidéo temps réel et de replay.",
+      "Agrégation et visualisation de flux vidéo et de données multi-capteurs, intégration logicielle et matérielle."
+    ],
+    "stack": [
+      "C++",
+      "C",
+      "Python",
+      "Docker",
+      "Robotique"
+    ],
+    "links": [
+      { "kind": "article", "href": "https://www.defense.gouv.fr/aid/actualites/cohoma-iii-ledition-consolidation", "label": "Lire la présentation du challenge" }
+    ]
+  },
+  {
+    "status": "done",
+    "context": "Thales",
     "title": "Code Sandbox",
-    "category": "Thales · Outillage développeur",
     "visual": {
       "kind": "codeSandbox",
       "file": "map.ts",
@@ -198,42 +253,38 @@ export const projects: Project[] = [
     ]
   },
   {
-    "index": "06",
-    "title": "CoHoMa III",
-    "category": "Thales · Robotique · 2025",
+    "status": "dev",
+    "context": "Open source",
+    "title": "Fulgur",
     "visual": {
-      "kind": "cohoma",
-      "feeds": [
-        { "label": "UAV 1", "kind": "uav" },
-        { "label": "UAV 2", "kind": "uav" },
-        { "label": "UGV 1", "kind": "ugv" },
-        { "label": "Thermique", "kind": "cam" }
-      ],
-      "markers": [0.22, 0.47, 0.8]
+      "kind": "rcLink",
+      "latencies": [18, 23, 16, 21]
     },
-    "description": "Challenge de l’Agence de l’innovation de défense sur la collaboration homme-machine, où drones et robots terrestres opèrent aux côtés d’opérateurs humains.",
+    "description": "Un véhicule radiocommandé tout-terrain piloté à la manette avec retour caméra FPV, pensé comme une plateforme modulaire d’expérimentation robotique ; développé sur mon temps personnel.",
     "bullets": [
-      "Développement full-stack et intégration logicielle de systèmes robotiques.",
-      "Conception d’une chaîne complète de streaming vidéo temps réel et de replay.",
-      "Agrégation et visualisation de flux vidéo et de données multi-capteurs, intégration logicielle et matérielle."
+      "Architecture présentée autour du contrôle en C++, des communications et des pilotes matériels.",
+      "Communications sur WebSocket, UDP et liaison série ; lecture de la manette avec SDL3."
     ],
     "stack": [
       "C++",
-      "C",
-      "Python",
-      "Docker",
-      "Robotique"
+      "SDL3",
+      "WebSocket",
+      "UDP",
+      "Série"
     ],
-    "url": "https://www.defense.gouv.fr/aid/actualites/cohoma-iii-ledition-consolidation",
-    "linkLabel": "Lire la présentation du challenge"
+    "links": [
+      { "kind": "repo", "href": "https://github.com/TheSn0wDev/fulgur", "label": "Voir le dépôt Fulgur" }
+    ]
   },
   {
+    "status": "done",
+    "context": "Thales",
     "title": "Vision4Rescue",
-    "category": "Thales · Services de secours · 2025",
     "visual": {
-      "kind": "radar",
-      "command": "Commandement",
-      "drones": ["UAV 1", "UAV 2", "UAV 3", "UAV 4"]
+      "kind": "rescue",
+      "drones": ["UAV 1", "UAV 2", "UAV 3"],
+      "feed": "Thermique",
+      "zone": "Front de feu"
     },
     "description": "Démonstrateur dédié aux services de secours, associant un centre de commandement mobile, des drones et des équipements connectés.",
     "bullets": [
@@ -244,14 +295,14 @@ export const projects: Project[] = [
       "CDP",
       "Robotique"
     ],
-    "url": "https://www.renault.fr/gamme-concept-cars/vision-4rescue.html",
-    "linkLabel": "Découvrir le démonstrateur Vision4Rescue",
-    "index": "07"
+    "links": [
+      { "kind": "site", "href": "https://www.renault.fr/gamme-concept-cars/vision-4rescue.html", "label": "Découvrir le démonstrateur Vision4Rescue" }
+    ]
   },
   {
-    "index": "08",
+    "status": "dev",
+    "context": "Open source",
     "title": "Luma Framework",
-    "category": "Open source · En développement",
     "visual": {
       "kind": "luma",
       "core": "Luma",
@@ -269,9 +320,9 @@ export const projects: Project[] = [
     ]
   },
   {
-    "index": "09",
+    "status": "archived",
+    "context": "Projet personnel",
     "title": "Djise",
-    "category": "Projet personnel · Archivé",
     "visual": {
       "kind": "djise",
       "song": "One More Time",
@@ -290,11 +341,12 @@ export const projects: Project[] = [
     ]
   },
   {
-    "index": "10",
+    "status": "abandoned",
+    "context": "Extra-professionnel",
     "title": "Atlantique RP",
-    "category": "Projet extra-professionnel · Abandonné",
     "visual": {
-      "kind": "rpTeam",
+      "kind": "rpMinimap",
+      "server": "Atlantique RP",
       "place": "Île d’Oléron",
       "lead": "Lead Dev",
       "team": 5

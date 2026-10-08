@@ -1,7 +1,7 @@
 'use client'
 
 import { Fragment, useRef, useState } from 'react'
-import { useContent, useTranslation } from '@/i18n/LocaleProvider'
+import { useContent, useTranslation, useLocale } from '@/i18n/LocaleProvider'
 import * as profileContent from '@/content/profile'
 import * as contactContent from '@/content/contact'
 import styles from './portfolio.module.css'
@@ -10,11 +10,14 @@ import { DiagonalArrowIcon } from './icons'
 
 type ContactSectionProps = {
   armed: boolean
+  lead?: string
 }
 
 
-export function ContactSection({ armed }: ContactSectionProps) {
+export function ContactSection({ armed, lead }: ContactSectionProps) {
   const t = useTranslation()
+  const locale = useLocale()
+  const summary = lead ?? profileContent.engagementSummary[locale]
   const { contactHeading, footerCopyright, footerTagline } = useContent(profileContent)
   const { contact } = useContent(contactContent)
 
@@ -55,6 +58,7 @@ export function ContactSection({ armed }: ContactSectionProps) {
               ),
             )}
           </h2>
+          {summary && <p style={{ margin: 0, maxWidth: 680, fontSize: 'clamp(17px, 1.5vw, 20px)', lineHeight: 1.6, color: '#C9D3EA' }}>{summary}</p>}
         </Reveal>
         <Reveal armed={armed} style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 20 }}>
           <a className={styles.mail} href={`mailto:${contact.email}`} style={{ fontSize: 'clamp(22px, 3vw, 40px)', fontWeight: 800, letterSpacing: '-0.01em', paddingBottom: 6, wordBreak: 'break-all' }}>
@@ -66,7 +70,9 @@ export function ContactSection({ armed }: ContactSectionProps) {
         </Reveal>
         <Reveal armed={armed} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: 14 }}>
           {links.map((link) => (
-            <a key={link.category} className={styles.clink} href={link.url}>
+            <a key={link.category} className={styles.clink} href={link.url}
+              target={/^https?:\/\//i.test(link.url) ? '_blank' : undefined}
+              rel={/^https?:\/\//i.test(link.url) ? 'noopener noreferrer' : undefined}>
               <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
                 <span style={{ fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#C9D3EA' }}>{link.category}</span>
                 <span style={{ fontSize: 17, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{link.label}</span>
