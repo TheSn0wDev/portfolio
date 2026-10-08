@@ -1,0 +1,4685 @@
+.pf {
+  --ink: #0b1533;
+  --text: #2e3a55;
+  --muted: #56627e;
+  --line: #dce3f2;
+  --surface: #f2f5fc;
+  --soft: color-mix(in srgb, var(--accent) 10%, #ffffff);
+  --sky: color-mix(in srgb, var(--accent) 45%, #ffffff);
+  --mx: 0;
+  --my: 0;
+  --gut: max(clamp(20px, 4.5vw, 64px), calc((100vw - 1312px) / 2 + clamp(20px, 4.5vw, 64px)));
+  font-family: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  color: var(--text);
+  background: #fbfcff;
+  position: relative;
+  overflow-x: clip;
+  cursor: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Native elements carry their own UA cursor (pointer on `a`/`button`, text on
+   inputs, etc.) which wins over the inherited .pf value even though no author
+   rule set it ; `.pf *` forces every descendant, of any tag, to defer to it. */
+.pf * {
+  cursor: inherit;
+}
+
+/* Text inputs still need native selection/editing behavior. */
+.pf input,
+.pf textarea {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* :global so this compiles to a bare `a` selector, matching the original's
+   specificity exactly ; it must stay weaker than single-class rules like
+   `.btnP { color: #fff }`, or button/pill text would turn accent-colored. */
+:global(a) {
+  color: var(--accent);
+}
+:global(a:hover) {
+  color: #0b1533;
+}
+
+.disp {
+  font-family: var(--font-archivo), 'Helvetica Neue', Helvetica, sans-serif;
+}
+.hand {
+  font-family: var(--font-caveat), 'Comic Sans MS', cursive;
+}
+
+/* Header */
+.hdr {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  transition: background 0.35s, box-shadow 0.35s;
+}
+.hdrOn {
+  background: rgba(251, 252, 255, 0.84);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 1px 0 var(--line);
+}
+.nav a {
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  padding: 12px 4px;
+  position: relative;
+  white-space: nowrap;
+}
+.nav a::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 6px;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.nav a:hover::after {
+  transform: scaleX(1);
+}
+
+/* Buttons & chips */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  border: 0;
+  cursor: inherit;
+  font-family: inherit;
+  transition: transform 0.25s, background 0.25s, color 0.25s, box-shadow 0.25s;
+}
+.btnP {
+  background: var(--ink);
+  color: #fff;
+}
+.btnP:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -14px var(--accent);
+}
+.btnG {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+  color: var(--ink);
+}
+.btnG:hover {
+  background: var(--ink);
+  color: #fff;
+}
+.btn .arr {
+  transition: transform 0.3s;
+}
+.btn:hover .arr {
+  transform: translateX(4px);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 13px;
+  border-radius: 999px;
+  background: var(--soft);
+  color: color-mix(in srgb, var(--accent) 80%, #000);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.chipW {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.chipD {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 var(--accent);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 10px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* Hero name letters */
+.ltr {
+  display: inline-block;
+  transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.5), color 0.3s;
+  animation: rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+.ltr:hover {
+  transform: translateY(-0.1em) rotate(-5deg);
+  color: var(--accent);
+}
+.w2 .ltr {
+  color: var(--accent);
+}
+.w2 .ltr:hover {
+  color: var(--ink);
+}
+.name {
+  transform: translate3d(calc(var(--mx) * -12px), calc(var(--my) * -6px), 0);
+  transition: transform 0.2s linear;
+}
+.rise {
+  animation: rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+}
+.brush path {
+  stroke-dasharray: 640;
+  stroke-dashoffset: 640;
+  animation: draw 1.3s 0.5s cubic-bezier(0.6, 0, 0.2, 1) forwards;
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Dot grid */
+.dots,
+.dotsHot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-size: 26px 26px;
+}
+.dots {
+  background-image: radial-gradient(#c9d3ea 1.1px, transparent 1.3px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent);
+  mask-image: linear-gradient(to bottom, #000 30%, transparent);
+}
+.dotsHot {
+  background-image: radial-gradient(var(--accent) 1.6px, transparent 1.9px);
+  -webkit-mask-image: radial-gradient(260px circle at var(--px, -400px) var(--py, -400px), #000, transparent 70%);
+  mask-image: radial-gradient(260px circle at var(--px, -400px) var(--py, -400px), #000, transparent 70%);
+}
+
+/* Marquee */
+.marq {
+  display: flex;
+  width: max-content;
+  animation: mq 42s linear infinite;
+}
+.mqWrap:hover .marq {
+  animation-play-state: paused;
+}
+@keyframes mq {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.mqI {
+  display: inline-flex;
+  align-items: center;
+  gap: 40px;
+  padding-right: 40px;
+}
+
+/* Scroll reveal */
+.armed .rv {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.armed .rvIn {
+  opacity: 1;
+  transform: none;
+}
+
+/* Tilt cards */
+.tilt {
+  position: relative;
+  transform: perspective(1200px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.4s, border-color 0.4s;
+  will-change: transform;
+}
+.tilt:hover {
+  box-shadow: 0 34px 70px -34px rgba(11, 21, 51, 0.38);
+  border-color: color-mix(in srgb, var(--accent) 40%, #dce3f2);
+}
+.glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(480px circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.6), transparent 55%);
+  opacity: 0;
+  transition: opacity 0.35s;
+  mix-blend-mode: soft-light;
+}
+.tilt:hover .glare {
+  opacity: 1;
+}
+
+/* Timeline */
+.rail,
+.railFill {
+  position: absolute;
+  left: 11px;
+  top: 12px;
+  width: 2px;
+  border-radius: 2px;
+}
+.rail {
+  bottom: 12px;
+  background: var(--line);
+}
+.railFill {
+  height: calc((100% - 24px) * var(--tl, 0));
+  background: var(--accent);
+}
+.tdot {
+  position: absolute;
+  left: 3px;
+  top: 36px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fbfcff;
+  box-shadow: inset 0 0 0 3.5px var(--accent);
+  z-index: 1;
+  transition: box-shadow 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tdot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 2.5px, var(--accent) 3px);
+  transform: scale(0);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tdot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  opacity: 0;
+  pointer-events: none;
+}
+.tdotOn {
+  box-shadow: inset 0 0 0 3.5px var(--accent), 0 0 0 6px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.tdotOn::before {
+  transform: scale(1);
+}
+.tdotOn::after {
+  animation: ripple 1s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@keyframes ripple {
+  from {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.8);
+  }
+}
+.still .tdot::before {
+  transform: scale(1);
+  transition: none;
+}
+.still .tdot::after {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tdot::before {
+    transition: none;
+  }
+  .tdotOn::after {
+    animation: none;
+  }
+}
+
+/* Lists */
+.bl {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bl li {
+  position: relative;
+  padding-left: 24px;
+  line-height: 1.6;
+  font-size: 16px;
+}
+.bl li::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform: rotate(45deg);
+}
+.todo {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+  border: 1.5px dashed var(--line);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+/* Every project visual shares one height so the cards line up in the
+   carousel ; sized for the tallest one, the RAG embedding cloud. */
+.visual {
+  flex: none;
+  height: 250px;
+}
+
+/* Project flow visual */
+.flow {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 50%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.14);
+}
+.flowDot {
+  position: absolute;
+  top: -4px;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--sky);
+  box-shadow: 0 0 16px var(--sky);
+  animation: flow 3.4s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+}
+@keyframes flow {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+.step {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: #16224a;
+  color: #e6ecfb;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+/* Personal RAG visual, played in order on a shared 8s cycle :
+   0s question pops · 0.6–2.4s documents fall into the embedding cloud ·
+   2.6–4.6s a magnifier glides between candidate points, resizing as it goes ·
+   4.6s it locks on the answer's point, which lights up · 4.9s sourced
+   answer pops ·
+   7.2s everything fades out together.
+   Keyframe percentages are fractions of 8s ; keep ProjectRagVisual delays in
+   sync. Base styles are the final frame, used as-is when motion is off. */
+.rag {
+  position: relative;
+  border-radius: 22px;
+  background: radial-gradient(120% 90% at 50% 60%, #16224a 0%, var(--ink) 70%);
+  overflow: hidden;
+}
+.ragPt,
+.ragTarget {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: rgba(201, 211, 234, 0.4);
+}
+.ragPt {
+  animation: ragHit 8s infinite;
+}
+@keyframes ragHit {
+  0% {
+    background: var(--sky);
+    box-shadow: 0 0 10px var(--sky);
+    transform: scale(1.8);
+  }
+  5%,
+  100% {
+    background: rgba(201, 211, 234, 0.4);
+    box-shadow: none;
+    transform: none;
+  }
+}
+/* Points added by the documents ; fade out together at the end of the cycle. */
+.ragLands {
+  position: absolute;
+  inset: 0;
+  animation: ragLands 8s infinite;
+}
+@keyframes ragLands {
+  0%,
+  17% {
+    opacity: 0;
+  }
+  19%,
+  90% {
+    opacity: 1;
+  }
+  95%,
+  100% {
+    opacity: 0;
+  }
+}
+.ragLand {
+  position: absolute;
+  width: 0;
+  height: 0;
+  animation: ragLand 8s infinite backwards;
+}
+@keyframes ragLand {
+  0%,
+  12% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(2.4);
+  }
+  19%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+.ragDoc {
+  position: absolute;
+  top: -20%;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  width: 30px;
+  height: 38px;
+  margin: -19px 0 0 -15px;
+  padding-bottom: 4px;
+  border-radius: 5px;
+  background: #e6ecfb;
+  color: var(--ink);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.6);
+  animation: ragFall 8s infinite backwards;
+}
+.ragDocLines {
+  width: 16px;
+  height: 11px;
+  background: repeating-linear-gradient(to bottom, #9fb4e8 0 2px, transparent 2px 4.5px);
+}
+@keyframes ragFall {
+  0% {
+    top: -20%;
+    opacity: 0;
+    transform: rotate(-10deg);
+    animation-timing-function: cubic-bezier(0.5, 0, 0.8, 0.4);
+  }
+  3% {
+    opacity: 1;
+  }
+  11% {
+    top: calc(var(--ty) * 1%);
+    opacity: 1;
+    transform: rotate(4deg) scale(0.85);
+  }
+  15%,
+  100% {
+    top: calc(var(--ty) * 1%);
+    opacity: 0;
+    transform: scale(0.1);
+  }
+}
+.ragLens {
+  position: absolute;
+  left: var(--x4);
+  top: var(--y4);
+  z-index: 1;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  border: 2.5px solid #e6ecfb;
+  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--sky) 18%, transparent), color-mix(in srgb, var(--sky) 6%, transparent) 70%);
+  box-shadow: 0 0 18px -2px color-mix(in srgb, var(--sky) 70%, transparent), inset 0 0 10px color-mix(in srgb, var(--sky) 30%, transparent);
+  backdrop-filter: brightness(1.35);
+  opacity: 0;
+  animation: ragLens 8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  pointer-events: none;
+}
+/* Glint on the glass. */
+.ragLens::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  width: 9px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  transform: rotate(-35deg);
+}
+/* Handle, pointing to the bottom right. */
+.ragLens::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 100%;
+  width: 13px;
+  height: 4.5px;
+  margin: -3px 0 0 -5px;
+  border-radius: 3px;
+  background: #e6ecfb;
+  transform: rotate(45deg);
+  transform-origin: 0 50%;
+}
+/* Stops follow RAG_LENS / RAG_LENS_TIMES : 2.6s 3.1s 3.6s 4.1s 4.6s. Each
+   segment eases in and out, so the glass slows over every candidate. */
+@keyframes ragLens {
+  0%,
+  30% {
+    left: var(--x0);
+    top: var(--y0);
+    opacity: 0;
+    transform: scale(calc(var(--s0) * 0.5));
+  }
+  32.5% {
+    left: var(--x0);
+    top: var(--y0);
+    opacity: 1;
+    transform: scale(var(--s0));
+  }
+  38.75% {
+    left: var(--x1);
+    top: var(--y1);
+    transform: scale(var(--s1));
+  }
+  45% {
+    left: var(--x2);
+    top: var(--y2);
+    transform: scale(var(--s2));
+  }
+  51.25% {
+    left: var(--x3);
+    top: var(--y3);
+    transform: scale(var(--s3));
+  }
+  57.5% {
+    left: var(--x4);
+    top: var(--y4);
+    opacity: 1;
+    transform: scale(var(--s4));
+  }
+  59.5% {
+    transform: scale(calc(var(--s4) * 1.25));
+  }
+  61% {
+    opacity: 1;
+    transform: scale(var(--s4));
+  }
+  64%,
+  100% {
+    left: var(--x4);
+    top: var(--y4);
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+.ragTarget {
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  background: #fff;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sky) 35%, transparent), 0 0 22px 4px var(--sky);
+  transform: scale(1.4);
+  animation: ragTarget 8s infinite;
+}
+.ragTarget::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid var(--sky);
+  opacity: 0;
+  animation: ragRing 8s ease-out infinite;
+}
+@keyframes ragTarget {
+  0%,
+  57.5% {
+    background: rgba(201, 211, 234, 0.4);
+    box-shadow: none;
+    transform: none;
+  }
+  59.5% {
+    background: #fff;
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--sky) 35%, transparent), 0 0 30px 8px var(--sky);
+    transform: scale(2);
+  }
+  62.5%,
+  100% {
+    background: #fff;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--sky) 35%, transparent), 0 0 22px 4px var(--sky);
+    transform: scale(1.4);
+  }
+}
+@keyframes ragRing {
+  0%,
+  57.5% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  59.5% {
+    opacity: 1;
+  }
+  73%,
+  100% {
+    opacity: 0;
+    transform: scale(4);
+  }
+}
+.ragCite {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: max-content;
+  max-width: min(240px, 62%);
+  padding: 10px 12px;
+  border-radius: 14px 14px 14px 4px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.7);
+  transform: translateY(-50%);
+  transform-origin: 0 50%;
+  animation: ragCite 8s infinite;
+}
+.ragCite::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -14px;
+  width: 14px;
+  height: 1.5px;
+  background: var(--sky);
+}
+.ragCiteText {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.ragCiteSrc {
+  align-self: flex-start;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 14%, #fff);
+  color: color-mix(in srgb, var(--accent) 80%, #000);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+@keyframes ragCite {
+  0%,
+  61.25% {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.4);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.07);
+  }
+  67.5%,
+  90% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+  95%,
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.92);
+  }
+}
+.ragAsk {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  max-width: min(260px, 56%);
+  padding: 9px 13px;
+  border-radius: 14px 14px 4px 14px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  box-shadow: 0 12px 26px -12px rgba(0, 0, 0, 0.7);
+  transform-origin: 100% 100%;
+  animation: ragAsk 8s infinite;
+}
+@keyframes ragAsk {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.6);
+  }
+  4% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  6%,
+  90% {
+    opacity: 1;
+    transform: none;
+  }
+  95%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+.still .ragPt,
+.still .ragLands,
+.still .ragLand,
+.still .ragDoc,
+.still .ragLens,
+.still .ragTarget,
+.still .ragTarget::after,
+.still .ragCite,
+.still .ragAsk {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ragPt,
+  .ragLands,
+  .ragLand,
+  .ragDoc,
+  .ragLens,
+  .ragTarget,
+  .ragTarget::after,
+  .ragCite,
+  .ragAsk {
+    animation: none;
+  }
+}
+/* MMA Scan face-off visual, played on a shared 8s cycle :
+   0s names · 0.4–2.9s stat bars fill one at a time, alternating corners ·
+   3.2s VS flash · 3.6s prediction pops · 3.8–5.2s percentage counts up ·
+   7.2s everything fades out. Bars read the --fo-t clock (seconds into the
+   cycle) instead of using animation-delay, so they all reset together while
+   the stage is hidden. Keep foBarDelay in ProjectCard in sync.
+   Base styles are the final frame, used as-is when motion is off. */
+@property --fo-t {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 8;
+}
+@property --fo-pct {
+  syntax: '<integer>';
+  inherits: false;
+  initial-value: 0;
+}
+.fo {
+  --fo-t: 8;
+  --red: #ff5a5f;
+  position: relative;
+  border-radius: 22px;
+  background: radial-gradient(120% 90% at 50% 40%, #16224a 0%, var(--ink) 70%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 18px;
+  overflow: hidden;
+  container-type: inline-size;
+  animation: foClock 8s linear infinite;
+}
+@keyframes foClock {
+  from {
+    --fo-t: 0;
+  }
+  to {
+    --fo-t: 8;
+  }
+}
+.foBody {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: foShow 8s infinite;
+}
+@keyframes foShow {
+  0% {
+    opacity: 0;
+  }
+  3%,
+  90% {
+    opacity: 1;
+  }
+  95%,
+  100% {
+    opacity: 0;
+  }
+}
+.foHead {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+.foName {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: #e6ecfb;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.foName::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--red);
+  transform: rotate(45deg);
+}
+.foName[data-side='1'] {
+  order: 2;
+  flex-direction: row-reverse;
+}
+.foName[data-side='1']::before {
+  background: var(--sky);
+}
+.foPicked {
+  color: #fff;
+  text-shadow: 0 0 14px color-mix(in srgb, var(--red) 70%, transparent);
+  animation: foPicked 8s infinite;
+}
+.foPicked[data-side='1'] {
+  text-shadow: 0 0 14px var(--sky);
+}
+@keyframes foPicked {
+  0%,
+  64% {
+    color: #e6ecfb;
+    text-shadow: none;
+  }
+  67%,
+  100% {
+    color: #fff;
+  }
+}
+.foVs {
+  order: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
+  animation: foVs 8s infinite;
+}
+/* Slanted with a skew rather than font-style: italic, whose glyph overhang
+   pushes the text off-center ; a skew pivots around the middle. */
+.foVsText {
+  display: block;
+  transform: skewX(-12deg);
+}
+@keyframes foVs {
+  0%,
+  38% {
+    background: #16224a;
+    color: #9fb4e8;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.04);
+    transform: none;
+  }
+  40% {
+    background: #fff;
+    color: var(--ink);
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.18), 0 0 40px 10px #fff;
+    transform: scale(1.5) rotate(-8deg);
+  }
+  45%,
+  100% {
+    background: #fff;
+    color: var(--ink);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
+    transform: none;
+  }
+}
+.foFlash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 70% at 50% 15%, rgba(255, 255, 255, 0.55), transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  animation: foFlash 8s infinite;
+}
+@keyframes foFlash {
+  0%,
+  39% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  46%,
+  100% {
+    opacity: 0;
+  }
+}
+.foRow {
+  display: grid;
+  grid-template-columns: 1fr 86px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+.foLabel {
+  order: 1;
+  color: #9fb4e8;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* Progress of this bar, 0 → 1 over 0.45s once the clock passes its delay. */
+.foSide {
+  --p: clamp(0, (var(--fo-t) - var(--d)) / 0.45, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.foSide[data-side='1'] {
+  order: 2;
+  flex-direction: row-reverse;
+}
+.foVal {
+  flex: none;
+  min-width: 30px;
+  color: #e6ecfb;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  opacity: calc(0.25 + 0.75 * var(--p));
+}
+.foSide[data-side='1'] .foVal {
+  text-align: right;
+}
+.foTrack {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.foFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(270deg, var(--red), color-mix(in srgb, var(--red) 55%, #16224a));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--red) 60%, transparent);
+  transform-origin: 100% 50%;
+  /* smoothstep easing of --p */
+  transform: scaleX(calc(var(--v) * var(--p) * var(--p) * (3 - 2 * var(--p))));
+}
+.foSide[data-side='1'] .foFill {
+  background: linear-gradient(90deg, var(--sky), color-mix(in srgb, var(--sky) 55%, #16224a));
+  box-shadow: 0 0 12px var(--sky);
+  transform-origin: 0 50%;
+}
+.foPred {
+  --fo-pct: var(--conf);
+  --tone: var(--red);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+  padding: 10px 14px 13px;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ink);
+  overflow: hidden;
+  box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.7);
+  counter-reset: fopct var(--fo-pct);
+  animation: foPred 8s infinite, foCount 8s infinite;
+}
+.foPred[data-side='1'] {
+  --tone: var(--accent);
+}
+@keyframes foPred {
+  0%,
+  45% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+  }
+  48% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+  50%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes foCount {
+  0%,
+  47.5% {
+    --fo-pct: 0;
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  65%,
+  100% {
+    --fo-pct: var(--conf);
+  }
+}
+.foPredText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+.foPredLabel {
+  color: var(--muted);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.foPct::before {
+  content: counter(fopct) '\00a0%';
+  color: var(--tone);
+  font-size: 28px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.foMeter {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--tone);
+  transform-origin: 0 50%;
+  transform: scaleX(calc(var(--fo-pct) / 100));
+}
+/* Phone-width cards : tighter grid so the bars keep a readable length. */
+@container (max-width: 260px) {
+  .foBody {
+    margin: -6px;
+    gap: 10px;
+  }
+  .foHead {
+    gap: 6px;
+  }
+  .foName {
+    gap: 6px;
+    font-size: 12px;
+  }
+  .foVs {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+  .foRow {
+    grid-template-columns: 1fr 72px 1fr;
+    gap: 6px;
+  }
+  .foLabel {
+    font-size: 9.5px;
+    letter-spacing: 0.02em;
+  }
+  .foSide {
+    gap: 6px;
+  }
+  .foVal {
+    min-width: 24px;
+    font-size: 11px;
+  }
+}
+.still .fo,
+.still .foBody,
+.still .foPicked,
+.still .foVs,
+.still .foFlash,
+.still .foPred {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fo,
+  .foBody,
+  .foPicked,
+  .foVs,
+  .foFlash,
+  .foPred {
+    animation: none;
+  }
+}
+/* Fulgur controller → vehicle visual, played on a shared 8s cycle :
+   0.4 / 1.9 / 3.4 / 4.9s the controller sends an order and radio rings spread
+   down to the track · 0.55s later the antenna blinks, the vehicle surges
+   forward and the latency readout updates · 3.2s it jumps the dirt mound ·
+   7.2s it comes to a stop at the end of the track as everything fades out ;
+   it is back at the start, still, when the stage fades in again.
+   A single animation, rcCycle, drives the --rc-t clock (seconds into the
+   cycle) and the drive curves, generated by scripts/fulgur-drive.mjs ; every
+   other element reads them, so nothing can drift apart. Keep RC_SENDS and
+   RC_TRAVEL in ProjectCard and RECEIVES in the script in sync.
+   Base styles are the final frame, used as-is when motion is off. */
+@property --rc-t {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 7;
+}
+/* Position along the track (0–1). */
+@property --rc-x {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+/* Height above the track (px). */
+@property --rc-y {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+/* Pitch (deg, positive nose up). */
+@property --rc-r {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+/* Speed (0–1), driving the speed lines. */
+@property --rc-s {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+.rc {
+  --rc-t: 7;
+  position: relative;
+  border-radius: 22px;
+  background: radial-gradient(120% 90% at 50% 15%, #16224a 0%, var(--ink) 70%);
+  overflow: hidden;
+  animation: rcCycle 8s linear infinite;
+}
+/* fulgur-drive:start — generated by scripts/fulgur-drive.mjs, do not edit. */
+.rc {
+  --rc-mound: 0.3878;
+  --rc-land: 0.5265;
+  --rc-land-t: 3.7;
+}
+@keyframes rcCycle {
+  0% { --rc-x: 0; --rc-s: 0; --rc-t: 0; --rc-y: 0; --rc-r: 0; }
+  1.25% { --rc-x: 0; --rc-s: 0; }
+  2.5% { --rc-x: 0; --rc-s: 0; }
+  3.75% { --rc-x: 0; --rc-s: 0; }
+  5% { --rc-x: 0; --rc-s: 0; }
+  6.25% { --rc-x: 0; --rc-s: 0; }
+  7.5% { --rc-x: 0; --rc-s: 0; }
+  8.75% { --rc-x: 0; --rc-s: 0; }
+  10% { --rc-x: 0; --rc-s: 0; }
+  11.25% { --rc-x: 0; --rc-s: 0; }
+  12.5% { --rc-x: 0.0006; --rc-s: 0.052; }
+  13.75% { --rc-x: 0.0044; --rc-s: 0.151; }
+  15% { --rc-x: 0.0116; --rc-s: 0.238; }
+  16.25% { --rc-x: 0.0217; --rc-s: 0.309; }
+  17.5% { --rc-x: 0.0339; --rc-s: 0.356; }
+  18.75% { --rc-x: 0.0471; --rc-s: 0.371; }
+  20% { --rc-x: 0.0604; --rc-s: 0.365; }
+  21.25% { --rc-x: 0.0734; --rc-s: 0.355; }
+  22.5% { --rc-x: 0.086; --rc-s: 0.342; }
+  23.75% { --rc-x: 0.098; --rc-s: 0.328; }
+  25% { --rc-x: 0.1096; --rc-s: 0.313; }
+  26.25% { --rc-x: 0.1206; --rc-s: 0.299; }
+  27.5% { --rc-x: 0.1311; --rc-s: 0.286; }
+  28.75% { --rc-x: 0.1412; --rc-s: 0.273; }
+  30% { --rc-x: 0.1508; --rc-s: 0.261; }
+  31.25% { --rc-x: 0.1622; --rc-s: 0.444; }
+  32.5% { --rc-x: 0.184; --rc-s: 0.715; }
+  33.75% { --rc-x: 0.2133; --rc-s: 0.879; }
+  35% { --rc-x: 0.247; --rc-s: 0.966; }
+  36.25% { --rc-x: 0.2826; --rc-s: 0.998; }
+  36.5% { --rc-y: 0; --rc-r: 0; }
+  37% { --rc-y: 0; --rc-r: 0; }
+  37.5% { --rc-x: 0.3186; --rc-s: 0.993; --rc-y: 0.13; --rc-r: 3.39; }
+  38% { --rc-y: 1.5; --rc-r: 10.44; }
+  38.5% { --rc-y: 3.87; --rc-r: 13.86; }
+  38.75% { --rc-x: 0.3539; --rc-s: 0.963; }
+  39% { --rc-y: 6.42; --rc-r: 12.66; }
+  39.5% { --rc-y: 8.32; --rc-r: 7.42; }
+  40% { --rc-x: 0.3878; --rc-s: 0.916; --rc-y: 9; --rc-r: 14; }
+  40.5% { --rc-y: 14.84; --rc-r: 11.92; }
+  41% { --rc-y: 19.53; --rc-r: 9.84; }
+  41.25% { --rc-x: 0.4198; --rc-s: 0.861; }
+  41.5% { --rc-y: 23.09; --rc-r: 7.76; }
+  42% { --rc-y: 25.51; --rc-r: 5.68; }
+  42.5% { --rc-x: 0.4497; --rc-s: 0.801; --rc-y: 26.78; --rc-r: 3.6; }
+  43% { --rc-y: 26.92; --rc-r: 1.52; }
+  43.5% { --rc-y: 25.91; --rc-r: -0.56; }
+  43.75% { --rc-x: 0.4774; --rc-s: 0.741; }
+  44% { --rc-y: 23.77; --rc-r: -2.64; }
+  44.5% { --rc-y: 20.48; --rc-r: -4.72; }
+  45% { --rc-x: 0.503; --rc-s: 0.682; --rc-y: 16.05; --rc-r: -6.8; }
+  45.5% { --rc-y: 10.49; --rc-r: -8.88; }
+  46% { --rc-y: 3.78; --rc-r: -10.96; }
+  46.25% { --rc-x: 0.5265; --rc-s: 0.626; }
+  46.5% { --rc-y: 0.53; --rc-r: -11.22; }
+  47% { --rc-y: 1.41; --rc-r: -8.41; }
+  47.5% { --rc-x: 0.548; --rc-s: 0.573; --rc-y: 2; --rc-r: -4.67; }
+  48% { --rc-y: 2.28; --rc-r: -0.86; }
+  48.5% { --rc-y: 2.28; --rc-r: 2.22; }
+  48.75% { --rc-x: 0.5678; --rc-s: 0.525; }
+  49% { --rc-y: 2.04; --rc-r: 4.1; }
+  49.5% { --rc-y: 1.64; --rc-r: 4.63; }
+  50% { --rc-x: 0.5865; --rc-s: 0.539; --rc-y: 1.15; --rc-r: 4; }
+  50.5% { --rc-y: 0.68; --rc-r: 2.68; }
+  51% { --rc-y: 0.29; --rc-r: 1.25; }
+  51.25% { --rc-x: 0.6069; --rc-s: 0.584; }
+  51.5% { --rc-y: 0.06; --rc-r: 0.25; }
+  52% { --rc-y: 0; --rc-r: 0; }
+  52.5% { --rc-x: 0.6284; --rc-s: 0.601; }
+  53.75% { --rc-x: 0.6501; --rc-s: 0.598; }
+  55% { --rc-x: 0.6714; --rc-s: 0.582; }
+  56.25% { --rc-x: 0.692; --rc-s: 0.558; }
+  57.5% { --rc-x: 0.7116; --rc-s: 0.53; }
+  58.75% { --rc-x: 0.7301; --rc-s: 0.499; }
+  60% { --rc-x: 0.7475; --rc-s: 0.468; }
+  61.25% { --rc-x: 0.7638; --rc-s: 0.437; }
+  62.5% { --rc-x: 0.779; --rc-s: 0.408; }
+  63.75% { --rc-x: 0.7932; --rc-s: 0.381; }
+  65% { --rc-x: 0.8065; --rc-s: 0.356; }
+  66.25% { --rc-x: 0.8189; --rc-s: 0.334; }
+  67.5% { --rc-x: 0.8305; --rc-s: 0.314; }
+  68.75% { --rc-x: 0.8419; --rc-s: 0.334; }
+  70% { --rc-x: 0.8548; --rc-s: 0.374; }
+  71.25% { --rc-x: 0.8688; --rc-s: 0.394; }
+  72.5% { --rc-x: 0.8832; --rc-s: 0.401; }
+  73.75% { --rc-x: 0.8976; --rc-s: 0.398; }
+  75% { --rc-x: 0.9118; --rc-s: 0.389; }
+  76.25% { --rc-x: 0.9256; --rc-s: 0.375; }
+  77.5% { --rc-x: 0.9388; --rc-s: 0.36; }
+  78.75% { --rc-x: 0.9515; --rc-s: 0.344; }
+  80% { --rc-x: 0.9634; --rc-s: 0.316; }
+  81.25% { --rc-x: 0.974; --rc-s: 0.272; }
+  82.5% { --rc-x: 0.9828; --rc-s: 0.219; }
+  83.75% { --rc-x: 0.9896; --rc-s: 0.164; }
+  85% { --rc-x: 0.9945; --rc-s: 0.112; }
+  86.25% { --rc-x: 0.9976; --rc-s: 0.067; }
+  87.5% { --rc-x: 0.9993; --rc-s: 0.031; }
+  88.75% { --rc-x: 0.9999; --rc-s: 0.008; }
+  90% { --rc-x: 1; --rc-s: 0; }
+  91.25% { --rc-x: 1; --rc-s: 0; }
+  92.5% { --rc-x: 1; --rc-s: 0; }
+  93.75% { --rc-x: 1; --rc-s: 0; }
+  95% { --rc-x: 1; --rc-s: 0; }
+  96.25% { --rc-x: 1; --rc-s: 0; }
+  97.5% { --rc-x: 1; --rc-s: 0; }
+  98.75% { --rc-x: 1; --rc-s: 0; }
+  100% { --rc-x: 1; --rc-s: 0; --rc-t: 8; --rc-y: 0; --rc-r: 0; }
+}
+/* fulgur-drive:end */
+/* Fades in over 0–0.24s and out over 7.2–7.6s, as the vehicle stops. */
+.rcBody {
+  position: absolute;
+  inset: 0;
+  opacity: clamp(0, min(var(--rc-t) / 0.24, (7.6 - var(--rc-t)) / 0.4), 1);
+}
+/* Rings centred on the controller, grown until they touch the track. */
+.rcWave {
+  --p: clamp(0, (var(--rc-t) - var(--d)) / 0.55, 1);
+  position: absolute;
+  left: 50%;
+  top: 38px;
+  width: 352px;
+  height: 352px;
+  margin: -176px 0 0 -176px;
+  border: 1.5px solid var(--sky);
+  border-radius: 50%;
+  opacity: calc(min(var(--p) * 12, 1) * (1 - var(--p)) * 0.85);
+  transform: scale(calc(0.08 + 0.92 * var(--p)));
+  pointer-events: none;
+}
+/* Pressed for 0.12s either side of each send. */
+.rcPad {
+  --b: calc(
+    max(0, min(var(--rc-t) - 0.28, 0.52 - var(--rc-t)) / 0.12) +
+      max(0, min(var(--rc-t) - 1.78, 2.02 - var(--rc-t)) / 0.12) +
+      max(0, min(var(--rc-t) - 3.28, 3.52 - var(--rc-t)) / 0.12) +
+      max(0, min(var(--rc-t) - 4.78, 5.02 - var(--rc-t)) / 0.12)
+  );
+  position: absolute;
+  left: 50%;
+  top: 22px;
+  margin-left: -24px;
+  transform: translateY(calc(var(--b) * 2px)) scale(calc(1 - 0.1 * var(--b)));
+  filter: drop-shadow(0 0 calc(var(--b) * 10px) var(--sky));
+}
+.rcLat {
+  position: absolute;
+  left: 18px;
+  top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.rcLatLabel {
+  color: #9fb4e8;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.rcMsWrap {
+  display: grid;
+}
+/* Shown from reception --a until the next one --b, popping in. */
+.rcMs {
+  --in: clamp(0, (var(--rc-t) - var(--a)) / 0.15, 1);
+  grid-area: 1 / 1;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  opacity: calc(var(--in) * clamp(0, (var(--b) - var(--rc-t)) * 50, 1));
+  transform: translateY(calc((1 - var(--in)) * 6px));
+}
+.rcTrack {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 30px;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0 8px, transparent 8px 14px);
+}
+/* Dirt mound, centred where the vehicle takes off. */
+.rcMound {
+  position: absolute;
+  left: calc(28px + var(--rc-mound) * (100% - 56px));
+  bottom: 0;
+  width: 46px;
+  height: 10px;
+  margin-left: -23px;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  background: linear-gradient(#a07a52, #6b4f35);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.12);
+}
+/* Dirt kicked up where and when the vehicle lands. */
+.rcDust {
+  position: absolute;
+  left: calc(28px + var(--rc-land) * (100% - 56px));
+  bottom: 0;
+}
+.rcDust span {
+  --p: clamp(0, (var(--rc-t) - var(--rc-land-t)) / 0.44, 1);
+  position: absolute;
+  bottom: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #a07a52;
+  opacity: calc(clamp(0, (var(--rc-t) - var(--rc-land-t)) * 50, 1) * (1 - var(--p)));
+  transform: translate(calc(var(--dx) * var(--p)), calc(var(--dy) * var(--p))) scale(calc(1 - 0.6 * var(--p)));
+}
+.rcDust span:nth-child(1) {
+  --dx: -16px;
+  --dy: -12px;
+}
+.rcDust span:nth-child(2) {
+  --dx: -4px;
+  --dy: -18px;
+}
+.rcDust span:nth-child(3) {
+  --dx: 10px;
+  --dy: -10px;
+}
+.rcCar {
+  position: absolute;
+  bottom: 0;
+  left: calc(var(--rc-x) * (100% - 56px));
+  overflow: visible;
+  transform-origin: 50% 100%;
+  transform: translateY(calc(var(--rc-y) * -1px)) rotate(calc(var(--rc-r) * -1deg));
+}
+/* Speed lines trailing the vehicle, longer and brighter the faster it goes. */
+.rcStreaks {
+  opacity: calc(var(--rc-s) * 0.9);
+  transform-box: fill-box;
+  transform-origin: 100% 50%;
+  transform: scaleX(calc(0.3 + 0.7 * var(--rc-s)));
+}
+/* Antenna blinks for 0.15s either side of each reception. */
+.rcRx {
+  --b: calc(
+    max(0, min(var(--rc-t) - 0.8, 1.1 - var(--rc-t)) / 0.15) +
+      max(0, min(var(--rc-t) - 2.3, 2.6 - var(--rc-t)) / 0.15) +
+      max(0, min(var(--rc-t) - 3.8, 4.1 - var(--rc-t)) / 0.15) +
+      max(0, min(var(--rc-t) - 5.3, 5.6 - var(--rc-t)) / 0.15)
+  );
+  fill: color-mix(in srgb, #fff calc(var(--b) * 100%), #9fb4e8);
+  filter: drop-shadow(0 0 calc(var(--b) * 4px) var(--sky));
+}
+.still .rc {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rc {
+    animation: none;
+  }
+}
+/* Code Sandbox editor → live map visual, played on a shared 8s cycle :
+   0.4–3.2s code lines type (each line's --d start, --dur length, --e caret
+   end) · 3.3s run button flashes · 3.4s the editor slides out for the live
+   preview · 3.7s terrain fades in · 3.9s phase line and objective · 4.0–4.25s
+   APP-6 units pop · 4.3–5.0s axis of advance draws · 4.8s hostile
+   counterattack · 5.3s diagnostic badge pops and pulses · 7.2s everything fades out. Everything reads the --cs-t
+   clock (seconds into the cycle) ; keep the CS_* constants in ProjectCard in
+   sync. Base styles are the final frame, used as-is when motion is off. */
+@property --cs-t {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 7;
+}
+.cs {
+  --cs-t: 7;
+  /* Editor → preview switch, smoothstepped. */
+  --cs-sw0: clamp(0, (var(--cs-t) - 3.4) / 0.45, 1);
+  --cs-sw: calc(var(--cs-sw0) * var(--cs-sw0) * (3 - 2 * var(--cs-sw0)));
+  position: relative;
+  border-radius: 22px;
+  background: radial-gradient(120% 90% at 50% 15%, #16224a 0%, var(--ink) 70%);
+  overflow: hidden;
+  animation: csClock 8s linear infinite;
+}
+@keyframes csClock {
+  from {
+    --cs-t: 0;
+  }
+  to {
+    --cs-t: 8;
+  }
+}
+.csBody {
+  position: absolute;
+  inset: 0;
+  animation: foShow 8s infinite;
+}
+.csWin {
+  position: absolute;
+  inset: 16px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: #0f1a3d;
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+.csBar {
+  flex: none;
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  height: 30px;
+  padding: 0 8px 0 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+.csDots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 8px;
+}
+.csDots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+}
+.csTab {
+  --on: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  color: #e6ecfb;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: calc(0.45 + 0.55 * var(--on));
+}
+.csTab::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform: scaleX(var(--on));
+}
+.csTabCode {
+  --on: calc(1 - var(--cs-sw));
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.csTabView {
+  --on: var(--cs-sw);
+}
+/* Pressed right before the switch. */
+.csRun {
+  --r: max(0, 1 - max(var(--cs-t) - 3.3, 3.3 - var(--cs-t)) / 0.2);
+  align-self: center;
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) calc(25% + 75% * var(--r)), transparent);
+  color: #fff;
+  font-size: 8px;
+  transform: scale(calc(1 - 0.15 * var(--r)));
+  box-shadow: 0 0 calc(var(--r) * 14px) var(--sky);
+}
+.csPanes {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+.csEditor,
+.csPreview {
+  position: absolute;
+  inset: 0;
+}
+.csEditor {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #e6ecfb;
+  transform: translateX(calc(var(--cs-sw) * -30%));
+  opacity: calc(1 - var(--cs-sw));
+}
+.csLine {
+  --p: clamp(0, (var(--cs-t) - var(--d)) / var(--dur), 1);
+  display: flex;
+  align-items: center;
+  white-space: pre;
+}
+.csNo {
+  flex: none;
+  width: 2ch;
+  margin-right: 12px;
+  color: #56627e;
+  text-align: right;
+}
+/* Clipped to the characters typed so far. */
+.csCode {
+  overflow: hidden;
+  width: calc(round(down, var(--p) * var(--n)) * 1ch);
+}
+.csCaret {
+  flex: none;
+  width: 2px;
+  height: 1.2em;
+  margin-left: 1px;
+  background: var(--sky);
+  opacity: calc(clamp(0, (var(--cs-t) - var(--d)) * 100, 1) * clamp(0, (var(--e) - var(--cs-t)) * 100, 1));
+}
+.csKw {
+  color: #c4a7ff;
+}
+.csFn {
+  color: var(--sky);
+}
+.csStr {
+  color: #8ee6b0;
+}
+.csPunct {
+  color: #9fb4e8;
+}
+.csPreview {
+  background: #13224d;
+  transform: translateX(calc((1 - var(--cs-sw)) * 100%));
+}
+.csMap {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.csTerrain {
+  opacity: clamp(0, (var(--cs-t) - 3.7) / 0.4, 1);
+}
+.csGrid {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 0.8;
+}
+.csContour {
+  fill: none;
+  stroke: rgba(159, 180, 232, 0.2);
+  stroke-width: 0.8;
+}
+.csRiver {
+  fill: none;
+  stroke: #2d5aa8;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.csPl,
+.csObj {
+  fill: none;
+  stroke: #e6ecfb;
+  stroke-width: 1.2;
+}
+.csPl text,
+.csObj text,
+.csEch {
+  fill: rgba(230, 236, 251, 0.8);
+  stroke: none;
+  font-size: 6.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.csPl {
+  stroke-dasharray: 5 4;
+  opacity: clamp(0, (var(--cs-t) - 3.9) / 0.3, 1);
+}
+/* Objective outline drawn around the hostile position. */
+.csObj path {
+  --p: clamp(0, (var(--cs-t) - 3.9) / 0.5, 1);
+  fill: rgba(255, 128, 128, 0.08);
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc((1 - var(--p)) * 100px);
+}
+.csObj text {
+  opacity: clamp(0, (var(--cs-t) - 4.2) / 0.2, 1);
+}
+/* APP-6 frames : friendly cyan rectangle, hostile red diamond. */
+.csSym {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(clamp(0, (var(--cs-t) - var(--d)) / 0.2, 1));
+  stroke: var(--ink);
+  stroke-width: 1.2;
+}
+.csFr {
+  fill: #80e0ff;
+}
+.csHo {
+  fill: #ff8080;
+}
+.csIcon {
+  fill: none;
+}
+.csEch {
+  text-anchor: middle;
+  fill: #e6ecfb;
+}
+/* Friendly axis of advance, drawn from the battalion to the objective. */
+.csAxis {
+  --p: clamp(0, (var(--cs-t) - 4.3) / 0.7, 1);
+}
+.csAxisBand,
+.csAxisLine {
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc((1 - var(--p) * (2 - var(--p))) * 100px);
+}
+.csAxisBand {
+  stroke: rgba(128, 224, 255, 0.25);
+  stroke-width: 9;
+}
+.csAxisLine {
+  stroke: #80e0ff;
+  stroke-width: 1.5;
+}
+.csAxisHead {
+  fill: #80e0ff;
+  transform-box: fill-box;
+  transform-origin: 0 50%;
+  transform: scale(clamp(0, (var(--cs-t) - 4.95) / 0.15, 1));
+}
+/* Hostile counterattack, dashed as an anticipated movement. */
+.csCounter {
+  fill: none;
+  stroke: #ff8080;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: clamp(0, (var(--cs-t) - 4.8) / 0.3, 1);
+}
+.csCounter path:first-child {
+  stroke-dasharray: 4 3;
+}
+.csLive {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(11, 21, 51, 0.7);
+  color: #e6ecfb;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.csLiveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f87171;
+  animation: csBlink 1s steps(2, jump-none) infinite;
+}
+@keyframes csBlink {
+  to {
+    opacity: 0.25;
+  }
+}
+.csDiag {
+  --b: clamp(0, (var(--cs-t) - 5.3) / 0.25, 1);
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px 5px 5px;
+  border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
+  border-radius: 999px;
+  background: rgba(11, 21, 51, 0.85);
+  color: #e6ecfb;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  opacity: var(--b);
+  /* Slight overshoot as it pops in. */
+  transform: scale(calc(0.6 + 0.4 * var(--b) + 0.5 * var(--b) * (1 - var(--b))));
+  transform-origin: 100% 100%;
+}
+.csOk {
+  --c: #34d399;
+}
+.csErr {
+  --c: #f87171;
+}
+.csDiagIcon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--c);
+  color: var(--ink);
+}
+.csDiagIcon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--c);
+  opacity: 0;
+  animation: csPulse 1.2s ease-out infinite;
+}
+@keyframes csPulse {
+  from {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.2);
+  }
+}
+@media (max-width: 560px) {
+  .csWin {
+    inset: 10px;
+  }
+  .csEditor {
+    padding: 10px;
+    font-size: 10px;
+  }
+  .csNo {
+    margin-right: 8px;
+  }
+}
+.still .cs,
+.still .csBody,
+.still .csLiveDot,
+.still .csDiagIcon::after {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs,
+  .csBody,
+  .csLiveDot,
+  .csDiagIcon::after {
+    animation: none;
+  }
+}
+
+/* CoHoMa III visual, played on a shared 8s cycle :
+   0.3–1.9s the feed tiles drop in and stack up, bottom row first ·
+   1.7–2.1s the replay timeline fades in · 2.3–4.3s the playhead plays
+   forward · 4.3–5.0s it is dragged back (rewind) · 5.4–6.6s dragged forward
+   to the last event marker (--m) · 6.6–7.2s plays on · 7.2–7.6s everything
+   fades out, then stays hidden until the loop wraps. Tiles read the --ch-t clock (seconds into the cycle) ; feed
+   content, markers and timecode follow the --ch-p playhead (0–1). Keep the
+   CH_* constants in ProjectCard in sync. Base styles are the final frame
+   (wall stacked, playhead on the last event), used as-is when motion is off. */
+@property --ch-t {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 7;
+}
+@property --ch-p {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.8;
+}
+/* Timecode readout : integer custom properties round, so floor(x) is
+   round(x - 0.5) ; fed to CSS counters below. */
+@property --ch-tc {
+  syntax: '<integer>';
+  inherits: true;
+  initial-value: 0;
+}
+@property --ch-mm {
+  syntax: '<integer>';
+  inherits: true;
+  initial-value: 0;
+}
+@property --ch-ss {
+  syntax: '<integer>';
+  inherits: true;
+  initial-value: 0;
+}
+.ch {
+  --m: 0.8;
+  --ch-t: 7;
+  --ch-p: var(--m);
+  /* Scrub windows : 1 while the playhead is dragged back / forward. */
+  --ch-rew: clamp(0, min(var(--ch-t) - 4.3, 5 - var(--ch-t)) / 0.08, 1);
+  --ch-ff: clamp(0, min(var(--ch-t) - 5.4, 6.6 - var(--ch-t)) / 0.08, 1);
+  --ch-grab: max(var(--ch-rew), var(--ch-ff));
+  /* Fade in over 0–0.24s, out over 7.2–7.6s, hidden until the loop wraps :
+     derived from the same clock as the playhead so the reset to 0 always
+     lands while the visual is invisible. */
+  --ch-show: min(clamp(0, var(--ch-t) / 0.24, 1), clamp(0, (7.6 - var(--ch-t)) / 0.4, 1));
+  /* 900s recording, keep in sync with CH_DURATION. */
+  --ch-tc: calc(var(--ch-p) * 900);
+  --ch-mm: calc(var(--ch-tc) / 60 - 0.5);
+  --ch-ss: calc(var(--ch-tc) - var(--ch-mm) * 60);
+  position: relative;
+  border-radius: 22px;
+  background: radial-gradient(120% 90% at 50% 15%, #16224a 0%, var(--ink) 70%);
+  overflow: hidden;
+  animation:
+    chClock 8s linear infinite,
+    chScrub 8s linear infinite;
+}
+@keyframes chClock {
+  from {
+    --ch-t: 0;
+  }
+  to {
+    --ch-t: 8;
+  }
+}
+@keyframes chScrub {
+  0% {
+    --ch-p: 0;
+  }
+  28.75% {
+    --ch-p: 0.08;
+  }
+  53.75% {
+    --ch-p: 0.42;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.35, 1);
+  }
+  62.5%,
+  67.5% {
+    --ch-p: 0.18;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.35, 1);
+  }
+  82.5% {
+    --ch-p: var(--m);
+  }
+  90%,
+  100% {
+    --ch-p: calc(var(--m) + 0.05);
+  }
+}
+.chBody {
+  position: absolute;
+  inset: 0;
+  opacity: var(--ch-show);
+}
+.chMosaic {
+  position: absolute;
+  inset: 12px 14px 58px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 6px;
+}
+.chTile {
+  /* Gravity drop then a short squash on landing. */
+  --pop: clamp(0, (var(--ch-t) - var(--d)) / 0.45, 1);
+  --land: clamp(0, min(var(--ch-t) - var(--d) - 0.45, var(--d) + 0.7 - var(--ch-t)) / 0.1, 1);
+  position: relative;
+  border-radius: 9px;
+  background: #0f1a3d;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  opacity: min(1, var(--pop) * 4);
+  transform-origin: 50% 100%;
+  transform: translateY(calc((var(--row) * 106% + 130%) * -1 * (1 - var(--pop) * var(--pop))))
+    scaleY(calc(1 - 0.07 * var(--land)));
+}
+.chFeed {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  filter: saturate(calc(1 - 0.6 * var(--ch-grab))) brightness(calc(1 + 0.2 * var(--ch-grab)));
+}
+.chFeed[data-kind='uav'] {
+  background: #12264a;
+}
+.chGround {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(closest-side, rgba(96, 170, 130, 0.42), transparent),
+    radial-gradient(closest-side, rgba(96, 170, 130, 0.28), transparent),
+    linear-gradient(115deg, transparent 46%, rgba(230, 220, 190, 0.28) 47% 50%, transparent 51%),
+    repeating-linear-gradient(0deg, rgba(159, 180, 232, 0.08) 0 1px, transparent 1px 18px),
+    repeating-linear-gradient(90deg, rgba(159, 180, 232, 0.08) 0 1px, transparent 1px 18px);
+  background-size:
+    90px 70px,
+    56px 48px,
+    150px 150px,
+    auto,
+    auto;
+  background-position:
+    calc(var(--ch-p) * -420px) calc(var(--ch-p) * -160px),
+    calc(var(--ch-p) * -300px + 30px) calc(var(--ch-p) * -110px + 20px),
+    calc(var(--ch-p) * -420px) calc(var(--ch-p) * -160px),
+    0 calc(var(--ch-p) * -160px),
+    calc(var(--ch-p) * -420px) 0;
+}
+.chReticle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(230, 236, 251, 0.5);
+  border-radius: 50%;
+}
+.chReticle::before,
+.chReticle::after {
+  content: '';
+  position: absolute;
+  background: rgba(230, 236, 251, 0.5);
+}
+.chReticle::before {
+  left: 50%;
+  top: -6px;
+  bottom: -6px;
+  width: 1px;
+}
+.chReticle::after {
+  top: 50%;
+  left: -6px;
+  right: -6px;
+  height: 1px;
+}
+.chFeed[data-kind='ugv'] {
+  background: linear-gradient(#1c2f60 0 48%, #0d1834 48%);
+}
+.chRidge {
+  position: absolute;
+  left: 0;
+  top: 26%;
+  width: 300%;
+  height: 24%;
+  fill: #273c74;
+  transform: translateX(calc(var(--ch-p) * -66.6%));
+}
+.chTrack {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 52%;
+  clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+  background: repeating-linear-gradient(to bottom, rgba(230, 236, 251, 0.16) 0 5px, transparent 5px 13px);
+  background-position: 0 calc(var(--ch-p) * 700px);
+}
+.chFeed[data-kind='cam'] {
+  background: radial-gradient(120% 90% at 50% 120%, #3b1652, #120a2a);
+}
+.chHot {
+  position: absolute;
+  top: 52%;
+  left: calc(50% + (var(--m) - var(--ch-p)) * 250%);
+  width: 22px;
+  height: 30px;
+  border-radius: 45%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, #fff6c8, #ffb347 40%, #ff5a36 70%, transparent);
+}
+.chHot[data-alt] {
+  top: 64%;
+  left: calc(50% + (var(--m) - 0.35 - var(--ch-p)) * 250%);
+  width: 16px;
+  height: 20px;
+  opacity: 0.75;
+}
+.chBracket {
+  /* Lock-on frame, only while the playhead sits on the last event. */
+  --c: var(--accent);
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 34px;
+  height: 42px;
+  transform: translate(-50%, -50%);
+  opacity: clamp(0, min(var(--ch-p) - var(--m) + 0.03, var(--m) + 0.1 - var(--ch-p)) * 40, 1);
+  background:
+    linear-gradient(var(--c), var(--c)) top left / 8px 1.5px no-repeat,
+    linear-gradient(var(--c), var(--c)) top left / 1.5px 8px no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / 8px 1.5px no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / 1.5px 8px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / 8px 1.5px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / 1.5px 8px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / 8px 1.5px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / 1.5px 8px no-repeat;
+}
+.chScan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 45%;
+  top: -45%;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.08), transparent);
+  animation: chScan 2.6s linear infinite;
+  animation-delay: calc(var(--d) * 1s);
+}
+@keyframes chScan {
+  0% {
+    top: -45%;
+  }
+  100% {
+    top: 100%;
+  }
+}
+/* Tape-seek tearing while scrubbing. */
+.chTear {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(to bottom, rgba(230, 236, 251, 0.14) 0 1px, transparent 1px 7px);
+  background-position: 0 calc(var(--ch-p) * 900px);
+  opacity: calc(0.8 * var(--ch-grab));
+}
+.chTileIcon {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  color: #9fb4e8;
+}
+.chTile[data-kind='uav'] .chTileIcon {
+  color: var(--sky);
+}
+.chTile[data-kind='ugv'] .chTileIcon {
+  color: var(--accent);
+}
+.chTileLabel {
+  position: absolute;
+  left: 7px;
+  bottom: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #e6ecfb;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+.chRec {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #c9d3ea;
+}
+.chRec .pulse {
+  width: 5px;
+  height: 5px;
+}
+.chSeek {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 15px;
+  letter-spacing: -0.12em;
+  color: #fff;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+}
+.chSeek span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.ch [data-mode='play'] {
+  opacity: calc(1 - var(--ch-grab));
+}
+.ch [data-mode='rew'] {
+  opacity: var(--ch-rew);
+}
+.ch [data-mode='ff'] {
+  opacity: var(--ch-ff);
+}
+.chTimeline {
+  --in: clamp(0, (var(--ch-t) - 1.7) / 0.4, 1);
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 14px;
+  opacity: var(--in);
+  transform: translateY(calc(8px * (1 - var(--in))));
+}
+.chTimeHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #c9d3ea;
+}
+.chMode {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.chModeIcon {
+  position: relative;
+  width: 14px;
+  height: 10px;
+}
+.chModeIcon span {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 8px;
+  letter-spacing: -0.15em;
+  color: var(--sky);
+}
+.chTimecode {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+.chTc::after {
+  counter-reset: mm var(--ch-mm) ss var(--ch-ss);
+  content: counter(mm, decimal-leading-zero) ':' counter(ss, decimal-leading-zero);
+  color: #e6ecfb;
+}
+.chTcTotal {
+  color: #6f7fa8;
+}
+.chRail {
+  position: relative;
+  margin-top: 9px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.chPlayed {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(var(--ch-p) * 100%);
+  border-radius: inherit;
+  background: var(--sky);
+}
+.chMarker {
+  /* Lights up once the playhead has passed it, dims again on rewind. */
+  --lit: clamp(0, (var(--ch-p) - var(--at)) * 80, 1);
+  position: absolute;
+  top: 50%;
+  left: calc(var(--at) * 100%);
+  width: 7px;
+  height: 7px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: color-mix(in srgb, var(--accent) calc(var(--lit) * 100%), #2a3a6b);
+  border: 1px solid rgba(230, 236, 251, 0.55);
+}
+.chHead {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--ch-p) * 100%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  transform: translate(-50%, -50%) scale(calc(1 + 0.3 * var(--ch-grab)));
+  box-shadow: 0 0 0 calc(5px * var(--ch-grab)) rgba(255, 255, 255, 0.18);
+}
+.still .ch,
+.still .chScan {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ch,
+  .chScan {
+    animation: none;
+  }
+}
+
+/* Vision4Rescue radar visual : drones patrol elliptic orbits around the
+   command node, each one linked to it with data packets flowing both ways
+   (sky : telemetry up, accent : orders down), under a radar sweep and pulse
+   rings. Orbits are flattened to the visual's aspect, so everything sized
+   around the node uses cqw / cqh. Base styles are a still frame, used as-is
+   when motion is off. */
+@property --vr-a {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+@property --vr-k {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+@property --vr-s {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+.vr {
+  position: relative;
+  container-type: size;
+  border-radius: 22px;
+  background: radial-gradient(120% 90% at 50% 50%, #16224a 0%, var(--ink) 70%);
+  overflow: hidden;
+}
+.vrMap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+}
+.vrGrid {
+  stroke: rgba(255, 255, 255, 0.05);
+  stroke-width: 1;
+}
+.vrContour path {
+  stroke: rgba(159, 180, 232, 0.16);
+  stroke-width: 1;
+}
+.vrRiver {
+  stroke: color-mix(in srgb, var(--sky) 28%, transparent);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+/* Range rings and crosshair, centred on the command node. */
+.vrRings,
+.vrSweep,
+.vrPulse {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 84cqw;
+  height: 84cqh;
+  margin: -42cqh 0 0 -42cqw;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.vrRings {
+  border: 1px solid rgba(159, 180, 232, 0.22);
+  background:
+    radial-gradient(
+      closest-side,
+      transparent calc(33% - 1px),
+      rgba(159, 180, 232, 0.14) 33%,
+      transparent calc(33% + 1px),
+      transparent calc(66% - 1px),
+      rgba(159, 180, 232, 0.14) 66%,
+      transparent calc(66% + 1px)
+    ),
+    linear-gradient(90deg, transparent calc(50% - 0.5px), rgba(159, 180, 232, 0.12) 0 calc(50% + 0.5px), transparent 0),
+    linear-gradient(transparent calc(50% - 0.5px), rgba(159, 180, 232, 0.12) 0 calc(50% + 0.5px), transparent 0);
+}
+.vrSweep {
+  --vr-s: 300deg;
+  background: conic-gradient(
+    from var(--vr-s),
+    transparent 0deg,
+    transparent 290deg,
+    color-mix(in srgb, var(--sky) 10%, transparent) 330deg,
+    color-mix(in srgb, var(--sky) 45%, transparent) 359deg,
+    transparent 360deg
+  );
+  animation: vrSweep 4s linear infinite;
+}
+@keyframes vrSweep {
+  to {
+    --vr-s: 660deg;
+  }
+}
+/* Rings broadcast from the command node, one per second. */
+.vrPulse {
+  border: 1.5px solid var(--sky);
+  opacity: 0;
+  animation: vrPulse 3s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+@keyframes vrPulse {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.06);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+/* Zero-size anchor on the node ; --vr-a turns the drone around its orbit
+   and --vr-k breathes it in and out. Both animations' durations and
+   directions are set per drone. */
+.vrDrone {
+  --ang: calc(var(--a0) + var(--vr-a));
+  --x: calc(var(--rx) * var(--vr-k) * cos(var(--ang)));
+  --y: calc(var(--ry) * var(--vr-k) * sin(var(--ang)));
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  animation:
+    vrOrbit 20s linear infinite,
+    vrBreathe 6s ease-in-out infinite alternate;
+}
+@keyframes vrOrbit {
+  to {
+    --vr-a: 360deg;
+  }
+}
+@keyframes vrBreathe {
+  from {
+    --vr-k: 0.72;
+  }
+  to {
+    --vr-k: 1;
+  }
+}
+.vrLink {
+  position: absolute;
+  left: 0;
+  top: -0.5px;
+  width: hypot(var(--x), var(--y));
+  height: 1px;
+  transform-origin: 0 50%;
+  transform: rotate(atan2(var(--y), var(--x)));
+  background: linear-gradient(90deg, rgba(159, 180, 232, 0.15), color-mix(in srgb, var(--sky) 70%, transparent));
+}
+/* Telemetry travels from the drone to the node ; orders run the other way. */
+.vrPacket {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: var(--sky);
+  box-shadow: 0 0 8px var(--sky);
+  opacity: 0;
+  animation: vrPacket 2.2s linear infinite;
+}
+.vrOrder {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation-direction: reverse;
+}
+@keyframes vrPacket {
+  0% {
+    left: 100%;
+    opacity: 0;
+  }
+  10%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    left: 0;
+    opacity: 0;
+  }
+}
+.vrBlip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 0 2px var(--sky),
+    0 0 14px var(--sky);
+  transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%));
+}
+.vrBlip::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 1px solid var(--sky);
+  opacity: 0;
+  animation: vrPing 1.6s ease-out infinite;
+}
+@keyframes vrPing {
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(3.2);
+  }
+}
+.vrBlipLabel {
+  position: absolute;
+  left: 14px;
+  top: -6px;
+  color: #c9d3ea;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.vrCommand {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+}
+.vrCommand::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  background: var(--accent);
+  border: 2px solid #fff;
+  box-shadow: 0 0 18px var(--accent);
+  transform: rotate(45deg);
+}
+.vrCommandLabel {
+  position: absolute;
+  left: 50%;
+  top: 22px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(11, 21, 51, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+.vrHud {
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #9fb4e8;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.still .vrSweep,
+.still .vrPulse,
+.still .vrDrone,
+.still .vrPacket,
+.still .vrBlip::before {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .vrSweep,
+  .vrPulse,
+  .vrDrone,
+  .vrPacket,
+  .vrBlip::before {
+    animation: none;
+  }
+}
+
+/* Luma Framework puzzle visual, played on a shared 8s cycle :
+   0.5 / 1.4 / 2.3 / 3.2s a plugin drifts in tilted, lines up in front of its
+   socket and snaps in 0.7s later (flash, core LED) · 4.3s every plugin is
+   in : the core boots, a pulse spreads and power flows into the plugins ·
+   7.2s everything fades out.
+   Everything reads the --lm-t clock (seconds into the cycle) ; keep
+   LM_ARRIVALS / LM_SNAP in ProjectCard in sync. The base clock (7) is the
+   final frame, used as-is when motion is off. */
+@property --lm-t {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 7;
+}
+.lm {
+  --lm-t: 7;
+  --show: min(clamp(0, var(--lm-t) / 0.3, 1), clamp(0, (7.6 - var(--lm-t)) / 0.4, 1));
+  --boot: clamp(0, (var(--lm-t) - 4.3) / 0.3, 1);
+  position: relative;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle, rgba(159, 180, 232, 0.12) 1px, transparent 1.5px) 0 0 / 16px 16px,
+    radial-gradient(120% 90% at 50% 50%, #16224a 0%, var(--ink) 70%);
+  overflow: hidden;
+  animation: lmClock 8s linear infinite;
+}
+@keyframes lmClock {
+  from {
+    --lm-t: 0;
+  }
+  to {
+    --lm-t: 8;
+  }
+}
+.lmBoard {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: var(--show);
+}
+/* Per piece : --a approach (0 → 1 over 0.5s, eased out), --s the snap from
+   the hover spot into the socket, --lit once it is in. */
+.lmGhost,
+.lmLed,
+.lmPlug,
+.lmFlash {
+  --a: clamp(0, (var(--lm-t) - var(--d)) / 0.5, 1);
+  --o: calc((1 - var(--a)) * (1 - var(--a)) * (1 - var(--a)));
+  --s: clamp(0, (var(--lm-t) - var(--d) - 0.58) / 0.12, 1);
+  --lit: clamp(0, (var(--lm-t) - var(--d) - 0.7) / 0.12, 1);
+}
+/* Dashed outline of the empty slot, marching until its plugin lands. */
+.lmGhost {
+  fill: none;
+  stroke: rgba(159, 180, 232, 0.4);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  opacity: calc(1 - var(--lit));
+  animation: lmMarch 1s linear infinite;
+}
+@keyframes lmMarch {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+.lmCore path {
+  fill: #1b2a5a;
+  stroke: color-mix(in srgb, var(--sky) calc(45% + 55% * var(--boot)), transparent);
+  stroke-width: 1.4;
+  filter: drop-shadow(0 0 calc(var(--boot) * 14px) color-mix(in srgb, var(--accent) 80%, transparent));
+}
+.lmCoreLabel {
+  fill: #fff;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.lmLed {
+  fill: color-mix(in srgb, var(--sky) calc(var(--lit) * 100%), #2a3a6b);
+  filter: drop-shadow(0 0 calc(var(--lit) * 4px) var(--sky));
+}
+.lmPlug {
+  --off: calc(var(--o) * 64 + (1 - var(--s) * var(--s)) * 9);
+  opacity: clamp(0, (var(--lm-t) - var(--d)) / 0.25, 1);
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: translate(
+      calc((var(--dx) * var(--off) + var(--px) * var(--o)) * 1px),
+      calc((var(--dy) * var(--off) + var(--py) * var(--o)) * 1px)
+    )
+    rotate(calc(var(--r) * var(--o)));
+}
+.lmPlug > path {
+  fill: color-mix(in srgb, var(--accent) calc(20% + 45% * var(--lit)), #16224a);
+  stroke: color-mix(in srgb, var(--sky) calc(35% + 65% * var(--lit)), transparent);
+  stroke-width: 1.4;
+  stroke-dasharray: none;
+}
+.lmPlugLabel {
+  fill: #e6ecfb;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+/* Snap flash on the seam, right when the knob seats. */
+.lmFlash {
+  --f: clamp(0, (var(--lm-t) - var(--d) - 0.7) / 0.5, 1);
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(calc(0.3 + 2.2 * var(--f)));
+  opacity: calc((1 - var(--f)) * clamp(0, var(--f) * 40, 1));
+}
+.lmBootPulse {
+  --f: clamp(0, (var(--lm-t) - 4.3) / 1, 1);
+  fill: none;
+  stroke: var(--sky);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(calc(1 + 2.6 * var(--f)));
+  opacity: calc((1 - var(--f)) * clamp(0, var(--f) * 40, 1));
+}
+/* Once booted, power runs from the core through each seam into the plugin. */
+.lmFlow {
+  opacity: var(--boot);
+}
+.lmSpark {
+  fill: #fff;
+  filter: drop-shadow(0 0 3px var(--sky));
+  animation: lmSpark 0.9s ease-in infinite;
+}
+@keyframes lmSpark {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--dx) * 22px), calc(var(--dy) * 22px));
+  }
+}
+.still .lm,
+.still .lmGhost,
+.still .lmSpark {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lm,
+  .lmGhost,
+  .lmSpark {
+    animation: none;
+  }
+}
+
+/* Djise live set visual, played on a shared 8s cycle :
+   0.4s the song request bubble pops in, waiting for the DJ · 1.4s a tip
+   coin drops from above, spinning · 2.1s it lands on the bubble's corner and
+   bounces (ring, +tip) · 3.4s the DJ queues the song and the equalizer kicks
+   in at full level · 7.2s the bubble fades out. The equalizer, the wave and
+   the vinyl loop on their own. Keep the timeline in ProjectCard in sync.
+   With motion off, every element rests on its final frame. */
+.dj {
+  position: relative;
+  border-radius: 22px;
+  background:
+    radial-gradient(80% 70% at 82% 10%, color-mix(in srgb, var(--accent) 35%, transparent) 0%, transparent 70%),
+    radial-gradient(120% 90% at 50% 110%, #1b2a5a 0%, var(--ink) 70%);
+  overflow: hidden;
+}
+.djWave {
+  position: absolute;
+  left: 0;
+  bottom: 18%;
+  width: 200%;
+  height: 34%;
+  fill: none;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  animation: djWave 4s linear infinite;
+}
+.djWave path {
+  stroke: var(--sky);
+  stroke-opacity: 0.35;
+  vector-effect: non-scaling-stroke;
+}
+.djWave path + path {
+  stroke: #f5c542;
+  stroke-opacity: 0.25;
+}
+@keyframes djWave {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.djEq {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 0;
+  height: 40%;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  transform-origin: bottom;
+  animation: djBoost 8s ease-in-out infinite;
+}
+@keyframes djBoost {
+  0%,
+  42% {
+    transform: scaleY(0.55);
+  }
+  46% {
+    transform: scaleY(1.08);
+  }
+  49%,
+  90% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(0.55);
+  }
+}
+.djBar {
+  flex: 1;
+  height: 100%;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(to top, var(--accent), var(--sky) 70%, #fff);
+  opacity: 0.85;
+  transform-origin: bottom;
+  transform: scaleY(calc(var(--hi) * 0.8));
+  animation: djBar 0.6s ease-in-out infinite alternate;
+}
+@keyframes djBar {
+  from {
+    transform: scaleY(var(--lo));
+  }
+  to {
+    transform: scaleY(var(--hi));
+  }
+}
+/* Spinning record in the booth. */
+.djVinyl {
+  position: absolute;
+  top: 14%;
+  right: 7%;
+  width: clamp(64px, 20%, 92px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle, #10193a 0 2px, #1b2550 2.5px 3.5px),
+    #10193a;
+  box-shadow: 0 0 0 2px rgba(159, 180, 232, 0.18), 0 10px 30px rgba(0, 0, 0, 0.4);
+  animation: djSpin 2.4s linear infinite;
+}
+.djVinyl::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 20deg, transparent 0 10%, rgba(255, 255, 255, 0.14) 14%, transparent 20% 60%, rgba(255, 255, 255, 0.08) 64%, transparent 70%);
+}
+.djVinylLabel {
+  position: absolute;
+  inset: 34%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ink) 0 12%, var(--accent) 14%);
+}
+@keyframes djSpin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+/* Request bubble, sent from the crowd (tail bottom-left). */
+.djReq {
+  position: absolute;
+  top: 22%;
+  left: 7%;
+  max-width: 58%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+  border-radius: 16px 16px 16px 4px;
+  background: #16224a;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 0 0 rgba(245, 197, 66, 0), 0 12px 30px rgba(0, 0, 0, 0.35);
+  transform-origin: bottom left;
+  animation: djReq 8s ease-out infinite;
+}
+@keyframes djReq {
+  0%,
+  5% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.6);
+  }
+  8% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.05);
+  }
+  10% {
+    transform: none;
+  }
+  26% {
+    transform: none;
+    box-shadow: 0 0 0 0 rgba(245, 197, 66, 0), 0 12px 30px rgba(0, 0, 0, 0.35);
+  }
+  27.5% {
+    transform: translateY(3px) scale(0.98);
+    box-shadow: 0 0 0 2px rgba(245, 197, 66, 0.7), 0 12px 30px rgba(0, 0, 0, 0.35);
+  }
+  30% {
+    transform: none;
+  }
+  40% {
+    box-shadow: 0 0 0 0 rgba(245, 197, 66, 0), 0 12px 30px rgba(0, 0, 0, 0.35);
+  }
+  90% {
+    opacity: 1;
+    transform: none;
+  }
+  95%,
+  100% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.96);
+  }
+}
+.djReqLabel {
+  margin-bottom: 4px;
+  color: #9fb4e8;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.djReqSong {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.djReqArtist {
+  color: #c9d3ea;
+  font-size: 13px;
+}
+.djReqStatus {
+  display: grid;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.djPending,
+.djAccepted {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.djPending {
+  color: #c9d3ea;
+  opacity: 0;
+  animation: djPending 8s linear infinite;
+}
+.djPending .typing span {
+  width: 5px;
+  height: 5px;
+  margin-right: 2px;
+}
+@keyframes djPending {
+  0%,
+  41% {
+    opacity: 1;
+  }
+  43%,
+  100% {
+    opacity: 0;
+  }
+}
+.djAccepted {
+  color: #7be0a4;
+  animation: djAccepted 8s ease-out infinite;
+}
+@keyframes djAccepted {
+  0%,
+  42.5% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  45%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* Tip coin : falls spinning, lands on the bubble's top-right corner and
+   bounces twice before settling. */
+.djCoin {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  width: 34px;
+  height: 34px;
+  perspective: 120px;
+  animation: djDrop 8s linear infinite;
+}
+@keyframes djDrop {
+  0%,
+  17% {
+    opacity: 0;
+    transform: translateY(-190px);
+    animation-timing-function: ease-in;
+  }
+  17.5% {
+    opacity: 1;
+    transform: translateY(-190px);
+    animation-timing-function: ease-in;
+  }
+  26.25% {
+    transform: none;
+    animation-timing-function: ease-out;
+  }
+  29.5% {
+    transform: translateY(-18px);
+    animation-timing-function: ease-in;
+  }
+  32.5% {
+    transform: none;
+    animation-timing-function: ease-out;
+  }
+  34.4% {
+    transform: translateY(-5px);
+    animation-timing-function: ease-in;
+  }
+  36.25%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+.djCoinFace {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff3c4 0%, #f5c542 45%, #c8901a 100%);
+  box-shadow: inset 0 0 0 2px rgba(140, 90, 10, 0.45), 0 4px 12px rgba(245, 197, 66, 0.45);
+  color: #6b4505;
+  font-size: 10.5px;
+  font-weight: 900;
+  white-space: nowrap;
+  animation: djFlip 8s linear infinite;
+}
+@keyframes djFlip {
+  0%,
+  17.5% {
+    transform: rotateY(0);
+  }
+  26.25% {
+    transform: rotateY(1440deg);
+  }
+  30% {
+    transform: rotateY(1440deg) rotate(-14deg);
+  }
+  33% {
+    transform: rotateY(1440deg) rotate(8deg);
+  }
+  36.25%,
+  100% {
+    transform: rotateY(1440deg);
+  }
+}
+.djRing {
+  position: absolute;
+  top: -22px;
+  right: -22px;
+  width: 46px;
+  height: 46px;
+  border: 2px solid #f5c542;
+  border-radius: 50%;
+  opacity: 0;
+  animation: djRing 8s ease-out infinite;
+}
+@keyframes djRing {
+  0%,
+  26% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  26.5% {
+    opacity: 1;
+    transform: scale(0.5);
+  }
+  34%,
+  100% {
+    opacity: 0;
+    transform: scale(2.2);
+  }
+}
+.djTipPop {
+  position: absolute;
+  top: -20px;
+  right: 22px;
+  color: #f5c542;
+  font-size: 14px;
+  font-weight: 900;
+  white-space: nowrap;
+  opacity: 0;
+  animation: djTipPop 8s ease-out infinite;
+}
+@keyframes djTipPop {
+  0%,
+  27% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-10px);
+  }
+  42%,
+  100% {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+}
+.still .djWave,
+.still .djEq,
+.still .djBar,
+.still .djVinyl,
+.still .djReq,
+.still .djPending,
+.still .djAccepted,
+.still .djCoin,
+.still .djCoinFace,
+.still .djRing,
+.still .djTipPop {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .djWave,
+  .djEq,
+  .djBar,
+  .djVinyl,
+  .djReq,
+  .djPending,
+  .djAccepted,
+  .djCoin,
+  .djCoinFace,
+  .djRing,
+  .djTipPop {
+    animation: none;
+  }
+}
+
+/* Combat Digital Platform tactical mesh visual, played on a shared 9s cycle :
+   0.3s the data mesh links the allied units · 0.8s the recon unit sweeps its
+   sensor · 1.7s it spots the enemy · from 1.8s the track hops over the mesh,
+   each unit flagging it as it arrives · 3.3s routes are planned · 3.6–5.4s
+   every unit converges, the mesh following them · 5.5s engagement · 5.9s the
+   enemy is neutralised · 8.4s everything fades out.
+   Everything reads the --cd-t clock (seconds into the cycle) ; keep CD_UNITS /
+   CD_LINKS in ProjectCard in sync. Symbols follow APP-6 colours (friendly
+   blue rectangle, hostile red diamond). The base clock (7) is the final
+   frame, used as-is when motion is off. */
+@property --cd-t {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 7;
+}
+.cd {
+  --cd-t: 7;
+  --friend: #80e0ff;
+  --hostile: #ff8080;
+  --tracer: #ffd27a;
+  --show: min(clamp(0, var(--cd-t) / 0.3, 1), clamp(0, (9 - var(--cd-t)) / 0.6, 1));
+  --mesh: clamp(0, (var(--cd-t) - 0.3) / 0.5, 1);
+  --scan: min(clamp(0, (var(--cd-t) - 0.8) / 0.3, 1), clamp(0, (3.6 - var(--cd-t)) / 0.4, 1));
+  --det: clamp(0, (var(--cd-t) - 1.7) / 0.2, 1);
+  --plan: min(clamp(0, (var(--cd-t) - 3.3) / 0.3, 1), clamp(0, (5.6 - var(--cd-t)) / 0.3, 1));
+  --mr: clamp(0, (var(--cd-t) - 3.6) / 1.8, 1);
+  --m: calc(var(--mr) * var(--mr) * (3 - 2 * var(--mr)));
+  --kill: clamp(0, (var(--cd-t) - 5.9) / 0.25, 1);
+  position: relative;
+  border-radius: 22px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px) 50% 50% / 48px 48px,
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px) 50% 50% / 48px 48px,
+    radial-gradient(120% 90% at 50% 50%, #16224a 0%, var(--ink) 70%);
+  overflow: hidden;
+  animation: cdClock 9s linear infinite;
+}
+@keyframes cdClock {
+  from {
+    --cd-t: 0;
+  }
+  to {
+    --cd-t: 9;
+  }
+}
+.cdMap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: var(--show);
+}
+.cdTerrain path {
+  fill: none;
+  stroke: rgba(159, 180, 232, 0.16);
+  stroke-width: 1;
+}
+.cdTerrain .cdRoad {
+  stroke: rgba(159, 180, 232, 0.22);
+  stroke-width: 2.5;
+  stroke-dasharray: 8 5;
+}
+/* Sensor footprint of the recon unit, and its dashed line to the contact. */
+.cdCone {
+  fill: color-mix(in srgb, var(--friend) 12%, transparent);
+  stroke: color-mix(in srgb, var(--friend) 40%, transparent);
+  stroke-width: 1;
+  opacity: var(--scan);
+}
+.cdTrack,
+.cdRoute {
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  animation: cdMarch 0.8s linear infinite;
+}
+.cdTrack {
+  stroke: var(--hostile);
+  opacity: calc(var(--det) * clamp(0, (3.6 - var(--cd-t)) / 0.3, 1));
+}
+.cdRoute {
+  stroke: color-mix(in srgb, var(--friend) 55%, transparent);
+  opacity: var(--plan);
+}
+@keyframes cdMarch {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+.cdObjective {
+  fill: none;
+  stroke: color-mix(in srgb, var(--hostile) 55%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(calc(1.8 - 0.8 * var(--m)));
+  opacity: calc(clamp(0, (var(--cd-t) - 3.3) / 0.3, 1) * (1 - var(--kill)));
+}
+/* A unit line from (0, 0) to (1, 0), stretched between both ends' current
+   positions, so the mesh follows the units as they move. */
+.cdLink {
+  --ax: calc(var(--ax0) + (var(--ax1) - var(--ax0)) * var(--m));
+  --ay: calc(var(--ay0) + (var(--ay1) - var(--ay0)) * var(--m));
+  --bx: calc(var(--bx0) + (var(--bx1) - var(--bx0)) * var(--m));
+  --by: calc(var(--by0) + (var(--by1) - var(--by0)) * var(--m));
+  --dx: calc(var(--bx) - var(--ax));
+  --dy: calc(var(--by) - var(--ay));
+  --lit: clamp(0, (var(--cd-t) - var(--lt)) / 0.3, 1);
+  stroke: color-mix(in srgb, var(--friend) calc(30% + 50% * var(--lit)), transparent);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+  transform-origin: 0 0;
+  transform: translate(calc(var(--ax) * 1px), calc(var(--ay) * 1px)) rotate(atan2(var(--dy), var(--dx))) scale(hypot(var(--dx), var(--dy)), 1);
+  opacity: var(--mesh);
+}
+/* The enemy track, hopping from one unit to the next. */
+.cdPacket {
+  --p: clamp(0, (var(--cd-t) - var(--d)) / 0.5, 1);
+  fill: var(--hostile);
+  filter: drop-shadow(0 0 4px var(--hostile));
+  transform: translate(
+    calc((var(--ax) + (var(--bx) - var(--ax)) * var(--p)) * 1px),
+    calc((var(--ay) + (var(--by) - var(--ay)) * var(--p)) * 1px)
+  );
+  opacity: min(clamp(0, var(--p) * 20, 1), clamp(0, (1 - var(--p)) * 20, 1));
+}
+.cdFire {
+  --p: clamp(0, (var(--cd-t) - var(--d)) / 0.35, 1);
+  stroke: var(--tracer);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-dasharray: 0.18 1.2;
+  stroke-dashoffset: calc(-0.82 * var(--p));
+  filter: drop-shadow(0 0 3px var(--tracer));
+  opacity: min(clamp(0, var(--p) * 20, 1), clamp(0, (1 - var(--p)) * 20, 1));
+}
+.cdLabel {
+  fill: #c9d3ea;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.cdIcon,
+.cdIcon path,
+.cdIcon rect {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.3;
+}
+.cdUnit {
+  --got: clamp(0, (var(--cd-t) - var(--rx)) / 0.15, 1);
+  transform: translate(
+    calc((var(--x0) + (var(--x1) - var(--x0)) * var(--m)) * 1px),
+    calc((var(--y0) + (var(--y1) - var(--y0)) * var(--m)) * 1px)
+  );
+}
+.cdFriend {
+  fill: var(--friend);
+  stroke: var(--ink);
+  stroke-width: 1.3;
+  filter: drop-shadow(0 0 calc(4px + var(--got) * 4px) color-mix(in srgb, var(--friend) 60%, transparent));
+}
+/* Once a unit holds the track : a red pip on its frame and a ring. */
+.cdPip {
+  fill: var(--hostile);
+  stroke: var(--ink);
+  stroke-width: 0.8;
+  opacity: var(--got);
+}
+.cdFlash,
+.cdPing,
+.cdBurst {
+  fill: none;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.cdFlash {
+  --f: clamp(0, (var(--cd-t) - var(--rx)) / 0.6, 1);
+  stroke: var(--hostile);
+  stroke-width: 1.4;
+  transform: scale(calc(1 + 1.2 * var(--f)));
+  opacity: calc((1 - var(--f)) * clamp(0, var(--f) * 40, 1));
+}
+.cdPing {
+  --f: clamp(0, (var(--cd-t) - 1.7) / 0.9, 1);
+  stroke: var(--hostile);
+  stroke-width: 1.4;
+  transform: scale(calc(1 + 2 * var(--f)));
+  opacity: calc((1 - var(--f)) * clamp(0, var(--f) * 40, 1));
+}
+.cdBurst {
+  --f: clamp(0, (var(--cd-t) - 5.9) / 0.7, 1);
+  stroke: var(--tracer);
+  stroke-width: 2;
+  transform: scale(calc(1 + 2.4 * var(--f)));
+  opacity: calc((1 - var(--f)) * clamp(0, var(--f) * 40, 1));
+}
+.cdEnemy {
+  opacity: var(--det);
+}
+.cdEnemyMark {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(calc(1.4 - 0.4 * var(--det)));
+  opacity: calc(1 - 0.45 * var(--kill));
+}
+.cdHostile {
+  fill: var(--hostile);
+  stroke: var(--ink);
+  stroke-width: 1.3;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--hostile) 60%, transparent));
+}
+.cdKill {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(calc(1.6 - 0.6 * var(--kill)));
+  opacity: var(--kill);
+}
+.still .cd,
+.still .cdTrack,
+.still .cdRoute {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cd,
+  .cdTrack,
+  .cdRoute {
+    animation: none;
+  }
+}
+
+
+/* Atlantique RP : Île d'Oléron map, pin and team org chart.
+   Timeline, in seconds of a 9s cycle : 0.3s the coastline draws · 1.2s the
+   pin drops, landing at 1.65s with a squash and a ripple · 1.9s the lead pops
+   in, its link to the pin draws · 2.7s the bus spreads under the pin, members
+   pop in from the centre outwards · 4.6s and 6.2s packets run down the chart,
+   every member glowing as one lands · 8.3s everything fades out.
+   Everything reads the --at-t clock ; per-element start times come in as --d
+   (keep in sync with ProjectRpTeamVisual). The base clock (7) is the final
+   frame, used as-is when motion is off. */
+@property --at-t {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 7;
+}
+.at {
+  --at-t: 7;
+  --member: #80e0ff;
+  --lead: #ffd27a;
+  --pin: #ff7a7a;
+  --show: min(clamp(0, var(--at-t) / 0.3, 1), clamp(0, (9 - var(--at-t)) / 0.7, 1));
+  --coast: clamp(0, (var(--at-t) - 0.3) / 1, 1);
+  --drop: clamp(0, (var(--at-t) - 1.2) / 0.45, 1);
+  --land: clamp(0, (var(--at-t) - 1.65) / 0.3, 1);
+  position: relative;
+  border-radius: 22px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px) 50% 50% / 40px 40px,
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px) 50% 50% / 40px 40px,
+    radial-gradient(120% 90% at 50% 50%, #16224a 0%, var(--ink) 70%);
+  overflow: hidden;
+  animation: atClock 9s linear infinite;
+}
+@keyframes atClock {
+  from {
+    --at-t: 0;
+  }
+  to {
+    --at-t: 9;
+  }
+}
+.atMap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: var(--show);
+}
+.atSea path,
+.atMainland,
+.atBridge {
+  fill: none;
+  stroke: rgba(159, 180, 232, 0.18);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+.atMainland {
+  stroke-width: 1.4;
+  stroke: rgba(159, 180, 232, 0.26);
+}
+/* The Oléron viaduct, back to the mainland. */
+.atBridge {
+  stroke-dasharray: 3 3;
+  opacity: clamp(0, (var(--at-t) - 1) / 0.5, 1);
+}
+.atIslandFill {
+  fill: rgba(159, 180, 232, 0.1);
+  opacity: clamp(0, (var(--at-t) - 0.9) / 0.6, 1);
+}
+.atCoast {
+  fill: none;
+  stroke: rgba(159, 180, 232, 0.55);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: calc(1 - var(--coast));
+}
+/* Org chart link, drawn from its start once its --d time comes. */
+.atLine {
+  --p: clamp(0, (var(--at-t) - var(--d)) / var(--len, 0.3), 1);
+  fill: none;
+  stroke: color-mix(in srgb, var(--member) 60%, transparent);
+  stroke-width: 1.4;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: calc(1 - var(--p));
+  opacity: clamp(0, var(--p) * 20, 1);
+}
+.atPacket {
+  --p: clamp(0, (var(--at-t) - var(--d)) / 1.1, 1);
+  fill: none;
+  stroke: var(--lead);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 0.03 2;
+  stroke-dashoffset: calc(0.03 - 1.03 * var(--p));
+  filter: drop-shadow(0 0 3px var(--lead));
+  opacity: min(clamp(0, var(--p) * 20, 1), clamp(0, (1 - var(--p)) * 20, 1));
+}
+/* Pin : falls from above, squashes on landing, its tip on the map point. */
+.atPin {
+  --s: sin(calc(var(--land) * 3.1416));
+  transform: translateY(calc((1 - var(--drop) * var(--drop)) * -80px)) scale(calc(1 + 0.2 * var(--s)), calc(1 - 0.2 * var(--s)));
+  opacity: clamp(0, var(--drop) * 8, 1);
+}
+.atPinBody {
+  fill: var(--pin);
+  stroke: var(--ink);
+  stroke-width: 1.4;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--pin) 60%, transparent));
+}
+.atPinDot {
+  fill: #fff;
+}
+.atShadow {
+  fill: rgba(0, 0, 0, 0.45);
+  transform: scale(calc(0.3 + 0.7 * var(--drop) * var(--drop)));
+  opacity: var(--drop);
+}
+.atRipple {
+  --f: clamp(0, (var(--at-t) - var(--d, 1.65)) / 0.9, 1);
+  fill: none;
+  stroke: var(--pin);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+  transform: scale(calc(0.4 + 1.6 * var(--f)));
+  opacity: calc((1 - var(--f)) * clamp(0, var(--f) * 40, 1));
+}
+.atPlace,
+.atLabel {
+  fill: #c9d3ea;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  dominant-baseline: central;
+  paint-order: stroke;
+  stroke: var(--ink);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.atPlace {
+  fill: #fff;
+  opacity: clamp(0, (var(--at-t) - 1.8) / 0.3, 1);
+}
+.atLabel {
+  opacity: clamp(0, (var(--at-t) - var(--d)) / 0.3, 1);
+}
+.atLeadLabel {
+  fill: var(--lead);
+}
+/* Team member : pops in with an overshoot and a ring, then glows each time
+   a packet lands on it (--h1, --h2). */
+.atNode {
+  --p: clamp(0, (var(--at-t) - var(--d)) / 0.4, 1);
+  --hit: max(
+    min(clamp(0, (var(--at-t) - var(--h1, -9)) / 0.1, 1), clamp(0, (var(--h1, -9) + 0.6 - var(--at-t)) / 0.5, 1)),
+    min(clamp(0, (var(--at-t) - var(--h2, -9)) / 0.1, 1), clamp(0, (var(--h2, -9) + 0.6 - var(--at-t)) / 0.5, 1))
+  );
+  transform: scale(calc(var(--p) + 0.35 * sin(calc(var(--p) * 3.1416)) + 0.12 * var(--hit)));
+  opacity: clamp(0, var(--p) * 6, 1);
+}
+.atRing {
+  --f: clamp(0, (var(--at-t) - var(--d) - 0.1) / 0.7, 1);
+  fill: none;
+  stroke: var(--member);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+  transform: scale(calc(0.6 + 0.8 * var(--f)));
+  opacity: calc((1 - var(--f)) * clamp(0, var(--f) * 40, 1));
+}
+.atLead .atRing {
+  stroke: var(--lead);
+}
+.atBadge {
+  fill: var(--member);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 calc(4px + 8px * var(--hit, 0)) color-mix(in srgb, var(--lead) calc(100% * var(--hit, 0)), var(--member)));
+}
+.atLead .atBadge {
+  fill: var(--lead);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--lead) 60%, transparent));
+}
+.atIcon circle,
+.atIcon path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.atStar {
+  fill: #fff;
+  stroke: var(--ink);
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+}
+.still .at {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .at {
+    animation: none;
+  }
+}
+
+.typing span {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: #c9d3ea;
+  animation: typ 1.2s infinite;
+}
+.typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes typ {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+    transform: none;
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+.sk {
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;
+}
+.sk:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 50px -30px rgba(11, 21, 51, 0.35);
+}
+.ol {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--ink);
+  transition: color 0.4s;
+}
+.edu:hover .ol {
+  color: var(--accent);
+  -webkit-text-stroke-color: var(--accent);
+}
+
+/* Contact */
+.clink {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  min-height: 64px;
+  padding: 16px 22px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.3s, transform 0.3s;
+}
+.clink:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-3px);
+}
+.clink .arr {
+  transition: transform 0.3s;
+}
+.clink:hover .arr {
+  transform: translate(3px, -3px);
+}
+.mail {
+  color: #fff;
+  text-decoration: none;
+  background-image: linear-gradient(var(--sky), var(--sky));
+  background-size: 0 3px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.mail:hover {
+  color: #fff;
+  background-size: 100% 3px;
+}
+
+/* Chat widget */
+.qb {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font: 600 13px var(--font-instrument), system-ui, sans-serif;
+  cursor: inherit;
+  transition: border-color 0.25s, background 0.25s, color 0.25s, transform 0.25s;
+}
+.qb:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.qbOn {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.src {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: var(--soft);
+  color: color-mix(in srgb, var(--accent) 80%, #000);
+  font-size: 12px;
+  font-weight: 600;
+}
+.caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: var(--accent);
+  animation: blink 1s steps(1) infinite;
+}
+.caretDone {
+  display: none;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+.sro {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.msg {
+  max-width: 85%;
+  padding: 12px 16px;
+  font-size: 15px;
+  line-height: 1.55;
+  border-radius: 18px;
+  white-space: pre-wrap;
+  animation: pop 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.msgUsr {
+  align-self: flex-end;
+  background: var(--ink);
+  color: #fff;
+  border-bottom-right-radius: 6px;
+}
+.msgBot {
+  align-self: flex-start;
+  background: var(--surface);
+  color: var(--ink);
+  border-bottom-left-radius: 6px;
+}
+.msgBot .typing span {
+  background: var(--muted);
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+.inbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 5px 5px 18px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: #fbfcff;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.inbox:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+.inbox input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font: 500 15px var(--font-instrument), system-ui, sans-serif;
+  color: var(--ink);
+  min-height: 40px;
+  outline: none;
+}
+.inbox input::placeholder {
+  color: #6b7591;
+}
+.send {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--accent);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: inherit;
+  transition: transform 0.2s, background 0.2s;
+}
+.send:hover {
+  transform: scale(1.06);
+  background: var(--ink);
+}
+.send:disabled,
+.qb:disabled {
+  opacity: 0.45;
+  cursor: inherit;
+  transform: none;
+}
+.ib {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: inherit;
+}
+.ib:hover {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* Orb */
+.orb {
+  position: relative;
+  display: block;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 45%, #1a2a5e, #0b1533 72%);
+  isolation: isolate;
+}
+.orb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.5), transparent 30%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  z-index: 2;
+}
+.orbLg {
+  width: 172px;
+  height: 172px;
+  box-shadow: 0 30px 70px -24px color-mix(in srgb, var(--accent) 75%, transparent);
+}
+.orbSm {
+  width: 40px;
+  height: 40px;
+  flex: none;
+}
+.logoOrb {
+  width: 42px;
+  height: 42px;
+  box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 80%, transparent);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+a:hover .logoOrb {
+  transform: scale(1.08) rotate(-8deg);
+}
+.logoOrb .blobs {
+  animation-duration: 17s;
+  animation-direction: reverse;
+  animation-delay: -6s;
+}
+.logoOrb .b1 {
+  animation-duration: 7.3s;
+  animation-delay: -2.1s;
+}
+.logoOrb .b2 {
+  animation-duration: 9.7s;
+  animation-delay: -5.4s;
+}
+.logoOrb .b3 {
+  animation-duration: 12.4s;
+  animation-delay: -8.2s;
+}
+.blobs {
+  position: absolute;
+  inset: 0;
+  animation: spin 12s linear infinite;
+}
+.b {
+  position: absolute;
+  width: 72%;
+  height: 72%;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  opacity: 0.92;
+}
+.orbLg .b {
+  filter: blur(18px);
+}
+.orbSm .b {
+  filter: blur(5px);
+}
+.b1 {
+  left: 2%;
+  top: 6%;
+  background: var(--accent);
+  animation: o1 6s ease-in-out infinite;
+}
+.b2 {
+  right: -4%;
+  top: 22%;
+  background: #22d3ee;
+  animation: o2 8s ease-in-out infinite;
+}
+.b3 {
+  left: 18%;
+  bottom: -8%;
+  background: #a855f7;
+  animation: o3 10s ease-in-out infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes o1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(25%, 15%) scale(1.2);
+  }
+}
+@keyframes o2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1.1);
+  }
+  50% {
+    transform: translate(-30%, 10%) scale(0.85);
+  }
+}
+@keyframes o3 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(0.9);
+  }
+  50% {
+    transform: translate(10%, -30%) scale(1.15);
+  }
+}
+.thinking {
+  animation: breath 1.1s ease-in-out infinite;
+}
+.thinking .blobs {
+  animation-duration: 2.4s;
+}
+.speaking {
+  animation: talk 0.45s ease-in-out infinite alternate;
+}
+.speaking .blobs {
+  animation-duration: 5s;
+}
+@keyframes breath {
+  50% {
+    transform: scale(1.08);
+  }
+}
+@keyframes talk {
+  to {
+    transform: scale(1.04);
+  }
+}
+.orbFloat {
+  position: relative;
+  transform: translate3d(calc(var(--mx) * 12px), calc(var(--my) * 10px), 0);
+}
+.orbFloat::before {
+  content: '';
+  position: absolute;
+  inset: -36px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 22%, transparent), transparent 68%);
+  animation: halo 4s ease-in-out infinite;
+}
+@keyframes halo {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+.still .orb,
+.still .blobs,
+.still .b,
+.still .orbFloat::before,
+.still .msg {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .orb,
+  .blobs,
+  .b,
+  .orbFloat::before,
+  .msg {
+    animation: none;
+  }
+}
+
+/* Projects carousel */
+.ptrack {
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gut);
+  padding: 8px var(--gut) 44px;
+  scrollbar-width: none;
+  cursor: inherit;
+  outline: none;
+}
+.ptrack::-webkit-scrollbar {
+  display: none;
+}
+.ptrack::after {
+  content: '';
+  flex: 0 0 1px;
+}
+.ptrackFree {
+  scroll-snap-type: none;
+}
+.ptrackDrag {
+  scroll-snap-type: none;
+  cursor: inherit;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.ptrack:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.pcard {
+  flex: 0 0 clamp(300px, 38vw, 560px);
+  scroll-snap-align: start;
+  box-sizing: border-box;
+}
+/* Project card : stacked on narrow screens ; from 1024px it widens to two
+   columns (visual + stack chips | title, description, bullets) so a whole
+   project fits in the viewport without scrolling. */
+.pcardWide {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'head' 'title' 'visual' 'text' 'chips';
+  align-content: start;
+  gap: 24px;
+}
+.pcHead {
+  grid-area: head;
+}
+.pcTitle {
+  grid-area: title;
+}
+/* Groups the visual and chips into the left column on wide cards ; on narrow
+   ones it dissolves so both children take their own grid areas. */
+.pcAside {
+  display: contents;
+}
+.pcVisual {
+  grid-area: visual;
+}
+.pcText {
+  grid-area: text;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.pcChips {
+  grid-area: chips;
+  align-self: end;
+}
+.pcDesc {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+@media (min-width: 1024px) {
+  .pcardWide {
+    flex-basis: min(1080px, 84vw);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      'head head'
+      'aside title'
+      'aside text';
+    column-gap: clamp(32px, 3.5vw, 48px);
+    row-gap: 20px;
+  }
+  .pcAside {
+    grid-area: aside;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .pcChips {
+    align-self: auto;
+  }
+}
+.gh {
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s;
+}
+.gh:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-6px);
+}
+.ghArr {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  transition: transform 0.35s;
+}
+.gh:hover .ghArr {
+  transform: rotate(45deg);
+}
+.nb {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: inherit;
+  transition: background 0.25s, color 0.25s, opacity 0.25s;
+}
+.nb:hover {
+  background: var(--ink);
+  color: #fff;
+}
+.nb:disabled {
+  opacity: 0.25;
+  cursor: inherit;
+  background: transparent;
+  color: var(--ink);
+}
+.pbar {
+  position: relative;
+  height: 2px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.pbar span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(20% + 80% * var(--pp, 0));
+  background: var(--ink);
+  border-radius: 2px;
+  transition: width 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+/* Mobile nav */
+.burger {
+  display: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  cursor: inherit;
+  padding: 0;
+}
+.burger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--ink);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.burgerOpen span:first-child {
+  transform: translateY(3.5px) rotate(45deg);
+}
+.burgerOpen span:last-child {
+  transform: translateY(-3.5px) rotate(-45deg);
+}
+.mnav {
+  display: flex;
+  flex-direction: column;
+  padding: 4px clamp(20px, 4.5vw, 64px) 22px;
+  animation: menu 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.mnav a:not(.btn) {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-archivo), 'Helvetica Neue', sans-serif;
+  font-weight: 800;
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+}
+.mnav a:not(.btn) span {
+  font-family: var(--font-instrument), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+@keyframes menu {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+@media (min-width: 961px) {
+  .mnav {
+    display: none;
+  }
+}
+@media (max-width: 1240px) {
+  .pillAv {
+    display: none !important;
+  }
+}
+@media (max-width: 960px) {
+  .burger {
+    display: inline-flex;
+  }
+  .nav,
+  .hdrCta {
+    display: none !important;
+  }
+}
+@media (max-width: 820px) {
+  .expAside {
+    position: static !important;
+  }
+}
+@media (max-width: 560px) {
+  .hdrCta {
+    display: none;
+  }
+  .eyebrow {
+    letter-spacing: 0.16em !important;
+    font-size: 12px !important;
+  }
+  .brush {
+    width: 52px;
+    flex: none;
+  }
+  .ctaRow .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+  .secH {
+    margin-bottom: 32px !important;
+    gap: 12px !important;
+  }
+  .secH h2 {
+    letter-spacing: 0.1em !important;
+  }
+  .navBtns {
+    display: none !important;
+  }
+  .tlItem {
+    padding-left: 34px !important;
+  }
+  .pcard {
+    flex-basis: 84vw;
+  }
+  .ptrack {
+    gap: 14px;
+    padding-bottom: 28px;
+  }
+  .flow {
+    display: none;
+  }
+  .qrow {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin: 0 -16px;
+    padding: 0 16px;
+    scroll-snap-type: x proximity;
+  }
+  .qrow::-webkit-scrollbar {
+    display: none;
+  }
+  .qb {
+    white-space: nowrap;
+    flex: none;
+  }
+  .inbox input {
+    font-size: 16px;
+  }
+  .chatfig {
+    height: min(620px, calc(100svh - 110px)) !important;
+    min-height: 520px;
+    border-radius: 24px !important;
+  }
+  .orbLg {
+    width: 132px;
+    height: 132px;
+  }
+  .msg {
+    max-width: 92%;
+  }
+}
+@media (hover: none) {
+  .tilt {
+    transform: none !important;
+  }
+  .tilt:hover {
+    box-shadow: none;
+  }
+  .glare {
+    display: none;
+  }
+}
+
+/* Custom cursor */
+/* .cur is a zero-size anchor moved by usePointerFx; every state change below
+   is a transform/opacity transition on its children, so nothing re-lays out. */
+.cur {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Ring: scaled rather than resized; border-width is divided by the scale so
+   the stroke stays visually ~1.5px in every state. */
+.curR {
+  position: absolute;
+  left: -17px;
+  top: -17px;
+  width: 34px;
+  height: 34px;
+  box-sizing: border-box;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background-color 0.3s,
+    opacity 0.25s;
+}
+.curBig .curR {
+  transform: scale(2.06);
+  border-width: 0.73px;
+  background-color: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.curDrag .curR {
+  transform: scale(2.82);
+  border-width: 0.53px;
+  opacity: 0;
+}
+
+/* Drag pill */
+.curP {
+  position: absolute;
+  left: -48px;
+  top: -48px;
+  width: 96px;
+  height: 96px;
+  opacity: 0;
+  transform: scale(0.35);
+  transition:
+    transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.2s;
+}
+.curDrag .curP {
+  opacity: 1;
+  transform: scale(1);
+}
+.curDrag.curPress .curP {
+  transform: scale(0.82);
+  transition-duration: 0.25s, 0.2s;
+}
+.curBg {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.curC {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.curDrag .curC {
+  opacity: 1;
+  transition-delay: 0.12s;
+}
+.curL {
+  font: 600 11px var(--font-instrument), system-ui, sans-serif;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  transition:
+    opacity 0.2s,
+    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.curA {
+  flex: none;
+  width: 7px;
+  height: 10px;
+  transition:
+    opacity 0.25s,
+    transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.curDrag .curAL {
+  animation: curNudgeL 1.6s ease-in-out infinite;
+}
+.curDrag .curAR {
+  animation: curNudgeR 1.6s ease-in-out infinite;
+}
+@keyframes curNudgeL {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-3px);
+  }
+}
+@keyframes curNudgeR {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+/* Grabbed: the label tucks away and the arrows close in around the center. */
+.curPress .curL {
+  opacity: 0;
+  transform: scale(0.6);
+}
+.curPress .curA {
+  animation: none;
+}
+.curPress .curAL {
+  transform: translateX(19px);
+}
+.curPress .curAR {
+  transform: translateX(-19px);
+}
+/* Nothing left to scroll toward on that side. */
+.curAtStart .curAL,
+.curAtEnd .curAR {
+  opacity: 0.3;
+}
+.still .ltr,
+.still .rise,
+.still .marq,
+.still .flowDot,
+.still .pulse,
+.still .typing span {
+  animation: none;
+}
+.still .brush path {
+  animation: none;
+  stroke-dashoffset: 0;
+}
+.still .railFill {
+  height: calc(100% - 24px);
+}
+.still.pf {
+  cursor: auto;
+}
+.still .cur {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ltr,
+  .rise,
+  .marq,
+  .flowDot,
+  .pulse,
+  .typing span,
+  .brush path {
+    animation: none;
+  }
+  .brush path {
+    stroke-dashoffset: 0;
+  }
+  .armed .rv {
+    opacity: 1;
+    transform: none;
+  }
+  .cur {
+    display: none;
+  }
+  .pf {
+    cursor: auto;
+  }
+}
+@media (pointer: coarse) {
+  .cur {
+    display: none;
+  }
+  .pf {
+    cursor: auto;
+  }
+}
+@media (max-width: 820px) {
+  .nav {
+    display: none;
+  }
+  .hideSm {
+    display: none;
+  }
+}
+
+/* Markdown inherits the existing chat bubble typography and colors. */
+.chatMarkdown {
+  display: inline;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.chatMarkdown > :first-child { margin-top: 0; }
+.chatMarkdown > :last-child { margin-bottom: 0; }
+.chatMarkdown p { margin: 0 0 .75em; }
+.chatMarkdown ul,
+.chatMarkdown ol { margin: .5em 0 .75em; padding-left: 1.4em; }
+.chatMarkdown li > p { margin: 0; }
+.chatMarkdown h1,
+.chatMarkdown h2,
+.chatMarkdown h3,
+.chatMarkdown h4,
+.chatMarkdown h5,
+.chatMarkdown h6 { margin: .75em 0 .35em; font-size: 1em; line-height: inherit; }
+.chatMarkdown a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.chatMarkdown blockquote { margin: .75em 0; padding-left: .75em; border-left: 2px solid var(--line); }
+.chatMarkdown pre { max-width: 100%; overflow-x: auto; margin: .75em 0; padding: .75em; border: 1px solid var(--line); border-radius: 6px; white-space: pre; }
+.chatMarkdown code { font-size: .9em; }
+.chatMarkdown table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; margin: .75em 0; }
+.chatMarkdown th,
+.chatMarkdown td { padding: .3em .6em; border: 1px solid var(--line); text-align: left; }
+
+.chatMarkdown > p:last-child { display: inline; }
+.chatMarkdown img { max-width: 100%; height: auto; }
+
+.languageSwitch {
+  display: flex;
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.languageSwitch a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  min-height: 44px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+}
+.languageSwitch a:hover { background: var(--soft); color: var(--ink); }
+.languageSwitch a[aria-current='page'] { background: var(--ink); color: white; }
+.languageSwitch a:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+@media (max-width: 420px) {
+  .hdr > div { gap: 8px !important; }
+  .hdr > div > div { gap: 8px !important; }
+  .hdr > div > a { gap: 6px !important; }
+  .hdr > div > a > span { font-size: 13px !important; }
+}
