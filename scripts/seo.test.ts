@@ -19,6 +19,10 @@ test('production uses the stable origin and rejects unsafe or missing configurat
   assert.equal(siteOrigin().origin, 'https://portfolio.vercel.app')
   process.env.SITE_URL = 'https://portfolio.example'
   assert.equal(siteOrigin().origin, 'https://portfolio.example')
+  process.env.SITE_URL = ' portfolio-thesn0wdev.vercel.app ';
+  assert.equal(siteOrigin().origin, 'https://portfolio-thesn0wdev.vercel.app')
+  process.env.SITE_URL = '"private-invalid-value"'
+  assert.throws(siteOrigin, error => error instanceof Error && /Invalid site origin/.test(error.message) && !error.message.includes('private-invalid-value'))
   for (const value of ['https://portfolio.example/path', 'https://user:pass@portfolio.example', 'javascript:alert(1)', 'http://localhost:3000', 'https://portfolio.example?x=1']) {
     process.env.SITE_URL = value
     assert.throws(siteOrigin)

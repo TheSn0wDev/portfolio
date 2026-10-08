@@ -8,7 +8,17 @@ export function siteOrigin(): URL {
   if (!configured && !productionHost && process.env.VERCEL_ENV === 'production') {
     throw new Error('Configure SITE_URL or VERCEL_PROJECT_PRODUCTION_URL before deploying.')
   }
-  const url = new URL(configured || (productionHost ? `https://${productionHost}` : 'http://localhost:3000'))
+  const rawOrigin = configured || productionHost || 'http://localhost:3000'
+  // Accept a bare domain, but do not silently repair paths or pasted markup.
+  const origin = /^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z][a-z0-9-]*\/?$/i.test(rawOrigin)
+    ? `https://${rawOrigin}` : rawOrigin
+  let url: URL
+  try {
+    url = new URL(origin)
+  } catch {
+    // Never expose the configured value in build logs.
+    throw new Error('Invalid site origin. Set SITE_URL to https://portfolio-thesn0wdev.vercel.app without quotes, Markdown or a page path.')
+  }
   if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password || url.pathname !== '/' || url.search || url.hash) {
     throw new Error('SITE_URL must be an HTTP(S) origin without credentials, path, query or fragment.')
   }
