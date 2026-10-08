@@ -1,24 +1,30 @@
 'use client'
 
 import { Fragment, useRef, useState } from 'react'
+import { useContent, useTranslation } from '@/i18n/LocaleProvider'
+import * as profileContent from '@/content/profile'
+import * as contactContent from '@/content/contact'
 import styles from './portfolio.module.css'
 import { Reveal } from './Reveal'
 import { DiagonalArrowIcon } from './icons'
-import { contactHeading, footerCopyright, footerTagline } from '@/content/profile'
-import { contact } from '@/content/contact'
 
 type ContactSectionProps = {
   armed: boolean
 }
 
-const links = [
+
+export function ContactSection({ armed }: ContactSectionProps) {
+  const t = useTranslation()
+  const { contactHeading, footerCopyright, footerTagline } = useContent(profileContent)
+  const { contact } = useContent(contactContent)
+
+  const links = [
   { category: 'LinkedIn', label: contact.linkedin.label, url: contact.linkedin.url },
   { category: 'GitHub', label: contact.github.label, url: contact.github.url },
-  { category: 'Téléphone', label: contact.phone.label, url: contact.phone.url },
+  { category: t('Téléphone'), label: contact.phone.label, url: contact.phone.url },
   { category: 'Email', label: contact.mail.label, url: contact.mail.url },
 ]
 
-export function ContactSection({ armed }: ContactSectionProps) {
   const [copied, setCopied] = useState(false)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -55,7 +61,7 @@ export function ContactSection({ armed }: ContactSectionProps) {
             {contact.email}
           </a>
           <button className={styles.btn} type="button" onClick={onCopy} style={{ background: 'rgba(255,255,255,.1)', color: '#fff', minHeight: 44 }}>
-            {copied ? 'Copié !' : 'Copier l’adresse'}
+            {copied ? t('Copié !') : t('Copier l’adresse')}
           </button>
         </Reveal>
         <Reveal armed={armed} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: 14 }}>

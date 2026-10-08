@@ -12,6 +12,7 @@
     "index:documents": "node scripts/index-documents.mjs",
     "test:index": "node --test scripts/index-documents.test.mjs",
     "test:rag": "node --conditions=react-server --import tsx --test scripts/rag.test.ts scripts/chat.test.ts",
+    "test:locale": "node --import tsx --test scripts/locale.test.ts",
     "test:chat-client": "node --import tsx --test scripts/chat-client.test.ts scripts/chat-markdown.test.ts"
   },
   "dependencies": {

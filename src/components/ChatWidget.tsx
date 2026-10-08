@@ -2,11 +2,12 @@
 
 import { useEffect, useRef } from 'react'
 import type { KeyboardEvent } from 'react'
+import { useContent, useTranslation } from '@/i18n/LocaleProvider'
+import { suggestedQuestions as frenchSuggestions } from '@/content/chat'
 import styles from './portfolio.module.css'
 import { Orb } from './Orb'
 import { ChatAnswer } from './ChatAnswer'
 import { SendIcon, UndoIcon } from './icons'
-import { suggestedQuestions } from '@/content/chat'
 import { useChat } from '@/hooks/useChat'
 
 type ChatWidgetProps = {
@@ -14,6 +15,9 @@ type ChatWidgetProps = {
 }
 
 export function ChatWidget({ motionEnabled }: ChatWidgetProps) {
+  const t = useTranslation()
+  const suggestedQuestions = useContent(frenchSuggestions)
+
   const { msgs, status, busy, draft, setDraft, ask, send, reset } = useChat(motionEnabled)
   const threadRef = useRef<HTMLDivElement>(null)
 
@@ -23,7 +27,7 @@ export function ChatWidget({ motionEnabled }: ChatWidgetProps) {
   }, [msgs])
 
   const hasMsgs = msgs.length > 0
-  const statusText = status === 'thinking' ? 'Réfléchit…' : status === 'speaking' ? 'Répond…' : 'En ligne'
+  const statusText = status === 'thinking' ? t('Réfléchit…') : status === 'speaking' ? t('Répond…') : t('En ligne')
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -63,11 +67,11 @@ export function ChatWidget({ motionEnabled }: ChatWidgetProps) {
             <Orb size="sm" status={status} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1, minWidth: 0 }}>
               <span className={styles.disp} style={{ fontSize: 15, fontWeight: 800, color: 'var(--ink)' }}>
-                Clément · assistant IA
+                {t('Clément · assistant IA')}
               </span>
               <span style={{ fontSize: 13, color: 'var(--muted)' }}>{statusText}</span>
             </div>
-            <button type="button" className={styles.ib} onClick={reset} aria-label="Nouvelle conversation">
+            <button type="button" className={styles.ib} onClick={reset} aria-label={t('Nouvelle conversation')}>
               <UndoIcon />
             </button>
           </div>
@@ -88,7 +92,7 @@ export function ChatWidget({ motionEnabled }: ChatWidgetProps) {
             })}
             {status === 'thinking' && (
               <div className={`${styles.msg} ${styles.msgBot}`}>
-                <span className={styles.typing} aria-label="Réflexion en cours">
+                <span className={styles.typing} aria-label={t('Réflexion en cours')}>
                   <span />
                   <span />
                   <span />
@@ -119,16 +123,16 @@ export function ChatWidget({ motionEnabled }: ChatWidgetProps) {
               className={styles.disp}
               style={{ margin: 0, fontSize: 'clamp(24px, 2.2vw, 30px)', fontWeight: 900, color: 'var(--ink)', letterSpacing: '-0.02em' }}
             >
-              Posez-moi une question
+              {t('Posez-moi une question')}
             </p>
             <p style={{ margin: 0, fontSize: 15, lineHeight: 1.55, color: 'var(--muted)' }}>
-              Je réponds à partir de mon parcours, de mes projets et de ma stack.
+              {t('Je réponds à partir de mon parcours, de mes projets et de ma stack.')}
             </p>
           </div>
         </div>
       )}
       <div style={{ borderTop: '1px solid var(--line)', background: '#fff', padding: '14px 16px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <div className={styles.qrow} role="group" aria-label="Questions suggérées" style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        <div className={styles.qrow} role="group" aria-label={t('Questions suggérées')} style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {suggestedQuestions.map((q) => (
             <button key={q.question} type="button" className={styles.qb} disabled={busy} onClick={() => ask(q.question)}>
               {q.question}
@@ -137,18 +141,18 @@ export function ChatWidget({ motionEnabled }: ChatWidgetProps) {
         </div>
         <div className={styles.inbox}>
           <label className={styles.sro} htmlFor="ask-input">
-            Votre question
+            {t('Votre question')}
           </label>
           <input
             id="ask-input"
             type="text"
-            placeholder="Écrivez votre question…"
+            placeholder={t('Écrivez votre question…')}
             autoComplete="off"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={onKeyDown}
           />
-          <button type="button" className={styles.send} onClick={send} disabled={busy} aria-label="Envoyer la question">
+          <button type="button" className={styles.send} onClick={send} disabled={busy} aria-label={t('Envoyer la question')}>
             <SendIcon />
           </button>
         </div>

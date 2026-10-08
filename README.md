@@ -112,3 +112,14 @@ L’Action ne committe pas l’index dans le dépôt.
 
 Documentation : [embeddings OpenAI](https://developers.openai.com/api/reference/resources/embeddings/methods/create)
 et [GitHub Actions avec Vercel](https://vercel.com/kb/guide/how-can-i-use-github-actions-with-vercel).
+
+
+### Langues
+
+Le portfolio est disponible sur `/fr` et `/en`. La route `/` redirige vers la préférence enregistrée dans le cookie `portfolio-locale`, puis vers la langue principale du navigateur (français par défaut). Le sélecteur du header conserve l’ancre courante.
+
+Les contenus français restent dans `src/content`. Les traductions anglaises sont dans `src/i18n/en.json` ; les composants partagent le contexte `LocaleProvider`. Les pages sont pré-rendues avec une langue HTML et des métadonnées propres, ainsi que des liens alternatifs `hreflang`.
+
+Le chat transmet `locale` à `/api/chat`. La langue de la page impose la langue des réponses, des abstentions et des erreurs ; les clés de cache incluent cette langue. Le changement de langue démarre une nouvelle conversation.
+
+Validation : `pnpm test:locale`, `pnpm test:chat-client`, `pnpm test:rag`.

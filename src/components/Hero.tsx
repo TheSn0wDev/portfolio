@@ -1,10 +1,13 @@
+'use client'
+
 import { Fragment } from 'react'
 import type { RefObject } from 'react'
+import { useContent } from '@/i18n/LocaleProvider'
+import * as profileContent from '@/content/profile'
 import styles from './portfolio.module.css'
 import { DotGrid } from './DotGrid'
 import { ChatWidget } from './ChatWidget'
 import { ArrowRightIcon, BrushUnderlineIcon, SuitcaseIcon, SwishArrowIcon } from './icons'
-import { currentRole, eyebrow, handwrittenTagline, heroChips, heroCtas, name, pitch } from '@/content/profile'
 
 type HeroProps = {
   heroRef: RefObject<HTMLElement | null>
@@ -16,6 +19,8 @@ function letters(word: string, base: number) {
 }
 
 export function Hero({ heroRef, motionEnabled }: HeroProps) {
+  const { currentRole, eyebrow, handwrittenTagline, heroChips, heroCtas, name, pitch } = useContent(profileContent)
+
   const line1 = letters(name.line1, 0.1)
   const line2 = letters(name.line2, 0.42)
 

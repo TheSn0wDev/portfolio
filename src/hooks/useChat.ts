@@ -1,7 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { fallbackAnswer } from '@/content/chat'
+import { fallbackAnswer as frenchFallback } from '@/content/chat'
+import { useLocale, translate } from '@/i18n/LocaleProvider'
 import { ChatRequestError, requestChatReply, type ChatHistoryMessage, type ChatReply } from '@/lib/chat/client'
 
 export type ChatMessage = {
@@ -14,6 +15,8 @@ export type ChatMessage = {
 export type ChatStatus = 'idle' | 'thinking' | 'speaking'
 
 export function useChat(motionEnabled: boolean) {
+  const locale = useLocale()
+  const fallbackAnswer = translate(frenchFallback, locale)
   const [msgs, setMsgs] = useState<ChatMessage[]>([])
   const [status, setStatus] = useState<ChatStatus>('idle')
   const [draft, setDraft] = useState('')
@@ -67,7 +70,7 @@ export function useChat(motionEnabled: boolean) {
 
     // Use the JSON contract to preserve the widget's existing typing animation.
     // Suggested questions follow the exact same backend path as typed messages.
-    void requestChatReply(question, historyRef.current, AbortSignal.any([controller.signal, AbortSignal.timeout(65_000)]))
+    void requestChatReply(question, historyRef.current, AbortSignal.any([controller.signal, AbortSignal.timeout(65_000)]), fetch, locale)
       .then(reply => {
         if (requestIdRef.current !== id) return
         historyRef.current = [...historyRef.current,
@@ -83,7 +86,7 @@ export function useChat(motionEnabled: boolean) {
         reveal({ answer: error instanceof ChatRequestError ? error.message : fallbackAnswer, sources: [] }, id)
       })
       .finally(() => { if (requestIdRef.current === id) requestRef.current = null })
-  }, [reveal])
+  }, [reveal, locale, fallbackAnswer])
 
   const send = useCallback(() => {
     const question = draft.trim()

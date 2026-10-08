@@ -1,7 +1,7 @@
 import 'server-only'
 import OpenAI from 'openai'
 import { getDocumentIndex } from './index'
-import { ABSTENTION, INSTRUCTIONS, PROMPT_VERSION, context, digest, finalize, indexVersion, retrieve, tokens, truncate, type ChatInput, type Answer } from './core'
+import { abstention, answerInstructions, PROMPT_VERSION, context, digest, finalize, indexVersion, retrieve, tokens, truncate, type ChatInput, type Answer } from './core'
 import { readCache, reserveGeneration, ServiceError, writeCache } from './storage'
 
 export async function answerQuestion(input: ChatInput, signal: AbortSignal, emit?: (delta: string) => void): Promise<Answer & { cached: boolean }> {
@@ -14,14 +14,14 @@ export async function answerQuestion(input: ChatInput, signal: AbortSignal, emit
   const reasoning = /^gpt-6-luna(?:-|$)/.test(model) ? { effort: 'none' as const } : undefined
   const minimum = Number(process.env.RAG_MIN_SIMILARITY ?? 0.3)
   if (!Number.isFinite(minimum) || minimum < 0 || minimum > 1) throw new ServiceError(503, 'Seuil de recherche invalide.')
-  const key = digest(JSON.stringify([PROMPT_VERSION, version, model, reasoning, minimum, input.question, input.history]))
+  const key = digest(JSON.stringify([PROMPT_VERSION, version, model, reasoning, minimum, input.locale ?? 'fr', input.question, input.history]))
   const cached = await readCache(key).catch(() => null)
   if (cached) {
     emit?.(cached.answer)
     console.info(JSON.stringify({ event: 'rag_answer', cached: true, latencyMs: Date.now() - started }))
     return { ...cached, cached: true }
   }
-  if (!index.chunks.length) return { answer: ABSTENTION, sources: [], indexVersion: version, cached: false }
+  if (!index.chunks.length) return { answer: abstention(input.locale), sources: [], indexVersion: version, cached: false }
   if (!process.env.OPENAI_API_KEY) throw new ServiceError(503, 'Service OpenAI non configuré.')
   // Reservation before any paid API call; failures still consume one slot.
   await reserveGeneration()
@@ -33,7 +33,7 @@ export async function answerQuestion(input: ChatInput, signal: AbortSignal, emit
   if (!embedding || embedding.length !== index.dimensions || !embedding.every(Number.isFinite)) throw new ServiceError(502, 'Recherche temporairement indisponible.')
   const passages = retrieve(index, query, embedding, minimum)
   if (!passages.length) {
-    const result = { answer: ABSTENTION, sources: [], indexVersion: version }
+    const result = { answer: abstention(input.locale), sources: [], indexVersion: version }
     await writeCache(key, result).catch(() => {})
     emit?.(result.answer)
     console.info(JSON.stringify({ event: 'rag_answer', abstained: true, embeddingTokens: embedded.usage.total_tokens, latencyMs: Date.now() - started }))
@@ -43,7 +43,7 @@ export async function answerQuestion(input: ChatInput, signal: AbortSignal, emit
   const request = {
     model, store: false, max_output_tokens: 350,
     ...(reasoning ? { reasoning } : {}),
-    instructions: INSTRUCTIONS,
+    instructions: answerInstructions(input.locale),
     input: [{ role: 'user' as const, content: JSON.stringify({ excerpts: context(passages), history: input.history, question: input.question }) }],
   }
   let text = ''

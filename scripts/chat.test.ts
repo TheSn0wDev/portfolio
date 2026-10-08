@@ -163,3 +163,39 @@ for (const stream of [false, true]) {
     assert.deepEqual(calls[1].body.reasoning, { effort: 'none' })
   })
 }
+
+
+test('English page forces English instructions and keeps cache separate from French', async () => {
+  Object.assign(process.env, { UPSTASH_REDIS_REST_URL: 'https://redis.test', UPSTASH_REDIS_REST_TOKEN: 'test-redis', NODE_ENV: 'production' })
+  const calls = mockOpenAI()
+  const openaiFetch = globalThis.fetch
+  const values = new Map<string, string>()
+  globalThis.fetch = (async (url, options) => {
+    if (!String(url).startsWith('https://redis.test')) return openaiFetch(url, options)
+    const command = JSON.parse(String(options?.body)) as (string | number)[]
+    const name = String(command[0]).toUpperCase()
+    if (name === 'EVAL') return Response.json({ result: [1, 0] })
+    if (name === 'GET') return Response.json({ result: values.has(String(command[1])) ? Buffer.from(values.get(String(command[1]))!).toString('base64') : null })
+    if (name === 'SET') { values.set(String(command[1]), String(command[2])); return Response.json({ result: Buffer.from('OK').toString('base64') }) }
+    throw new Error('Unexpected Redis command: ' + name)
+  }) as typeof fetch
+  const question = 'Quel robot développe Clément ?'
+  await POST(request({ question, locale: 'fr' }))
+  await POST(request({ question, locale: 'en' }))
+  assert.equal(calls.length, 4)
+  assert.match(String(calls[1].body.instructions), /toujours en français/)
+  assert.match(String(calls[3].body.instructions), /Always answer in English/)
+  const repeat = await POST(request({ question, locale: 'en' }))
+  assert.equal((await repeat.json()).cached, true)
+  assert.equal(calls.length, 4)
+})
+test('English JSON and streaming abstentions and validation errors are localized', async () => {
+  mockOpenAI(false, true)
+  const result = await POST(request({ question: 'Recette chocolat pâtisserie', locale: 'en' }))
+  assert.match((await result.json()).answer, /I can’t find/)
+  const stream = await POST(request({ question: 'Recette chocolat pâtisserie', locale: 'en', stream: true }))
+  assert.match(await stream.text(), /I can’t find/)
+  const invalid = await POST(request({ question: '', locale: 'en' }))
+  assert.equal(invalid.status, 400)
+  assert.equal((await invalid.json()).error, 'Please enter a question.')
+})

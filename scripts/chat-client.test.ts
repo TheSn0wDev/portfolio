@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test, { afterEach, beforeEach } from 'node:test'
 import { createElement } from 'react'
 import { act, create, type ReactTestRenderer } from 'react-test-renderer'
+import { LocaleProvider } from '../src/i18n/LocaleProvider'
 import { useChat } from '../src/hooks/useChat'
 import { suggestedQuestions } from '../src/content/chat'
 import { requestChatReply } from '../src/lib/chat/client'
@@ -121,4 +122,12 @@ test('malformed success and non-JSON failures produce a safe error', async () =>
   const signal = new AbortController().signal
   await assert.rejects(requestChatReply('Bonjour', [], signal, async () => Response.json({ wrong: 'field' })), /temporairement indisponible/)
   await assert.rejects(requestChatReply('Bonjour', [], signal, async () => new Response('<html>proxy error</html>', { status: 502 })), /temporairement indisponible/)
+})
+
+
+test('English locale reaches the request made by the chat hook', async () => {
+  function EnglishHarness() { chat = useChat(false); return null }
+  await act(async () => { renderer = create(createElement(LocaleProvider, { locale: 'en' }, createElement(EnglishHarness))) })
+  act(() => chat.ask('Quelle est ton expertise ?'))
+  assert.equal((requests[0].body as unknown as { locale: string }).locale, 'en')
 })

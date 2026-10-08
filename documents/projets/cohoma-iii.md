@@ -20,4 +20,6 @@ Dans son poste de Robotics Software Engineer chez Thales à Gennevilliers, de ma
 
 Il a conçu une chaîne complète de streaming vidéo en temps réel et de replay, agrégé et visualisé des flux vidéo et des données multi-capteurs, et intégré des composants logiciels et matériels sur des plateformes robotiques.
 
+Clément a également développé le frontend des interfaces de pilotage. Il précise avoir travaillé sur les mêmes composants pour le démonstrateur Vision4Rescue pendant cette période.
+
 Stack de cette expérience : C++, C, Python, Docker et hardware.

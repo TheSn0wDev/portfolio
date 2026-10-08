@@ -21,7 +21,7 @@ export const skillGroups: SkillGroup[] = [
   {
     title: 'Cloud & DevOps',
     variant: 'light',
-    chips: ['Docker', 'Git', 'GitLab CI', 'GitHub Actions', 'Kubernetes · Thales CDP', 'AWS · Cours à Laval', 'GCP · Formation en cours'],
+    chips: ['Docker', 'Git', 'GitLab CI', 'GitHub Actions', 'Kubernetes', 'AWS', 'GCP'],
   },
   {
     title: 'Engineering',

@@ -1,14 +1,21 @@
+'use client'
+
+import { useContent, useTranslation } from '@/i18n/LocaleProvider'
+import * as navContent from '@/content/nav'
+import * as profileContent from '@/content/profile'
 import styles from './portfolio.module.css'
-import { navLinks } from '@/content/nav'
-import { heroCtas } from '@/content/profile'
 
 type MobileNavProps = {
   onNavigate: () => void
 }
 
 export function MobileNav({ onNavigate }: MobileNavProps) {
+  const t = useTranslation()
+  const { navLinks } = useContent(navContent)
+  const { heroCtas } = useContent(profileContent)
+
   return (
-    <nav id="mnav" className={styles.mnav} aria-label="Menu mobile">
+    <nav id="mnav" className={styles.mnav} aria-label={t('Menu mobile')}>
       {navLinks.map((link) => (
         <a key={link.href} href={link.href} onClick={onNavigate}>
           {link.label}

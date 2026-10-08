@@ -1,8 +1,12 @@
+'use client'
+
+import { useContent, useTranslation } from '@/i18n/LocaleProvider'
+import * as navContent from '@/content/nav'
+import * as profileContent from '@/content/profile'
 import styles from './portfolio.module.css'
+import { LanguageSwitch } from './LanguageSwitch'
 import { Orb } from './Orb'
 import { MobileNav } from './MobileNav'
-import { navLinks } from '@/content/nav'
-import { availability, heroCtas, name } from '@/content/profile'
 
 type HeaderProps = {
   scrolled: boolean
@@ -12,6 +16,10 @@ type HeaderProps = {
 }
 
 export function Header({ scrolled, menuOpen, onToggleMenu, onCloseMenu }: HeaderProps) {
+  const t = useTranslation()
+  const { navLinks } = useContent(navContent)
+  const { availability, heroCtas, name } = useContent(profileContent)
+
   return (
     <header className={[styles.hdr, scrolled || menuOpen ? styles.hdrOn : ''].filter(Boolean).join(' ')}>
       <div
@@ -29,14 +37,14 @@ export function Header({ scrolled, menuOpen, onToggleMenu, onCloseMenu }: Header
         <a
           href="#top"
           style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', color: 'var(--ink)' }}
-          aria-label={`${name.line1} ${name.line2}, retour en haut`}
+          aria-label={`${name.line1} ${name.line2}, ${t('retour en haut')}`}
         >
           <Orb size="logo" />
           <span className={styles.disp} style={{ fontWeight: 800, fontSize: 16, letterSpacing: '0.02em' }}>
             Clément Ozor
           </span>
         </a>
-        <nav className={styles.nav} aria-label="Sections" style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
+        <nav className={styles.nav} aria-label={t('Sections')} style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
           {navLinks.map((link) => (
             <a key={link.href} href={link.href}>
               {link.label}
@@ -58,13 +66,14 @@ export function Header({ scrolled, menuOpen, onToggleMenu, onCloseMenu }: Header
           >
             {heroCtas.contact.label}
           </a>
+          <LanguageSwitch />
           <button
             type="button"
             className={[styles.burger, menuOpen ? styles.burgerOpen : ''].filter(Boolean).join(' ')}
             onClick={onToggleMenu}
             aria-expanded={menuOpen}
             aria-controls="mnav"
-            aria-label="Menu"
+            aria-label={t('Menu')}
           >
             <span />
             <span />

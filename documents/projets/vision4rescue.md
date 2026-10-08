@@ -10,7 +10,7 @@ Vision4Rescue s'appuie sur la Combat Digital Platform (CDP) de Thales, notamment
 
 Clément confirme avoir contribué à Vision4Rescue pendant sa participation à CoHoMa III chez Thales en 2025. Il travaille actuellement sur la Combat Digital Platform (CDP).
 
-La contribution à Vision4Rescue est confirmée, mais les composants précis développés ou intégrés ne sont pas détaillés. Les travaux de streaming et de replay de CoHoMa III ne sont pas automatiquement attribués à Vision4Rescue.
+Clément précise que sa contribution à Vision4Rescue porte sur les mêmes composants que ceux de CoHoMa III : frontend des interfaces de pilotage, chaîne de streaming vidéo en temps réel et de replay, agrégation et visualisation de flux vidéo et de données multi-capteurs, et intégration logicielle et matérielle de systèmes robotiques.
 
 Le portfolio précédent associait ce projet à la robotique, au C++ et à Python ; l’usage personnel de ces langages sur Vision4Rescue reste à préciser.
 
@@ -24,4 +24,4 @@ C++, Python, Robotics, Firefighters, Innovation.
 
 Aucun statut de développement n'est précisé dans le portfolio précédent ou le CV fourni.
 
-Le CV fourni ne détaille pas ce projet. La participation se situe pendant CoHoMa III en 2025. Les dates exactes, les responsabilités précises et les résultats chiffrés ne sont pas documentés.
+Le CV fourni ne détaille pas ce projet. La participation se situe pendant CoHoMa III en 2025. Les dates exactes et les résultats chiffrés ne sont pas documentés.

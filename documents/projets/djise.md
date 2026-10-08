@@ -4,7 +4,11 @@
 
 Djise était un projet d'application permettant de connecter les DJs à leur public pendant une prestation. Les membres de l'audience pouvaient envoyer des demandes de morceaux en direct au DJ, accompagnées d'un pourboire.
 
-## Fonctionnement envisagé
+## Contribution de Clément Ozor
+
+Clément était CEO de Djise et a réalisé seul l’ensemble du développement du site et de son backend. Il a utilisé Next.js, NestJS et Stripe pour les paiements. Le développement était terminé avant l’archivage du projet.
+
+## Fonctionnement
 
 Le public proposait la musique qu'il souhaitait entendre et associait un pourboire à sa demande. Le DJ pouvait ainsi recevoir les demandes musicales de son audience pendant sa prestation.
 
@@ -18,10 +22,10 @@ Lien référencé dans le portfolio précédent : https://djise.app.
 
 ## Technologies et domaines référencés
 
-TypeScript, Next.js, App.
+TypeScript, Next.js, NestJS, Stripe, application web.
 
 ## Statut documenté
 
-Djise est désormais archivé, faute de budget et de marketing.
+Le développement de Djise est terminé. Le projet est désormais archivé, faute de budget et de marketing.
 
-Les dates, les modalités de paiement, les règles de traitement des demandes et les résultats chiffrés ne sont pas précisés.
+Les dates, les règles de traitement des demandes, les modalités détaillées des paiements Stripe et les résultats chiffrés ne sont pas précisés.

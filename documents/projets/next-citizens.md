@@ -8,8 +8,12 @@ Aucun lien public n'est fourni dans les sources.
 
 Lua, FiveM, GTA V RP, framework.
 
+## Contribution de Clément Ozor
+
+Clément était développeur au sein de l’équipe. Il a travaillé sur les premières bases de l’architecture, la gestion de la base de données et le début du système d’économie.
+
 ## Statut documenté
 
 Le projet n'a jamais décollé et a été abandonné.
 
-Le CV fourni ne détaille pas ce projet. Les dates, les responsabilités précises et les résultats chiffrés ne sont pas documentés dans les sources.
+Le CV fourni ne détaille pas ce projet. Les dates et les résultats chiffrés ne sont pas documentés dans les sources.

@@ -26,7 +26,7 @@ Ses travaux comprennent :
 - L'agrégation et la visualisation de flux vidéo et de données multi-capteurs.
 - L'intégration de composants logiciels et matériels sur des plateformes robotiques.
 
-Clément a également contribué au démonstrateur Vision4Rescue pendant sa participation à CoHoMa III. Le périmètre précis de cette contribution n’est pas détaillé.
+Clément a également développé le frontend des interfaces de pilotage. Pendant sa participation à CoHoMa III, il a contribué au démonstrateur Vision4Rescue sur les mêmes composants : interfaces de pilotage, streaming vidéo et replay, visualisation de données multi-capteurs et intégration robotique.
 
 Stack : C++, C, Python, Docker et hardware.
 

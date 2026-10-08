@@ -1,9 +1,12 @@
+'use client'
+
 import type { RefObject } from 'react'
+import { useContent, useTranslation } from '@/i18n/LocaleProvider'
+import * as experiencesContent from '@/content/experiences'
 import styles from './portfolio.module.css'
 import { Reveal } from './Reveal'
 import { ExperienceCard } from './ExperienceCard'
 import { TriangleIcon } from './icons'
-import { experienceAside, experiences } from '@/content/experiences'
 
 type ExperienceTimelineProps = {
   timelineRef: RefObject<HTMLDivElement | null>
@@ -12,13 +15,16 @@ type ExperienceTimelineProps = {
 }
 
 export function ExperienceTimeline({ timelineRef, armed, motionEnabled }: ExperienceTimelineProps) {
+  const t = useTranslation()
+  const { experienceAside, experiences } = useContent(experiencesContent)
+
   return (
     <section id="experiences" style={{ maxWidth: 1312, margin: '0 auto', padding: 'clamp(72px, 9vw, 128px) clamp(20px, 4.5vw, 64px) 0' }}>
       <Reveal armed={armed} className={styles.secH} style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 56 }}>
         <TriangleIcon />
         <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--muted)' }}>01</span>
         <h2 className={styles.disp} style={{ margin: 0, fontSize: 'clamp(22px, 2.6vw, 32px)', fontWeight: 900, letterSpacing: '0.2em', color: 'var(--ink)', textTransform: 'uppercase' }}>
-          Expériences
+          {t('Expériences')}
         </h2>
         <span style={{ flex: 1, minWidth: 40, height: 1.5, background: 'var(--ink)', opacity: 0.6 }} />
       </Reveal>

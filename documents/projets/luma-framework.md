@@ -14,4 +14,8 @@ TypeScript, framework modulaire et gaming / roleplay.
 
 ## Statut
 
-Luma est toujours en cours de développement. Clément Ozor y travaille sur son temps personnel, selon ses disponibilités.
+Luma est à un stade très préliminaire. Le manque d’informations sur le roleplay de GTA VI limite son avancement. Il s’agit principalement d’une anticipation de cet écosystème, plutôt que d’un framework concret et abouti.
+
+## Contribution et objectif d’apprentissage
+
+Clément Ozor intervient comme développeur sur Luma. Il utilise aussi ce projet personnel pour apprendre et approfondir la programmation orientée objet. Aucun module livré ni compatibilité effective avec GTA VI ne sont confirmés.

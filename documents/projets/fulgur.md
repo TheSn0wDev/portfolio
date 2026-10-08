@@ -8,7 +8,21 @@ Le README présente notamment le pilotage sans fil par manette, des communicatio
 
 Dépôt : https://github.com/TheSn0wDev/fulgur.
 
-## Technologies présentées
+## Développements présents dans le projet de Clément
+
+La lecture du dépôt public précise le travail logiciel présent :
+
+- Contrôleur C++ avec SDL3 pour lire les boutons, axes et informations de batterie d’une manette, avec une implémentation PS5, et publier son état en JSON sur NATS.
+- Abstraction de bus de messagerie et implémentation NATS en C++ pour la publication et l’abonnement.
+- Interface React et TypeScript recevant les états de manette et les informations du véhicule via NATS sur WebSocket, avec Zustand pour la gestion d’état.
+- Lecteur vidéo WebRTC utilisant WHEP, avec tentative de reconnexion.
+- Modules controller, messaging, logger, pinger, telemetry et viewer ; compilation des composants C++ organisée avec CMake.
+
+Stack observée : C++, SDL3, NATS, JSON, CMake, React, TypeScript, Vite, Tailwind CSS, Zustand, WebSocket, WebRTC et WHEP.
+
+Le code a été lu sans compilation ni exécution. JetStream n’est pas implémenté dans le bus NATS et la batterie affichée dans le viewer reçoit encore une valeur fixe. Le montage matériel, la commande des moteurs et le fonctionnement complet sur véhicule restent à confirmer. Cette lecture ne vérifie pas l’auteur de chaque ligne.
+
+## Technologies annoncées dans le README
 
 C++ embarqué, SDL3 pour les entrées des manettes, WebSocket, UDP et liaison série pour les communications. Le README mentionne aussi des intégrations optionnelles avec Raspberry Pi, ESP32 ou d'autres microcontrôleurs.
 

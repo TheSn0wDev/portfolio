@@ -1,11 +1,12 @@
 'use client'
 
+import { useContent, useTranslation } from '@/i18n/LocaleProvider'
+import * as projectsContent from '@/content/projects'
 import styles from './portfolio.module.css'
 import { Reveal } from './Reveal'
 import { ProjectCard } from './ProjectCard'
 import { BigDiagonalArrowIcon, ChevronLeftIcon, ChevronRightIcon, TriangleIcon } from './icons'
 import { useProjectCarousel } from '@/hooks/useProjectCarousel'
-import { githubCard, projects } from '@/content/projects'
 
 type ProjectsCarouselProps = {
   armed: boolean
@@ -13,6 +14,9 @@ type ProjectsCarouselProps = {
 }
 
 export function ProjectsCarousel({ armed, motionEnabled }: ProjectsCarouselProps) {
+  const t = useTranslation()
+  const { githubCard, projects } = useContent(projectsContent)
+
   const { trackRef, pbarRef, mode, index, total, atStart, atEnd, prev, next, trackHandlers } = useProjectCarousel(motionEnabled)
 
   const trackClassName = [styles.ptrack, mode === 'free' ? styles.ptrackFree : '', mode === 'dragging' ? styles.ptrackDrag : '']
@@ -26,7 +30,7 @@ export function ProjectsCarousel({ armed, motionEnabled }: ProjectsCarouselProps
           <TriangleIcon />
           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--muted)' }}>02</span>
           <h2 className={styles.disp} style={{ margin: 0, fontSize: 'clamp(22px, 2.6vw, 32px)', fontWeight: 900, letterSpacing: '0.2em', color: 'var(--ink)', textTransform: 'uppercase' }}>
-            Projets
+            {t('Projets')}
           </h2>
           <span style={{ flex: 1, minWidth: 40, height: 1.5, background: 'var(--ink)', opacity: 0.6 }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -34,10 +38,10 @@ export function ProjectsCarousel({ armed, motionEnabled }: ProjectsCarouselProps
               {String(index + 1).padStart(2, '0')}{' '}
               <span style={{ color: 'var(--muted)', fontWeight: 500 }}>/ {String(total || projects.length + 1).padStart(2, '0')}</span>
             </span>
-            <button type="button" className={`${styles.nb} ${styles.navBtns}`} onClick={prev} disabled={atStart} aria-label="Projet précédent">
+            <button type="button" className={`${styles.nb} ${styles.navBtns}`} onClick={prev} disabled={atStart} aria-label={t('Projet précédent')}>
               <ChevronLeftIcon />
             </button>
-            <button type="button" className={`${styles.nb} ${styles.navBtns}`} onClick={next} disabled={atEnd} aria-label="Projet suivant">
+            <button type="button" className={`${styles.nb} ${styles.navBtns}`} onClick={next} disabled={atEnd} aria-label={t('Projet suivant')}>
               <ChevronRightIcon />
             </button>
           </div>
@@ -46,13 +50,15 @@ export function ProjectsCarousel({ armed, motionEnabled }: ProjectsCarouselProps
       <div
         ref={trackRef}
         data-ptrack=""
+        data-at-start={atStart ? '' : undefined}
+        data-at-end={atEnd ? '' : undefined}
         className={trackClassName}
         onScroll={trackHandlers.onScroll}
         onPointerDown={trackHandlers.onPointerDown}
         onClickCapture={trackHandlers.onClickCapture}
         onDragStart={trackHandlers.onDragStart}
         role="region"
-        aria-label="Liste des projets, défilement horizontal"
+        aria-label={t('Liste des projets, défilement horizontal')}
         tabIndex={0}
       >
         {projects.map((project) => (

@@ -36,6 +36,9 @@ export function PortfolioRoot() {
     cursorRef,
     bigClass: styles.curBig,
     dragClass: styles.curDrag,
+    pressClass: styles.curPress,
+    atStartClass: styles.curAtStart,
+    atEndClass: styles.curAtEnd,
     enabled: motionEnabled,
   })
 

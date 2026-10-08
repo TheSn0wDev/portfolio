@@ -10,8 +10,12 @@ Lien référencé dans le portfolio précédent : https://github.com/TheSn0wDev/
 
 C, CSFML, Make, développement de jeux vidéo, RPG.
 
+## Contribution de Clément Ozor
+
+Le projet a été développé par quatre étudiants développeurs d’Epitech. Clément a travaillé sur les interfaces, les animations, les combats et l’inventaire du jeu.
+
 ## Statut documenté
 
 Aucun statut de développement n'est précisé dans le portfolio précédent ou le CV fourni.
 
-Les dates exactes, la répartition des responsabilités dans l'équipe et les résultats chiffrés ne sont pas documentés.
+Les dates exactes et les résultats chiffrés ne sont pas documentés.

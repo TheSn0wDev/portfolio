@@ -29,7 +29,7 @@ Le 7 octobre 2026, Clément a confirmé que MMA Scan est actif et toujours en co
 - L'ancienne disponibilité les soirs et week-ends n'est pas présentée comme la disponibilité actuelle.
 - Les 14 projets du portfolio précédent sont conservés. Les statuts issus du portfolio précédent sont présentés comme historiques, sauf ceux d'Atlantique RP (abandonné) et de Djise (archivé faute de budget et de marketing), confirmés par Clément.
 - Personal RAG et MMA Scan sont ajoutés à partir du CV. Personal RAG n'est pas assimilé au chantier RAG du portfolio v3.
-- CoHoMa III est enrichi avec l'expérience robotique décrite dans le CV. Aucune contribution supplémentaire à Vision4Rescue n'est déduite de cette expérience.
+- CoHoMa III est enrichi avec l'expérience robotique décrite dans le CV. Le périmètre commun avec Vision4Rescue est confirmé par Clément le 8 octobre 2026.
 - Les coordonnées du CV, dont le téléphone, sont incluses dans `documents/contact.md`.
 - Les descriptions ne déduisent ni niveaux de maîtrise, ni dates de disponibilité, ni métriques ou responsabilités absentes des sources.
 - Le corpus comporte 27 fichiers Markdown : cinq documents biographiques, dix-sept fiches projets et cinq fichiers de glossaire comprenant 69 entrées.
@@ -180,3 +180,26 @@ Clément confirme ChromaDB et le dépôt project-brain pour Personal RAG, l’é
 ## Vision4Rescue : précision du 8 octobre 2026
 
 Clément confirme son travail actuel sur la CDP et sa contribution à Vision4Rescue pendant CoHoMa III. La carte projet et les documents reprennent cette participation sans attribuer de composants ni de résultats supplémentaires.
+
+## Contributions précisées le 8 octobre 2026
+
+Précisions directement fournies par Clément, prioritaires sur les mentions antérieures de périmètre inconnu :
+
+- Vision4Rescue et CoHoMa III : mêmes composants, dont le frontend des interfaces de pilotage ; fiches et expériences harmonisées.
+- Djise : CEO, développement seul de l’ensemble du site avec Next.js, NestJS et Stripe ; développement terminé, projet archivé. La deuxième réponse est rattachée à Djise selon l’ordre des projets discutés.
+- Luma : développeur, projet très préliminaire faute d’informations sur le RP de GTA VI ; anticipation et apprentissage de la programmation orientée objet.
+- My RPG : quatre développeurs d’Epitech ; interfaces, animations, combats et inventaire pour Clément.
+- Next Citizens : premières bases d’architecture, gestion de la base de données et début du système d’économie.
+- NextJS Boilerplate : ensemble développé par Clément pour regrouper les bibliothèques réutilisées et gagner du temps dans ses projets Next.js.
+- Personal RAG : assistant générique destiné aux projets en cours pour les comprendre et demander des conseils ; intégration partout décrite comme objectif.
+
+### Fulgur : consultation du dépôt via le connecteur GitHub
+
+Lecture le 8 octobre 2026 du README, de l’arborescence et du code de la branche main, sans compilation ni exécution :
+
+- [Contrôleur C++](https://github.com/TheSn0wDev/fulgur/blob/main/fulgur-controller/src/main.cpp) et [PS5Controller](https://github.com/TheSn0wDev/fulgur/blob/main/fulgur-controller/src/controller/PS5Controller.cpp) : SDL3, boutons, axes, batterie et publication JSON sur NATS.
+- [Bus NATS](https://github.com/TheSn0wDev/fulgur/blob/main/fulgur-messaging/src/NatsMessagingBus.cpp) : publication et abonnement ; JetStream non implémenté.
+- [Viewer](https://github.com/TheSn0wDev/fulgur/blob/main/fulgur-viewer/src/App.tsx) et [dépendances](https://github.com/TheSn0wDev/fulgur/blob/main/fulgur-viewer/package.json) : React, TypeScript, NATS WebSocket, Zustand, Vite et Tailwind CSS ; batterie affichée avec une valeur fixe.
+- [Lecteur vidéo](https://github.com/TheSn0wDev/fulgur/blob/main/fulgur-viewer/src/components/WebRTCPlayer.tsx) : WebRTC/WHEP et reconnexion.
+
+La fiche distingue code présent et périmètre annoncé ; le fonctionnement sur véhicule et l’auteur de chaque ligne ne sont pas vérifiés.
