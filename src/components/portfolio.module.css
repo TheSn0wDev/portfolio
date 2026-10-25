@@ -5509,6 +5509,15 @@ a:hover .logoOrb {
     animation: none;
   }
 
+  .logoOrb .b {
+    filter: blur(5px);
+    mix-blend-mode: screen;
+  }
+
+  .logoOrb .blobs {
+    animation: none;
+  }
+
   .tilt {
     transform: none !important;
   }
