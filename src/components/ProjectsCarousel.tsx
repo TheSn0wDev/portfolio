@@ -7,6 +7,7 @@ import { Reveal } from './Reveal'
 import { ProjectCard } from './ProjectCard'
 import { BigDiagonalArrowIcon, ChevronLeftIcon, ChevronRightIcon, TriangleIcon } from './icons'
 import { useProjectCarousel } from '@/hooks/useProjectCarousel'
+import { useAnimationVisibility } from '@/hooks/useAnimationVisibility'
 
 type ProjectsCarouselProps = {
   armed: boolean
@@ -18,6 +19,8 @@ export function ProjectsCarousel({ armed, motionEnabled }: ProjectsCarouselProps
   const { githubCard, projects } = useContent(projectsContent)
 
   const { trackRef, pbarRef, mode, index, total, atStart, atEnd, prev, next, trackHandlers } = useProjectCarousel(motionEnabled)
+
+  useAnimationVisibility(trackRef)
 
   const trackClassName = [styles.ptrack, mode === 'free' ? styles.ptrackFree : '', mode === 'dragging' ? styles.ptrackDrag : '']
     .filter(Boolean)

@@ -47,6 +47,8 @@ export function usePointerFx({ rootRef, heroRef, cursorRef, bigClass, dragClass,
   })
 
   useEffect(() => {
+    if (!enabled || !window.matchMedia('(any-hover: hover) and (any-pointer: fine)').matches) return
+
     const s = state.current
 
     const onMove = (e: PointerEvent) => {

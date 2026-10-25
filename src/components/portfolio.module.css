@@ -5503,6 +5503,12 @@ a:hover .logoOrb {
   }
 }
 @media (hover: none) {
+  .orb .b {
+    filter: none;
+    mix-blend-mode: normal;
+    animation: none;
+  }
+
   .tilt {
     transform: none !important;
   }
@@ -5955,3 +5961,13 @@ a:hover .logoOrb {
 .skipLink:focus-visible { transform: translateY(0); outline: 3px solid var(--accent); outline-offset: 3px; }
 /* The primary heading is visible on the first paint. */
 .pf h1 .ltr, .pf h1 .rise { animation: none; opacity: 1; transform: none; }
+
+/* Pause clipped carousel cards as well as cards below the viewport. */
+.ptrack[data-pause-offscreen] [data-pcard]:not([data-animation-visible]),
+.ptrack[data-pause-offscreen] [data-pcard]:not([data-animation-visible]) *,
+.ptrack[data-pause-offscreen] [data-pcard]:not([data-animation-visible])::before,
+.ptrack[data-pause-offscreen] [data-pcard]:not([data-animation-visible])::after,
+.ptrack[data-pause-offscreen] [data-pcard]:not([data-animation-visible]) *::before,
+.ptrack[data-pause-offscreen] [data-pcard]:not([data-animation-visible]) *::after {
+  animation-play-state: paused !important;
+}
