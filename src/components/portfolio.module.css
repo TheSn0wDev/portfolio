@@ -5053,6 +5053,8 @@ a:hover .logoOrb {
 .blobs {
   position: absolute;
   inset: 0;
+  /* Clip filtered layers explicitly; Safari can paint past rounded overflow. */
+  clip-path: circle(50%);
   animation: spin 12s linear infinite;
 }
 .b {
