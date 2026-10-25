@@ -5506,17 +5506,10 @@ a:hover .logoOrb {
 }
 @media (hover: none) {
   .orb .b {
-    filter: none;
-    mix-blend-mode: normal;
     animation: none;
   }
 
-  .logoOrb .b {
-    filter: blur(5px);
-    mix-blend-mode: screen;
-  }
-
-  .logoOrb .blobs {
+  .orb .blobs {
     animation: none;
   }
 
